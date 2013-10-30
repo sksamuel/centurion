@@ -9,7 +9,9 @@ import akka.actor.{ActorRef, Actor}
 class Splitter(target: ActorRef) extends Actor {
 
   def receive = {
-    case iter: Traversable[_] => iter.foreach(target !)
+    case iter: Iterable[_] => iter.foreach(target !)
+    case iter: Iterator[_] => iter.foreach(target !)
+    case iter: Array[_] => iter.foreach(target !)
     case other: AnyRef => target ! other
   }
 }
