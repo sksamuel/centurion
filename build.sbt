@@ -43,7 +43,7 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0.M6-SNAP36" % "test"
 
 pomExtra := (
-  <url>https://github.com/sksamuel/elastic4s</url>
+  <url>https://github.com/sksamuel/akka-patterns</url>
     <licenses>
       <license>
         <name>Apache 2</name>
@@ -52,13 +52,13 @@ pomExtra := (
       </license>
     </licenses>
     <scm>
-      <url>git@github.com:sksamuel/elastic4s.git</url>
-      <connection>scm:git@github.com:sksamuel/elastic4s.git</connection>
+      <url>git@github.com:sksamuel/akka-patterns.git</url>
+      <connection>scm:git@github.com:sksamuel/akka-patterns.git</connection>
     </scm>
     <developers>
       <developer>
-        <id>theon</id>
+        <id>sksamuel</id>
         <name>sksamuel</name>
-        <url>http://github.com/elastic4s</url>
+        <url>http://github.com/akka-patterns</url>
       </developer>
     </developers>)
