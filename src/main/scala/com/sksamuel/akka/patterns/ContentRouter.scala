@@ -1,17 +1,21 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{ActorRef, Actor}
-import scala.collection.mutable.ListBuffer
+import akka.actor.Actor
 
 /** @author Stephen Samuel */
-class ContentRouter extends Actor {
+class ContentRouter(_routes: Route*) extends Actor {
 
-  val routes = new ListBuffer[RouteDefinition]
+  var routes = Map.empty[Class[_], Any => Unit]
+  _routes.foreach(add)
+
+  def add(route: Route): Unit = routes = routes + (route.messageType -> route.f)
 
   def receive = {
-    case route: RouteDefinition => routes.append(route)
-    case any: Any => routes.find(_).foreach(_.target ! any)
+    case any: Any => routes.get(any.getClass) match {
+      case Some(f) => f(any)
+      case None => unhandled(any)
+    }
   }
 }
 
-case class RouteDefinition(f: Any => Boolean, target: ActorRef)
+case class Route(messageType: Class[_], f: Any => Unit)
