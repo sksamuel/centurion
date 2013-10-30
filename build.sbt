@@ -28,7 +28,9 @@ parallelExecution in Test := false
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-libraryDependencies += "com.typesafe.akka" % "akka-actor_2.10" % "2.2.1"
+libraryDependencies += "com.typesafe.akka" % "akka-actor_2.10" % "2.2.3"
+
+libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.10" % "2.2.3"
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.6"
 
@@ -40,7 +42,7 @@ libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0.M6-SNAP36" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0.RC3" % "test"
 
 pomExtra := (
   <url>https://github.com/sksamuel/akka-patterns</url>

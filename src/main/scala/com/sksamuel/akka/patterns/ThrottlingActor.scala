@@ -2,6 +2,7 @@ package com.sksamuel.akka.patterns
 
 import scala.concurrent.duration.FiniteDuration
 import akka.actor.{ActorRef, Actor}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * Throttles messages such that there is a minimum delay between messages.

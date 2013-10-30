@@ -4,7 +4,8 @@ import akka.actor.{ActorRef, Actor}
 import scala.collection.mutable.ListBuffer
 
 /**
- * Waits for a specified number of messages before sending those to the target.
+ * Waits for a specified number of messages before sending those to the target
+ * as a single collection of messages.
  *
  * @author Stephen Samuel */
 class CountingLatch(count: Int, target: ActorRef) extends Actor {
