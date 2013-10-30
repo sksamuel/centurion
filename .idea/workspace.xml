@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c898a7f9-36f6-472e-853b-c86454fe2bca" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.travis.yml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/CountingLatchTest.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sbt" afterPath="$PROJECT_DIR$/build.sbt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/MessageFilterTest.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="akka-patterns.iws" />
@@ -20,7 +16,7 @@
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/util/mvc/BackgroundController.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080147254" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/test/scala/com/cloudray/scalapress/obj/controller/admin/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082904941" ignored="false" />
     <file path="/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080795599" ignored="false" />
-    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383124017352" ignored="false" />
+    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383125943310" ignored="false" />
     <file path="/CountingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383124031212" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/plugin/listings/controller/renderer/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082717487" ignored="false" />
     <file path="/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082712107" ignored="false" />
@@ -429,6 +425,7 @@
     <file path="/MessageFilter.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383122053340" ignored="false" />
     <file path="/CountingLatchTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383125929780" ignored="false" />
     <file path="/ThrottlingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383125575512" ignored="false" />
+    <file path="/MessageFilterTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383126909819" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -515,12 +512,13 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Envelope.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/MessageFilter.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ContentRouter.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala" />
         <option value="$PROJECT_DIR$/build.sbt" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/CountingLatchTest.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/MessageFilter.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/MessageFilterTest.scala" />
       </list>
     </option>
   </component>
@@ -645,7 +643,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
   </component>
-  <component name="RunManager" selected="ScalaTest.CountingLatchTest">
+  <component name="RunManager" selected="ScalaTest.MessageFilterTest">
     <configuration default="false" name="CountingLatchTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -671,6 +669,28 @@
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="MessageFilterTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.sksamuel.akka.patterns.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="scalaCoverage" />
+      <module name="akka-patterns" />
+      <setting name="path" value="com.sksamuel.akka.patterns.MessageFilterTest" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -774,12 +794,14 @@
       <setting name="showProgressMessages" value="true" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="ScalaTest.CountingLatchTest" />
+      <item index="1" class="java.lang.String" itemvalue="ScalaTest.MessageFilterTest" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="ScalaTest.CountingLatchTest" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="ScalaTest.MessageFilterTest" />
+        <item index="1" class="java.lang.String" itemvalue="ScalaTest.CountingLatchTest" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -910,7 +932,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated content router for static route handlers" />
+    <option name="LAST_COMMIT_MESSAGE" value="added tests for counting latch" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -936,6 +958,7 @@
     <MESSAGE value="Added aggregator" />
     <MESSAGE value="Added message filter" />
     <MESSAGE value="Updated content router for static route handlers" />
+    <MESSAGE value="added tests for counting latch" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -945,13 +968,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/Iterable.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="32" selection-start="727" selection-end="727" vertical-scroll-proportion="0.31387666">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/package.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="47" column="42" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.33259913">
@@ -969,13 +985,6 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Envelope.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="44" selection-start="212" selection-end="212" vertical-scroll-proportion="0.11563877">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/MessageFilter.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="291" selection-end="291" vertical-scroll-proportion="0.19823788">
           <folding />
         </state>
       </provider>
@@ -1029,13 +1038,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="29" selection-start="512" selection-end="512" vertical-scroll-proportion="0.45">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/com.typesafe.akka/akka-testkit_2.10/srcs/akka-testkit_2.10-2.2.3-sources.jar!/akka/testkit/TestKit.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="399" column="0" selection-start="13647" selection-end="13647" vertical-scroll-proportion="0.4456929">
@@ -1043,16 +1045,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/CountingLatchTest.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="20" selection-start="1025" selection-end="1025" vertical-scroll-proportion="0.825">
+        <state line="4" column="57" selection-start="177" selection-end="177" vertical-scroll-proportion="0.1">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="57" selection-start="177" selection-end="177" vertical-scroll-proportion="0.1">
+        <state line="11" column="0" selection-start="336" selection-end="336" vertical-scroll-proportion="0.275">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/CountingLatchTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="0" selection-start="355" selection-end="1110" vertical-scroll-proportion="0.175">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/MessageFilter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="42" selection-start="145" selection-end="145" vertical-scroll-proportion="0.125">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/com/sksamuel/akka/patterns/MessageFilterTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="17" selection-start="683" selection-end="683" vertical-scroll-proportion="0.475">
           <folding />
         </state>
       </provider>
