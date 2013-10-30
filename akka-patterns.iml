@@ -32,15 +32,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="SBT: com.typesafe.akka:akka-actor_2.10:2.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: org.slf4j:log4j-over-slf4j:1.6.6" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.6.6" level="project" />
     <orderEntry type="library" name="SBT: com.typesafe:config:1.0.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.10:2.0.M6-SNAP36" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.3" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: org.mockito:mockito-all:1.9.5" level="project" />
     <orderEntry type="library" name="SBT: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang:scala-reflect:2.10.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.10:2.0.RC3" level="project" />
+    <orderEntry type="library" name="SBT: com.typesafe.akka:akka-testkit_2.10:2.2.3" level="project" />
+    <orderEntry type="library" name="SBT: com.typesafe.akka:akka-actor_2.10:2.2.3" level="project" />
   </component>
 </module>
 
