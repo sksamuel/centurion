@@ -1,10 +1,10 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{ActorRef, Actor}
 import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
-class Resequencer(types: Seq[Class[_]], target: ActorRef) extends Actor {
+class Aggregator(types: Seq[Class[_]], target: ActorRef) extends Actor {
 
   val buffers = types.map(arg => new ListBuffer[AnyRef])
 
@@ -14,13 +14,14 @@ class Resequencer(types: Seq[Class[_]], target: ActorRef) extends Actor {
         case -1 => unhandled(msg)
         case pos: Int =>
           buffers(pos).append(msg)
-          checkForCompleteSequence()
+          checkForCompleteMessage()
       }
   }
 
-  def checkForCompleteSequence(): Unit = {
+  def checkForCompleteMessage(): Unit = {
     if (buffers.forall(_.size > 0)) {
-      buffers.foreach(target ! _.remove(0))
+      val msg = buffers.map(_.remove(0))
+      target ! msg
     }
   }
 }

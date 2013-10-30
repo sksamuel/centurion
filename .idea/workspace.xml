@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c898a7f9-36f6-472e-853b-c86454fe2bca" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ContentRouter.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingLatch.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Aggregator.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="akka-patterns.iws" />
@@ -17,7 +17,7 @@
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/util/mvc/BackgroundController.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080147254" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/test/scala/com/cloudray/scalapress/obj/controller/admin/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082904941" ignored="false" />
     <file path="/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080795599" ignored="false" />
-    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097188945" ignored="false" />
+    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383120210973" ignored="false" />
     <file path="/CountingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087818974" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/plugin/listings/controller/renderer/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082717487" ignored="false" />
     <file path="/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082712107" ignored="false" />
@@ -414,7 +414,7 @@
     <file path="/ItemSellPriceTagTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383086794325" ignored="false" />
     <file path="/pricing.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087141379" ignored="false" />
     <file path="/ThrottlingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383095945476" ignored="false" />
-    <file path="/Resequencer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096628912" ignored="false" />
+    <file path="/Resequencer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383121545916" ignored="false" />
     <file path="/Splitter.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096599398" ignored="false" />
     <file path="/BlockingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096911762" ignored="false" />
     <file path="/AcknowledgingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096757933" ignored="false" />
@@ -422,6 +422,7 @@
     <file path="/Envelope.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097123276" ignored="false" />
     <file path="/EnvelopingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097179627" ignored="false" />
     <file path="/RoutingSlip.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383120200479" ignored="false" />
+    <file path="/Aggregator.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383121529253" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -481,17 +482,7 @@
     <favorites_list name="akka-patterns" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="ContentRouter.scala" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ContentRouter.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="8" selection-start="191" selection-end="191" vertical-scroll-proportion="0.13215859">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -512,7 +503,6 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingLatch.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
         <option value="$PROJECT_DIR$/build.sbt" />
@@ -520,6 +510,8 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/EnvelopingActor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/RoutingSlip.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ContentRouter.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Aggregator.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
       </list>
     </option>
   </component>
@@ -598,36 +590,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="patterns" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="akka-patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="akka-patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ContentRouter.scala" />
-              <option name="myItemType" value="org.jetbrains.plugins.scala.components.ScalaDefsProjectViewProvider$ScalaFileTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -805,7 +767,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="0" width="1924" height="1082" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -822,7 +784,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24493062" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24493062" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="DB Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -876,7 +838,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added enveloping actor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added content router" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -898,95 +860,12 @@
     <MESSAGE value="Fixed sbt build" />
     <MESSAGE value="Added travis build" />
     <MESSAGE value="Added enveloping actor" />
+    <MESSAGE value="Added content router" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/concurrent/duration/Duration.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="362" column="30" selection-start="15607" selection-end="15607" vertical-scroll-proportion="-0.5099119">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingActor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="11" selection-start="1039" selection-end="1039" vertical-scroll-proportion="0.52863437">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="1" selection-start="341" selection-end="514" vertical-scroll-proportion="0.21475771">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/GenSeqLike.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="6" selection-start="4534" selection-end="4534" vertical-scroll-proportion="0.33259913">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/srcs/akka-actor_2.10-2.2.1-sources.jar!/akka/actor/Actor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="543" column="6" selection-start="19676" selection-end="19676" vertical-scroll-proportion="0.7687225">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/IterableLike.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="126" column="22" selection-start="4408" selection-end="4408" vertical-scroll-proportion="0.34911895">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="63" selection-start="140" selection-end="140" vertical-scroll-proportion="0.08259912">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="34" selection-start="584" selection-end="584" vertical-scroll-proportion="0.3469163">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/mutable/ListBuffer.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="316" column="6" selection-start="9426" selection-end="9426" vertical-scroll-proportion="0.33259913">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="21" selection-start="408" selection-end="408" vertical-scroll-proportion="0.26431718">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="56" selection-end="56" vertical-scroll-proportion="0.08259912">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.sbt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="71" selection-start="538" selection-end="538" vertical-scroll-proportion="0.3469163">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="17" column="0" selection-start="368" selection-end="368" vertical-scroll-proportion="0.280837">
@@ -1011,6 +890,90 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ContentRouter.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="8" selection-start="191" selection-end="191" vertical-scroll-proportion="0.13215859">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/DynamicRouter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="1" selection-start="498" selection-end="498" vertical-scroll-proportion="0.31387666">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/Iterable.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="42" selection-start="672" selection-end="672" vertical-scroll-proportion="0.26431718">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/Seq.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="6" selection-start="648" selection-end="648" vertical-scroll-proportion="0.26431718">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/package.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="36" selection-start="2414" selection-end="2414" vertical-scroll-proportion="0.38215858">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.sbt/boot/scala-2.9.2/lib/scala-library.jar!/scala/collection/GenSeq.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="6" selection-start="31" selection-end="31" vertical-scroll-proportion="0.01724138">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/SeqLike.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="105" column="28" selection-start="4267" selection-end="4267" vertical-scroll-proportion="-0.38656387">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/immutable/Seq.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="32" selection-start="1050" selection-end="1050" vertical-scroll-proportion="0.46255508">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.sbt/boot/scala-2.9.2/lib/scala-library.jar!/scala/collection/immutable/Set.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="43" selection-start="958" selection-end="958" vertical-scroll-proportion="0.13793103">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.sbt/boot/scala-2.9.2/lib/scala-library.jar!/scala/collection/SeqLike.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="6" selection-start="3618" selection-end="3618" vertical-scroll-proportion="0.7413793">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.sbt/boot/scala-2.9.2/lib/scala-library.jar!/scala/collection/Seq.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="252" selection-start="277" selection-end="277" vertical-scroll-proportion="0.01775148">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="0" selection-start="588" selection-end="588" vertical-scroll-proportion="0.36343613">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Aggregator.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="18" selection-start="644" selection-end="644" vertical-scroll-proportion="0.37995595">
           <folding />
         </state>
       </provider>
