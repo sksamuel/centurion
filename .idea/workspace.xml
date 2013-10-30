@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c898a7f9-36f6-472e-853b-c86454fe2bca" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Envelope.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/EnvelopingActor.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="akka-patterns.iws" />
@@ -15,7 +17,7 @@
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/util/mvc/BackgroundController.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080147254" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/test/scala/com/cloudray/scalapress/obj/controller/admin/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082904941" ignored="false" />
     <file path="/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080795599" ignored="false" />
-    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096982140" ignored="false" />
+    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097016690" ignored="false" />
     <file path="/CountingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087818974" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/plugin/listings/controller/renderer/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082717487" ignored="false" />
     <file path="/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082712107" ignored="false" />
@@ -417,6 +419,8 @@
     <file path="/BlockingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096911762" ignored="false" />
     <file path="/AcknowledgingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096757933" ignored="false" />
     <file path="/build.sbt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096966697" ignored="false" />
+    <file path="/Envelope.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097123276" ignored="false" />
+    <file path="/EnvelopingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383097179627" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -501,6 +505,8 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
         <option value="$PROJECT_DIR$/build.sbt" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Envelope.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/EnvelopingActor.scala" />
       </list>
     </option>
   </component>
@@ -579,36 +585,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="patterns" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="akka-patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="akka-patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="patterns" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AcknowledgingActor.scala" />
-              <option name="myItemType" value="org.jetbrains.plugins.scala.components.ScalaDefsProjectViewProvider$ScalaFileTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -857,7 +833,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed sbt build" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added travis build" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -877,18 +853,12 @@
     <MESSAGE value="Added ackkowledgign actor" />
     <MESSAGE value="Added blocking actor" />
     <MESSAGE value="Fixed sbt build" />
+    <MESSAGE value="Added travis build" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/DynamicRouter.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="3" selection-start="496" selection-end="496" vertical-scroll-proportion="0.2973568">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/srcs/akka-actor_2.10-2.2.1-sources.jar!/akka/actor/Scheduler.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="126" column="16" selection-start="4599" selection-end="4599" vertical-scroll-proportion="0.34911895">
@@ -952,13 +922,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="368" selection-end="368" vertical-scroll-proportion="0.280837">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/mutable/ListBuffer.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="316" column="6" selection-start="9426" selection-end="9426" vertical-scroll-proportion="0.33259913">
@@ -983,6 +946,27 @@
     <entry file="file://$PROJECT_DIR$/build.sbt">
       <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="71" selection-start="538" selection-end="538" vertical-scroll-proportion="0.3469163">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="0" selection-start="368" selection-end="368" vertical-scroll-proportion="0.280837">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Envelope.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="14" selection-start="103" selection-end="103" vertical-scroll-proportion="0.08259912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/EnvelopingActor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="42" selection-start="220" selection-end="220" vertical-scroll-proportion="0.13215859">
           <folding />
         </state>
       </provider>
