@@ -10,7 +10,7 @@ import akka.actor.{ActorRef, Actor}
  * the message is held until d time has elapsed from the previous message.
  *
  * @author Stephen Samuel */
-class ThrottlingLatch(duration: FiniteDuration, target: ActorRef) extends Actor {
+class ThrottlingActor(duration: FiniteDuration, target: ActorRef) extends Actor {
 
   var pending: Option[AnyRef] = None
   var throttled = false
