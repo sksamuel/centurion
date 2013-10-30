@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c898a7f9-36f6-472e-853b-c86454fe2bca" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="akka-patterns.iws" />
@@ -17,7 +15,7 @@
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/util/mvc/BackgroundController.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080147254" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/test/scala/com/cloudray/scalapress/obj/controller/admin/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082904941" ignored="false" />
     <file path="/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080795599" ignored="false" />
-    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096772350" ignored="false" />
+    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096982140" ignored="false" />
     <file path="/CountingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087818974" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/plugin/listings/controller/renderer/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082717487" ignored="false" />
     <file path="/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082712107" ignored="false" />
@@ -418,6 +416,7 @@
     <file path="/Splitter.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096599398" ignored="false" />
     <file path="/BlockingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096911762" ignored="false" />
     <file path="/AcknowledgingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096757933" ignored="false" />
+    <file path="/build.sbt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096966697" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -501,6 +500,7 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
+        <option value="$PROJECT_DIR$/build.sbt" />
       </list>
     </option>
   </component>
@@ -857,7 +857,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added ackkowledgign actor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed sbt build" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -875,6 +875,8 @@
     <MESSAGE value="Added resequencer" />
     <MESSAGE value="Added splitter" />
     <MESSAGE value="Added ackkowledgign actor" />
+    <MESSAGE value="Added blocking actor" />
+    <MESSAGE value="Fixed sbt build" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -967,6 +969,20 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="16" column="21" selection-start="408" selection-end="408" vertical-scroll-proportion="0.26431718">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="0" selection-start="56" selection-end="56" vertical-scroll-proportion="0.08259912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.sbt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="71" selection-start="538" selection-end="538" vertical-scroll-proportion="0.3469163">
           <folding />
         </state>
       </provider>
