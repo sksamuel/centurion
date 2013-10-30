@@ -5,4 +5,5 @@ import java.util.UUID
 /** @author Stephen Samuel */
 class Envelope(msg: AnyRef) {
   val correlationId = UUID.randomUUID().toString
+  val timestamp = System.currentTimeMillis()
 }
