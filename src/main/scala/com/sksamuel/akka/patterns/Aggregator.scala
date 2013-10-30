@@ -1,26 +1,27 @@
 package com.sksamuel.akka.patterns
 
 import akka.actor.{ActorRef, Actor}
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 /** @author Stephen Samuel */
-class Aggregator(types: Seq[Class[_]], target: ActorRef) extends Actor {
+class Aggregator(target: ActorRef, types: Class[_]*) extends Actor {
 
-  val buffers = types.map(arg => new ListBuffer[AnyRef])
+  val buffers = types.map(arg => mutable.Map.empty[String, Any])
 
   def receive = {
-    case msg: AnyRef =>
+    case Envelope(msg, id) =>
       types.indexOf(msg.getClass) match {
         case -1 => unhandled(msg)
         case pos: Int =>
-          buffers(pos).append(msg)
-          checkForCompleteMessage()
+          buffers(pos).put(id, msg)
+          checkForCompleteMessage(id)
       }
+    case msg: Any => unhandled(msg)
   }
 
-  def checkForCompleteMessage(): Unit = {
-    if (buffers.forall(_.size > 0)) {
-      val msg = buffers.map(_.remove(0))
+  def checkForCompleteMessage(correlationId: String): Unit = {
+    if (buffers.forall(_.contains(correlationId))) {
+      val msg = buffers.flatMap(_.remove(correlationId))
       target ! msg
     }
   }
