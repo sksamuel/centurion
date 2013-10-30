@@ -7,17 +7,18 @@ import scala.collection.mutable.ListBuffer
  * Holds up further messages until the previous message has been received.
  *
  * @author Stephen Samuel */
-class BlockingActor(target: ActorRef) extends Actor {
+class ReliableActor(target: ActorRef) extends Actor {
 
   val buffer = new ListBuffer[AnyRef]
   var blocked = false
 
   def receive = {
-    case Ackknowledged =>
+    case Acknowledged =>
       blocked = false
       if (buffer.size > 0) send(buffer.remove(0))
-    case msg: AnyRef => send(msg)
-
+    case msg: AnyRef =>
+      if (blocked) buffer append msg
+      else send(msg)
   }
 
   def send(msg: AnyRef) = {

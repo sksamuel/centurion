@@ -10,8 +10,8 @@ class AcknowledgingActor(target: ActorRef) extends Actor {
   def receive = {
     case msg: AnyRef =>
       target ! msg
-      sender ! Ackknowledged
+      sender ! Acknowledged
   }
 }
 
-case object Ackknowledged
+case object Acknowledged
