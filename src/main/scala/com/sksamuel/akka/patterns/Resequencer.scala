@@ -19,7 +19,7 @@ class Resequencer(types: Seq[Class[_]], target: ActorRef) extends Actor {
   }
 
   def checkForCompleteSequence(): Unit = {
-    if (buffers.count(_.size > 0) == buffers.size) {
+    if (buffers.forall(_.size > 0)) {
       val msg = buffers.map(_.remove(0))
       target ! msg
     }

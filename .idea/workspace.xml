@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c898a7f9-36f6-472e-853b-c86454fe2bca" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" afterPath="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="akka-patterns.iws" />
@@ -16,7 +17,7 @@
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/util/mvc/BackgroundController.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080147254" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/test/scala/com/cloudray/scalapress/obj/controller/admin/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082904941" ignored="false" />
     <file path="/ObjectEditControllerTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383080795599" ignored="false" />
-    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096388361" ignored="false" />
+    <file path="/Dummy.txt" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096772350" ignored="false" />
     <file path="/CountingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087818974" ignored="false" />
     <file path="$PROJECT_DIR$/../scalapress/src/main/scala/com/cloudray/scalapress/plugin/listings/controller/renderer/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082717487" ignored="false" />
     <file path="/ListingConfirmationRenderer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383082712107" ignored="false" />
@@ -413,8 +414,10 @@
     <file path="/ItemSellPriceTagTest.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383086794325" ignored="false" />
     <file path="/pricing.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383087141379" ignored="false" />
     <file path="/ThrottlingLatch.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383095945476" ignored="false" />
-    <file path="/Resequencer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096381161" ignored="false" />
+    <file path="/Resequencer.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096628912" ignored="false" />
     <file path="/Splitter.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096599398" ignored="false" />
+    <file path="/BlockingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096911762" ignored="false" />
+    <file path="/AcknowledgingActor.scala" changelist="c898a7f9-36f6-472e-853b-c86454fe2bca" time="1383096757933" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -494,8 +497,10 @@
       <list>
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/CountingLatch.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/ThrottlingLatch.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala" />
       </list>
     </option>
   </component>
@@ -574,6 +579,36 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="patterns" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="akka-patterns" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="akka-patterns" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="patterns" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AcknowledgingActor.scala" />
+              <option name="myItemType" value="org.jetbrains.plugins.scala.components.ScalaDefsProjectViewProvider$ScalaFileTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -822,7 +857,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added resequencer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added ackkowledgign actor" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -838,6 +873,8 @@
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="Added throttling latch" />
     <MESSAGE value="Added resequencer" />
+    <MESSAGE value="Added splitter" />
+    <MESSAGE value="Added ackkowledgign actor" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -899,13 +936,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/mutable/ListBuffer.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="309" column="22" selection-start="9149" selection-end="9149" vertical-scroll-proportion="0.21696036">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Splitter.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="63" selection-start="140" selection-end="140" vertical-scroll-proportion="0.08259912">
@@ -915,7 +945,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/Resequencer.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="3" selection-start="672" selection-end="672" vertical-scroll-proportion="0.4129956">
+        <state line="21" column="34" selection-start="584" selection-end="584" vertical-scroll-proportion="0.3469163">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/AcknowledgingActor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="0" selection-start="368" selection-end="368" vertical-scroll-proportion="0.280837">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.3-sources.jar!/scala/collection/mutable/ListBuffer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="316" column="6" selection-start="9426" selection-end="9426" vertical-scroll-proportion="0.33259913">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/sksamuel/akka/patterns/BlockingActor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="21" selection-start="408" selection-end="408" vertical-scroll-proportion="0.26431718">
           <folding />
         </state>
       </provider>
