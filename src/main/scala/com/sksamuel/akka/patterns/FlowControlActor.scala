@@ -4,13 +4,14 @@ import akka.actor.{ActorRef, Actor}
 import scala.collection.mutable.ListBuffer
 
 /**
- * Holds up further messages until the previous message has been received.
+ * Holds up further messages until the previous messages have
+ * been acknowledged.
  *
  * @author Stephen Samuel */
-class ReliableActor(target: ActorRef) extends Actor {
+class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
 
   val buffer = new ListBuffer[AnyRef]
-  var blocked = false
+  val pending = 0
 
   def receive = {
     case Acknowledged =>

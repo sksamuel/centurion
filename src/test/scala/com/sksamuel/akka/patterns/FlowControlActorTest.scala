@@ -7,11 +7,11 @@ import akka.actor.ActorSystem
 import scala.concurrent.duration._
 
 /** @author Stephen Samuel */
-class ReliableActorTest extends FlatSpec with MockitoSugar with OneInstancePerTest {
+class FlowControlActorTest extends FlatSpec with MockitoSugar with OneInstancePerTest {
 
   implicit val system = ActorSystem()
   val probe = TestProbe()
-  val actorRef = TestActorRef(new ReliableActor(probe.ref))
+  val actorRef = TestActorRef(new FlowControlActor(probe.ref))
 
   "a reliable actor" should "block subsequent messages if waiting acknowledgement" in {
     actorRef ! "foo"
