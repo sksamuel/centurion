@@ -1,28 +1,28 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{Cancellable, Actor}
+import akka.actor.Cancellable
 import scala.concurrent.duration._
 
 /**
  * Actor that self destructs after a period of inactivity.
  *
  * @author Stephen Samuel */
-class TimeoutActor extends Actor {
+trait TimeoutActor extends PatternActor {
 
-  var timeout: Cancellable = _
+  private var timeout: Cancellable = _
 
   override def preStart(): Unit = {
     scheduleCancel()
   }
 
-  def receive = {
+  def scheduleCancel(): Unit = timeout = context.system.scheduler.scheduleOnce(30 seconds, self, Timeout)
+
+  def handlers = super.handlers.andThen {
     case Timeout =>
     case _ =>
-      timeout.cancel()
+      if (timeout != null) timeout.cancel()
       scheduleCancel()
   }
-
-  def scheduleCancel(): Unit = timeout = context.system.scheduler.scheduleOnce(30 seconds, self, Timeout)
 }
 
 case object Timeout
