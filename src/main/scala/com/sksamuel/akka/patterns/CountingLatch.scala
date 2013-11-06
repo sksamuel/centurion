@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.ActorRef
+import akka.actor.{Actor, ActorRef}
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -8,11 +8,11 @@ import scala.collection.mutable.ListBuffer
  * as a single collection of messages.
  *
  * @author Stephen Samuel */
-class CountingLatch(count: Int, target: ActorRef) extends PatternActor {
+class CountingLatch(count: Int, target: ActorRef) extends Actor {
 
   val received = new ListBuffer[AnyRef]
 
-  def handlers = {
+  override def receive = {
     case msg: AnyRef =>
       received.append(msg)
       if (received.size == count) {

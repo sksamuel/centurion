@@ -1,14 +1,14 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.ActorRef
+import akka.actor.{Actor, ActorRef}
 import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
-class Resequencer(types: Seq[Class[_]], target: ActorRef) extends PatternActor {
+class Resequencer(types: Seq[Class[_]], target: ActorRef) extends Actor {
 
   val buffers = types.map(arg => new ListBuffer[AnyRef])
 
-  override def handlers = {
+  def receive = {
     case msg: AnyRef =>
       types.indexOf(msg.getClass) match {
         case -1 => unhandled(msg)

@@ -15,15 +15,15 @@ class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
 
   def receive = {
     case Acknowledged =>
-      blocked = false
+      //blocked = false
       if (buffer.size > 0) send(buffer.remove(0))
     case msg: AnyRef =>
-      if (blocked) buffer append msg
-      else send(msg)
+    //  if (blocked) buffer append msg
+    //else send(msg)
   }
 
   def send(msg: AnyRef) = {
     target ! msg
-    blocked = true
+    // blocked = true
   }
 }
