@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Terminated, Actor, ActorRef}
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -13,6 +13,7 @@ class CountingLatch(count: Int, target: ActorRef) extends Actor {
   val received = new ListBuffer[AnyRef]
 
   override def receive = {
+    case Terminated(targ) => context.stop(self)
     case msg: AnyRef =>
       received.append(msg)
       if (received.size == count) {

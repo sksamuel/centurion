@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{Terminated, ActorRef, Actor}
 import scala.collection.mutable
 
 /**
@@ -13,6 +13,8 @@ class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
   val queue = mutable.Queue.empty[Any]
   var pending = 0
 
+  override def preStart(): Unit = context.watch(target)
+
   def receive = {
     case Acknowledged =>
       if (pending > 0) pending = pending - 1
@@ -20,6 +22,7 @@ class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
         target ! queue.dequeue()
         pending = pending + 1
       }
+    case Terminated(targ) => context.stop(self)
     case msg =>
       if (pending == windowSize) {
         queue enqueue msg

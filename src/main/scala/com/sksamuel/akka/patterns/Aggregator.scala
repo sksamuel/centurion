@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{Terminated, ActorRef, Actor}
 import scala.collection.mutable
 
 /** @author Stephen Samuel */
@@ -9,6 +9,7 @@ class Aggregator(target: ActorRef, types: Class[_]*) extends Actor {
   val buffers = types.map(arg => mutable.Map.empty[String, Any])
 
   def receive = {
+    case Terminated(targ) => context.stop(self)
     case Envelope(msg, id, _) =>
       types.indexOf(msg.getClass) match {
         case -1 => unhandled(msg)
