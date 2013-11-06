@@ -2,31 +2,36 @@ package com.sksamuel.akka.patterns
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
-import akka.actor.{Cancellable, Actor}
+import akka.actor.Cancellable
 
 /** @author Stephen Samuel */
-trait PeriodicActor extends Actor {
+trait PeriodicActor extends DecoratingActor {
 
-  implicit val executionContext: ExecutionContext
+  implicit val executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   private var signal: Cancellable = _
-  var interval = 500.millis
+  var tickGenerator: IntervalGenerator = new FixedIntervalGenerator(500.millis)
 
-  override def preStart() = {
+  abstract override def preStart() = {
     schedule()
     super.preStart()
   }
+  override def postStop(): Unit = cancel()
 
-  abstract override def receive = super.receive andThen {
+  receiver {
     case Tick => schedule()
   }
 
-  def schedule() = {
+  protected def schedule() {
     cancel()
-    signal = context.system.scheduler.scheduleOnce(interval, self, Tick)
+    signal = context.system.scheduler.scheduleOnce(tickGenerator.duration, self, Tick)
   }
 
-  override def postStop(): Unit = cancel()
-  private def cancel(): Unit = if (signal != null) signal.cancel()
+  protected def cancel(): Unit = if (signal != null) signal.cancel()
 }
 
 case object Tick
+
+trait IntervalGenerator {
+  def duration: FiniteDuration
+}
+class FixedIntervalGenerator(val duration: FiniteDuration) extends IntervalGenerator

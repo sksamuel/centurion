@@ -8,8 +8,14 @@ import akka.actor.PoisonPill
  * @author Stephen Samuel */
 trait TimeoutActor extends PeriodicActor {
 
-  abstract override def receive = super.receive andThen {
-    case Tick => self ! PoisonPill
-    case msg => schedule()
+  receiver {
+    case Tick =>
+      cancel()
+      self ! Timeout
+      self ! PoisonPill
+    case msg =>
+      schedule()
   }
 }
+
+case object Timeout
