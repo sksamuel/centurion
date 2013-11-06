@@ -11,7 +11,7 @@ class WorkpileMaster extends Actor {
 
   def receive = {
 
-    case RegisterWorker(worker) =>
+    case WorkerReady(worker) =>
       if (queue.isEmpty) {
         workers enqueue worker
         context.watch(worker)
@@ -34,15 +34,18 @@ class WorkpileMaster extends Actor {
 abstract class WorkpileWorker[W](val master: ActorRef) extends Actor {
 
   override def preStart() = {
-    master ! RegisterWorker(self)
+    ready()
   }
 
   def receive = {
-    case Work(work: W) => process(work)
+    case Work(work: W) =>
+      process(work)
+      ready()
   }
 
+  def ready() = master ! WorkerReady(self)
   def process(work: W)
 }
 
-case class RegisterWorker(worker: ActorRef)
+case class WorkerReady(worker: ActorRef)
 case class Work(any: Any)
