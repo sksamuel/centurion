@@ -1,7 +1,7 @@
 package com.sksamuel.akka.patterns
 
 import akka.actor.{ActorRef, Actor}
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 /**
  * Holds up further messages until the previous messages have
@@ -10,20 +10,22 @@ import scala.collection.mutable.ListBuffer
  * @author Stephen Samuel */
 class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
 
-  val buffer = new ListBuffer[AnyRef]
-  val pending = 0
+  val queue = mutable.Queue.empty[Any]
+  var pending = 0
 
   def receive = {
     case Acknowledged =>
-      //blocked = false
-      if (buffer.size > 0) send(buffer.remove(0))
-    case msg: AnyRef =>
-    //  if (blocked) buffer append msg
-    //else send(msg)
-  }
-
-  def send(msg: AnyRef) = {
-    target ! msg
-    // blocked = true
+      if (pending > 0) pending = pending - 1
+      if (queue.size > 0) {
+        target ! queue.dequeue()
+        pending = pending + 1
+      }
+    case msg =>
+      if (pending == windowSize) {
+        queue enqueue msg
+      } else {
+        pending = pending + 1
+        target ! msg
+      }
   }
 }
