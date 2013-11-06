@@ -34,6 +34,6 @@ class ThrottlingActor(duration: FiniteDuration, target: ActorRef) extends Actor 
           }
       }
   }
-
-  case object ReleaseThrottle
 }
+
+case object ReleaseThrottle
