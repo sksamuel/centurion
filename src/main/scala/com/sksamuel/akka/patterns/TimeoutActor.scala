@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.Cancellable
+import akka.actor.{PoisonPill, Cancellable}
 import scala.concurrent.duration._
 
 /**
@@ -9,19 +9,18 @@ import scala.concurrent.duration._
  * @author Stephen Samuel */
 trait TimeoutActor extends PatternActor {
 
-  private var timeout: Cancellable = _
+  private var signal: Cancellable = _
 
-  override def preStart(): Unit = {
-    scheduleCancel()
+  override def preStart(): Unit = scheduleCancel()
+
+  def scheduleCancel(): Unit = {
+    if (signal != null) signal.cancel()
+    signal = context.system.scheduler.scheduleOnce(30 seconds, self, Timeout)
   }
 
-  def scheduleCancel(): Unit = timeout = context.system.scheduler.scheduleOnce(30 seconds, self, Timeout)
-
   def handlers = super.handlers.andThen {
-    case Timeout =>
-    case _ =>
-      if (timeout != null) timeout.cancel()
-      scheduleCancel()
+    case Timeout => self ! PoisonPill
+    case _ => scheduleCancel()
   }
 }
 
