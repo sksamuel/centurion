@@ -44,7 +44,7 @@ outstanding (yet to be acknowleged messages) does not exceed a set threshold. Ea
 buffered message is sent. If no ack is received within a user defined duration then the message is resent.
 This actor is similar to how TCP flow control works.
 
-#### Ackknowledging Actor
+#### Acknowledging Actor
 
 The AckknowledgingActor is an actor that will send an ack to the sender as soon as a message is received.
 This actor is most often used as the other end to the flow control actors.
@@ -105,3 +105,27 @@ received, then the barrier is unlocked and then it will forward all future messa
 The BufferingBarrier accepts a collection of message types and waits until at least one message of each
 specified type has been received. While blocked any messages received are blocked. Once all message types have been
 received, then the barrier is unlocked and then it will forward all buffered and future messages to the target actor.
+
+#### Workpile Actor
+
+The WorkpileMaster and WorkpileWorker specify a way of using worker-pull semantics. When a worker starts it requests
+work from the master. If work is available it is sent a packet of work and once complete will request another. If
+no work is currently available the master will queue all workers until work arrives. If when work arrives there are
+no free workers then the master will queue the work until the next worker is available.
+
+### Mailboxes
+
+#### Lifo Mailbox
+
+The LifoMailbox processes messages last in first out.
+
+#### Priority Mailbox
+
+The PriorityMailbox processes messages in a priority queue. The messages must be of type Envelope with an attached
+attribute for the priority. If the priority is not specified then it is assumed to be of least importance and will
+be processed after all pending messages that have a defined priority.
+
+#### Expiring Mailbox
+
+The ExpiringMailbox processes messages first in first out but with an additional timeout per message.
+If the message is not processed before the timeout for that message then it is discarded.
