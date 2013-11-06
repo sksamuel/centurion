@@ -9,18 +9,24 @@ import scala.concurrent.duration._
  * @author Stephen Samuel */
 trait TimeoutActor extends PatternActor {
 
+  var timeout = 30.seconds
   private var signal: Cancellable = _
 
-  override def preStart(): Unit = scheduleCancel()
+  override def preStart() = {
+    scheduleCancel()
+    super.preStart()
+  }
 
   def scheduleCancel(): Unit = {
     if (signal != null) signal.cancel()
-    signal = context.system.scheduler.scheduleOnce(30 seconds, self, Timeout)
+    signal = context.system.scheduler.scheduleOnce(timeout, self, Timeout)
   }
 
-  def handlers = super.handlers.andThen {
+  abstract override def receive = {
     case Timeout => self ! PoisonPill
-    case _ => scheduleCancel()
+    case msg =>
+      scheduleCancel()
+      super.receive(msg)
   }
 }
 

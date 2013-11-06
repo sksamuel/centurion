@@ -4,11 +4,14 @@ import scala.concurrent.duration._
 import akka.actor.Actor
 
 /** @author Stephen Samuel */
-class PeriodicActor extends Actor {
+trait PeriodicActor extends Actor {
 
-  override def preStart() = schedule()
+  override def preStart() = {
+    schedule()
+    super.preStart()
+  }
 
-  def receive = {
+  abstract override def receive = super.receive.andThen {
     case Tick => schedule()
   }
 
