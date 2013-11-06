@@ -7,13 +7,13 @@ import akka.actor.ActorSystem
 import scala.concurrent.duration._
 
 /** @author Stephen Samuel */
-class CountingLatchTest extends FunSuite with MockitoSugar with OneInstancePerTest {
+class GroupingActorTest extends FunSuite with MockitoSugar with OneInstancePerTest {
 
   implicit val system = ActorSystem()
   val probe = TestProbe()
 
   test("counting latch waits for specified number of messages") {
-    val actorRef = TestActorRef(new CountingLatch(3, probe.ref))
+    val actorRef = TestActorRef(new GroupingActor(3, probe.ref))
 
     actorRef ! new Object
     probe.expectNoMsg(1 seconds)
@@ -24,7 +24,7 @@ class CountingLatchTest extends FunSuite with MockitoSugar with OneInstancePerTe
   }
 
   test("counting latch sends all pending messages in order") {
-    val actorRef = TestActorRef(new CountingLatch(3, probe.ref))
+    val actorRef = TestActorRef(new GroupingActor(3, probe.ref))
 
     actorRef ! "foo"
     actorRef ! "bar"

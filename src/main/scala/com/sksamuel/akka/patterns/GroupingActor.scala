@@ -8,23 +8,17 @@ import scala.collection.mutable.ListBuffer
  * as a single collection of messages.
  *
  * @author Stephen Samuel */
-class CountingLatch(count: Int, target: ActorRef) extends Actor {
+class GroupingActor(count: Int, target: ActorRef) extends Actor {
 
-  val received = new ListBuffer[Any]
-  var released = false
+  val received = new ListBuffer[AnyRef]
 
   override def receive = {
     case Terminated(targ) => context.stop(self)
-    case msg =>
-      if (released) {
-        target ! msg
-      } else {
-        received.append(msg)
-        if (received.size == count) {
-          received.foreach(target !)
-          received.clear()
-          released = true
-        }
+    case msg: AnyRef =>
+      received.append(msg)
+      if (received.size == count) {
+        target ! received.toList
+        received.clear()
       }
   }
 }
