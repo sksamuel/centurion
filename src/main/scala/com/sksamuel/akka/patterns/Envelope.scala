@@ -11,7 +11,8 @@ case class Envelope[T](msg: T,
 }
 
 object Envelope {
-  def apply[T](msg: T) = new Envelope(msg = msg, attributes = Map(MessageTimestamp, System.currentTimeMillis()))
+  def apply[T](msg: T) = new
+      Envelope(msg = msg, attributes = Map[Attribute, Any](MessageTimestamp -> System.currentTimeMillis()))
 }
 
 trait Attribute
