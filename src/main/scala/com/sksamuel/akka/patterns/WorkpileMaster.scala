@@ -31,20 +31,20 @@ class WorkpileMaster extends Actor {
   }
 }
 
-abstract class WorkpileWorker[W](val master: ActorRef) extends Actor {
+abstract class WorkpileWorker(val master: ActorRef) extends Actor {
 
   override def preStart() = {
     ready()
   }
 
   def receive = {
-    case Work(work: W) =>
+    case Work(work) =>
       process(work)
       ready()
   }
 
   def ready() = master ! WorkerReady(self)
-  def process(work: W)
+  def process(work: Any)
 }
 
 case class WorkerReady(worker: ActorRef)
