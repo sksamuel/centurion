@@ -5,9 +5,10 @@ import akka.actor.{ActorSystem, ActorRef}
 import com.sksamuel.akka.patterns.{Envelope, PriorityAttribute}
 import java.util.{Comparator, PriorityQueue}
 import akka.dispatch
+import com.typesafe.config.Config
 
 /** @author Stephen Samuel */
-class PriorityMailbox extends MailboxType {
+class PriorityMailbox(settings: ActorSystem.Settings, config: Config) extends MailboxType {
 
   def create(owner: Option[ActorRef], system: Option[ActorSystem]): MessageQueue = new PriorityMessageQueue
 

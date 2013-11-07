@@ -18,12 +18,16 @@ class ExpiringMailboxTest extends FlatSpec with MockitoSugar with OneInstancePer
     probe.expectMsg("test")
     probe.expectNoMsg()
   }
+
+  it should "handle empty queues" in {
+    probe.expectNoMsg()
+  }
 }
 
 class SleepingActor(target: ActorRef) extends Actor {
   def receive = {
     case msg =>
-      Thread.sleep(1000) // simulate some long running work
+      Thread.sleep(500) // simulate some long running work
       target ! msg
   }
 }
