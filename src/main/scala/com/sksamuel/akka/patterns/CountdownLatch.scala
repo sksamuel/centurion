@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
  * as a single collection of messages.
  *
  * @author Stephen Samuel */
-class CountingLatch(count: Int, target: ActorRef) extends Actor {
+class CountdownLatch(count: Int, target: ActorRef) extends Actor {
 
   val received = new ListBuffer[Any]
   var released = false

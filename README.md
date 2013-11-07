@@ -18,11 +18,11 @@ The enveloping actor will wrap any incoming messages in an Envelope object, toge
 describing that messsage. This pattern is used when you need to associate metadata with the message.
 The typical example would be when a correlation id is needed for a message exchange.
 
-#### Counting Latch
+#### Countdown Latch
 
-The counting latch will buffer incoming messages until a predefined limit has been reached.
+The CountdownLatch will buffer incoming messages until a predefined limit has been reached.
 Once the limit is reached it will then dispatch the buffered messages and any further messages will
-be sent as normal.
+be sent as normal. This can be thought of as the actor equivalent of the Java CountdownLatch concurrency primitive.
 
 #### Grouping Actor
 
