@@ -65,7 +65,9 @@ The timeout actor will terminate itself if a message is not received within a us
 
 #### Keep Alive Actor
 
-The keep alive actor will broadcast a heartbeat at user defined intervals since the last message was received. 
+The keep alive actor will send a heartbeat after a user defined duration has passed without another message being
+received. Each time a message is received then the heartbeat countdown is reset. This actor is analogous to the
+keep-alive pings you would see in a TCP connection.
 
 #### Pausable Actor
 
