@@ -135,3 +135,10 @@ be processed after all pending messages that have a defined priority.
 
 The ExpiringMailbox processes messages first in first out but with an additional timeout per message.
 If the message is not processed before the timeout for that message then it is discarded.
+
+## Routers
+
+#### One Time Router
+
+The OneTimeRouter routes messages to routees that are created for the processing of that single message.
+After processing that message they are then terminated via a poison pill message.
