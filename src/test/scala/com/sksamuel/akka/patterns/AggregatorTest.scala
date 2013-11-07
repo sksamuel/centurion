@@ -23,7 +23,7 @@ class AggregatorTest extends FlatSpec with MockitoSugar with OneInstancePerTest 
     assert(msg(1) === BigDecimal.valueOf(10d))
   }
 
-  "an aggregator" should "send message with the components in declaration order" in {
+  it should "send message with the components in declaration order" in {
     val correlationId = "abc"
     actorRef ! Envelope(BigDecimal.valueOf(10d), correlationId)
     actorRef ! Envelope("foo", correlationId)
@@ -32,7 +32,7 @@ class AggregatorTest extends FlatSpec with MockitoSugar with OneInstancePerTest 
     assert(msg(1) === BigDecimal.valueOf(10d))
   }
 
-  "an aggregator" should "buffer components with different correlationIds until a complete message is received" in {
+  it should "buffer components with different correlationIds until a complete message is received" in {
     val correlationId1 = "abc"
     val correlationId2 = "xzy"
     actorRef ! Envelope(BigDecimal.valueOf(10d), correlationId1)
