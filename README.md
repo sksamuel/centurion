@@ -14,7 +14,7 @@ The latest release is 0.0.1 - pending.
 
 #### Enveloping Actor
 
-The enveloping actor will wrap any incoming messages in an Envelope object, together with attributes
+The EnvelopingActor will wrap any incoming messages in an Envelope object, together with attributes
 describing that messsage. This pattern is used when you need to associate metadata with the message.
 The typical example would be when a correlation id is needed for a message exchange.
 
@@ -26,7 +26,7 @@ be sent as normal. This can be thought of as the actor equivalent of the Java Co
 
 #### Grouping Actor
 
-The grouping actor will buffer incoming messages into lists of a predefined size. O
+The GroupingActor will buffer incoming messages into lists of a predefined size. O
 nce the required number of messages has been received then those messages will be sent to the target actor
 as an array of messages. This is useful when you want to process messages in batches.
 
@@ -51,33 +51,35 @@ This actor is most often used as the other end to the flow control actors.
 
 #### Aggregator
 
-The aggregator will combine messages with the same correlation id and then dispatch as an array to the target.
+The Aggregator will combine messages with the same correlation id and then dispatch as an array to the target.
 The aggregating actor is created with the types of messages that are required before a "complete" message is ready.
 
 #### Periodic Actor
 
-The periodic actor broadcasts tick messages at a user defined interval.
-These tick messages can be used by an implementing actor to perform logic based on an interval.
+The PeriodicActor broadcasts tick messages at a user defined interval interleved with the normal messsages it receives.
+These tick messages can be used by an implementing actor to perform logic based on durations.
 
 #### Timeout Actor
 
-The timeout actor will terminate itself if a message is not received within a user defined interval. 
+The TimeoutActor will terminate itself if a message is not received within a user defined duration. This actor
+is useful for implementing session time out patterns.
 
 #### Keep Alive Actor
 
-The keep alive actor will send a heartbeat after a user defined duration has passed without another message being
+The KeepAliveActor will send a heartbeat after a user defined duration has passed without another message being
 received. Each time a message is received then the heartbeat countdown is reset. This actor is analogous to the
 keep-alive pings you would see in a TCP connection.
 
 #### Pausable Actor
 
-The pausable actor is a finite state machine will two states - paused or running.
+The PausableActor is a finite state machine will two states - paused or running.
 If paused then any messages are buffered until the actor is resumed. If the actor is running then all messages
 are forwarded as normal to the target actor.
 
 #### Splitter
 
-The splitter accepts messages of Iterables and dispatches them singularly.
+The Splitter accepts collections of messages and dispatches them singularly to a target actor. The actor is
+understands messages of type Iterable, Iterator, Array, Java Iterables and Java Iterators.
 
 #### Resequencer
 
