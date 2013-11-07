@@ -10,7 +10,7 @@ import akka.dispatch.Dispatchers
  * are then terminated via a poison pill message.
  *
  * @author Stephen Samuel */
-class OneTimeRouter(instances: Int = 5) extends RouterConfig {
+case class OneTimeRouter(instances: Int = 5) extends RouterConfig {
 
   def routerDispatcher: String = Dispatchers.DefaultDispatcherId
   def supervisorStrategy: SupervisorStrategy = SupervisorStrategy.defaultStrategy
@@ -20,18 +20,8 @@ class OneTimeRouter(instances: Int = 5) extends RouterConfig {
     case (sender, message) =>
       List(Destination(sender, {
         val target = routeeProvider.context.actorOf(routeeProvider.routeeProps)
-        val routee = routeeProvider.context.actorOf(Props(classOf[OneTimeRoutee], target))
-        routeeProvider.registerRoutees(List(routee))
-        routee
+        routeeProvider.registerRoutees(List(target))
+        target
       }))
   }
 }
-
-class OneTimeRoutee(target: ActorRef) extends Actor {
-  def receive = {
-    case msg =>
-      target ! msg
-      target ! PoisonPill
-  }
-}
-
