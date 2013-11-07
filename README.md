@@ -4,13 +4,13 @@ akka-patterns
 Implementations of EIPs using Akka
 
 
-#### Release
+### Release
 
 The latest release is 0.0.1 - pending.
 
 [![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
 
-### Patterns
+## Patterns
 
 #### Enveloping Actor
 
@@ -77,6 +77,12 @@ are forwarded as normal to the target actor.
 
 The splitter accepts messages of Iterables and dispatches them singularly.
 
+#### Resequencer
+
+The Resequencer receives out of sequence messages and publishes them in order once complete. The actor uses
+the correlation id to collect messages together, and once a complete set has been received, it will publish those
+in declaration order.
+
 #### Wiretap
 
 #### Discarding Throttling Actor
@@ -113,7 +119,7 @@ work from the master. If work is available it is sent a packet of work and once 
 no work is currently available the master will queue all workers until work arrives. If when work arrives there are
 no free workers then the master will queue the work until the next worker is available.
 
-### Mailboxes
+## Mailboxes
 
 #### Lifo Mailbox
 
