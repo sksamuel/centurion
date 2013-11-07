@@ -1,14 +1,34 @@
 akka-patterns
 =============
 
-Implementations of EIPs using Akka
+This project provides implementations of some common enterprise integration patterns and other more general
+patterns for Akka. Many of these patterns are straightforward to implement and certainly not rocket science, but
+are not provided out of the box in akka. Therefore it's useful to have a single library that is well tested
+and saves each project re-inventing the wheel. Contributions welcome.
 
-
-### Release
+## Release
 
 The latest release is 0.0.1 - pending.
 
 [![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
+
+To use in an SBY project add the dependency:
+
+```scala
+libraryDependencies += "com.sksamuel.akka" % "akka-patterns_2_2.10" % "0.0.1"
+```
+
+And Maven users should add:
+
+```xml
+<dependency>
+    <groupId>com.sksamuel.akka</groupId>
+    <artifactId>akka-patterns_2.10</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
+You can always find the latest version on [maven central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.sksamuel.akka%22%20AND%20a%3A%akka-patterns%22)
 
 ## Patterns
 
@@ -146,3 +166,22 @@ If the message is not processed before the timeout for that message then it is d
 
 The OneTimeRouter routes messages to routees that are created for the processing of that single message.
 After processing that message they are then terminated via a poison pill message.
+
+
+## License
+```
+This software is licensed under the Apache 2 license, quoted below.
+
+Copyright 2013 Stephen Samuel
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
