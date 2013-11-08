@@ -66,7 +66,7 @@ This actor is similar to how TCP flow control works.
 
 #### Acknowledging Actor
 
-The AckknowledgingActor is an actor that will send an ack to the sender as soon as a message is received.
+The AcknowledgingActor is an actor that will send an ack to the sender as soon as a message is received.
 This actor is most often used as the other end to the flow control actors.
 
 #### Aggregator
