@@ -12,7 +12,7 @@ The latest release is 0.0.1 - pending.
 
 [![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
 
-To use in an SBY project add the dependency:
+To use in an SBT project add the dependency:
 
 ```scala
 libraryDependencies += "com.sksamuel.akka" % "akka-patterns_2_2.10" % "0.0.1"
