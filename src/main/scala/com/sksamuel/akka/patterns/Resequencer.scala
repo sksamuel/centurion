@@ -15,10 +15,17 @@ class Resequencer(target: ActorRef) extends Actor {
         case Some(seq: Int) if expectedSequenceNo == seq =>
           target ! msg
           expectedSequenceNo += 1
+          catchUp()
         case Some(seq: Int) =>
           buffer.put(seq, msg)
         case None =>
           unhandled(msg)
       }
+  }
+
+  private def catchUp() {
+    while (buffer.contains(expectedSequenceNo)) {
+      buffer.remove(expectedSequenceNo) foreach (target !)
+    }
   }
 }
