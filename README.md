@@ -103,9 +103,9 @@ understands messages of type Iterable, Iterator, Array, Java Iterables and Java 
 
 #### Resequencer
 
-The Resequencer receives out of sequence messages and publishes them in order once complete. The actor uses
-the correlation id to collect messages together, and once a complete set has been received, it will publish those
-in declaration order.
+The Resequencer receives out of sequence messages and publishes them in order. The actor uses a Sequence Id
+on the message envelope to order the messages. If a message is received out of order it is buffered until the
+expected message arrives.
 
 #### Wiretap
 
