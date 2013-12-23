@@ -4,10 +4,10 @@ import akka.actor.{Actor, ActorRef}
 import scala.collection.mutable.{Map => MMap}
 
 /** @author Stephen Samuel */
-class Resequencer(target: ActorRef) extends Actor {
+class Resequencer(target: ActorRef, sequenceStart: Int = 1) extends Actor {
 
   val buffer = MMap.empty[Int, Envelope[_]]
-  var expectedSequenceNo = 1
+  var expectedSequenceNo = sequenceStart
 
   def receive = {
     case msg: Envelope[_] =>
