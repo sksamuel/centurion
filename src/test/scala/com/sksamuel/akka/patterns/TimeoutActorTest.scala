@@ -13,13 +13,14 @@ class TimeoutActorTest extends FlatSpec with MockitoSugar with OneInstancePerTes
   val probe = TestProbe()
 
   "a timeout actor" should "terminate after no msg in the timeout period" in {
-    TestActorRef(new TestTimeoutActor(new FixedIntervalGenerator(250 millis), probe.ref))
-    probe.expectMsg(Timeout)
+    val test = TestActorRef(new TestTimeoutActor(new FixedIntervalGenerator(250 millis), probe.ref))
+    probe.watch(test)
+    probe.expectTerminated(test, 3 seconds)
   }
 }
 
 class TestTimeoutActor(var generator: IntervalGenerator, target: ActorRef) extends TimeoutActor {
   receiver {
-    case Timeout => target ! Timeout
+    case _ =>
   }
 }

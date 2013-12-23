@@ -10,12 +10,16 @@ class Aggregator(target: ActorRef, types: Class[_]*) extends Actor {
 
   def receive = {
     case Terminated(targ) => context.stop(self)
-    case Envelope(msg, id, _) =>
-      types.indexOf(msg.getClass) match {
-        case -1 => unhandled(msg)
-        case pos: Int =>
-          buffers(pos).put(id, msg)
-          checkForCompleteMessage(id)
+    case e: Envelope[_] =>
+      e.attributes.get(CorrelationId) match {
+        case Some(id: String) =>
+          types.indexOf(e.msg.getClass) match {
+            case -1 => unhandled(e)
+            case pos: Int =>
+              buffers(pos).put(id, e)
+              checkForCompleteMessage(id)
+          }
+        case None => unhandled(e)
       }
     case msg: Any => unhandled(msg)
   }
