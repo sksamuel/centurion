@@ -3,6 +3,7 @@ package com.sksamuel.akka.patterns
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import akka.actor.Cancellable
+import scala.util.Random
 
 /** @author Stephen Samuel */
 trait PeriodicActor extends DecoratingActor {
@@ -35,3 +36,9 @@ trait IntervalGenerator {
   def duration: FiniteDuration
 }
 class FixedIntervalGenerator(val duration: FiniteDuration) extends IntervalGenerator
+class RandomIntervalGenerator(val minDuration: FiniteDuration, val maxDuration: FiniteDuration)
+  extends IntervalGenerator {
+  def duration: FiniteDuration = {
+    (Random.nextInt(maxDuration.toMillis.toInt - minDuration.toMillis.toInt) + minDuration.toMillis).millis
+  }
+}

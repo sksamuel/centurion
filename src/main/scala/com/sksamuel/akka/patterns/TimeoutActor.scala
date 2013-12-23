@@ -11,11 +11,8 @@ trait TimeoutActor extends PeriodicActor {
   receiver {
     case Tick =>
       cancel()
-      self ! Timeout
       self ! PoisonPill
     case msg =>
       schedule()
   }
 }
-
-case object Timeout
