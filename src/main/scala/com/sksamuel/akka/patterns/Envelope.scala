@@ -18,3 +18,4 @@ object Envelope {
 trait Attribute
 case object MessageTimestampAttribute extends Attribute
 case object PriorityAttribute extends Attribute
+case object SequenceAttribute extends Attribute

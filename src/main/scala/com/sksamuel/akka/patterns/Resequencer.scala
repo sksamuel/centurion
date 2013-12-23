@@ -1,26 +1,24 @@
 package com.sksamuel.akka.patterns
 
 import akka.actor.{Actor, ActorRef}
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{Map => MMap}
 
 /** @author Stephen Samuel */
-class Resequencer(types: Seq[Class[_]], target: ActorRef) extends Actor {
+class Resequencer(target: ActorRef) extends Actor {
 
-  val buffers = types.map(arg => new ListBuffer[AnyRef])
+  val buffer = MMap.empty[Int, Envelope[_]]
+  var expectedSequenceNo = 1
 
   def receive = {
-    case msg: AnyRef =>
-      types.indexOf(msg.getClass) match {
-        case -1 => unhandled(msg)
-        case pos: Int =>
-          buffers(pos).append(msg)
-          checkForCompleteSequence()
+    case msg: Envelope[_] =>
+      msg.attributes.get(SequenceAttribute) match {
+        case Some(seq: Int) if expectedSequenceNo == seq =>
+          target ! msg
+          expectedSequenceNo += 1
+        case Some(seq: Int) =>
+          buffer.put(seq, msg)
+        case None =>
+          unhandled(msg)
       }
-  }
-
-  def checkForCompleteSequence(): Unit = {
-    if (buffers.forall(_.size > 0)) {
-      buffers.foreach(target ! _.remove(0))
-    }
   }
 }
