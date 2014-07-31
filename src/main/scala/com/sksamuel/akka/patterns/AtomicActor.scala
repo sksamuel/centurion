@@ -3,13 +3,17 @@ package com.sksamuel.akka.patterns
 import akka.actor.{Actor, Stash}
 
 /** @author Stephen Samuel */
-trait Atomic extends Actor with Stash {
+abstract class AtomicActor extends Actor with Stash {
 
-  abstract override def receive = {
+  case object Continue
+
+  final def receive = {
     case msg =>
       context become inactive
-      super.receive(msg)
+      atomicReceive(msg)
   }
+
+  def atomicReceive: Actor.Receive
 
   def inactive: Actor.Receive = {
     case Continue =>
@@ -18,6 +22,7 @@ trait Atomic extends Actor with Stash {
     case _ =>
       stash()
   }
+
 }
 
-case object Continue
+
