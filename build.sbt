@@ -6,6 +6,8 @@ version := "0.11.1"
 
 scalaVersion := "2.11.6"
 
+crossScalaVersions := Seq("2.11.6", "2.10.4")
+
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
