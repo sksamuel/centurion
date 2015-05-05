@@ -2,11 +2,9 @@ organization := "com.sksamuel.akka"
 
 name := "akka-patterns"
 
-version := "0.11.0"
+version := "0.11.1"
 
-scalaVersion := "2.11.2"
-
-crossScalaVersions := Seq("2.11.2", "2.10.4")
+scalaVersion := "2.11.6"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
@@ -29,13 +27,13 @@ parallelExecution in Test := false
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.3"
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.3"
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.9"
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.7"
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10"
 
-libraryDependencies += "org.slf4j" % "log4j-over-slf4j" % "1.7.7" % "test"
+libraryDependencies += "org.slf4j" % "log4j-over-slf4j" % "1.7.10" % "test"
 
 libraryDependencies += "log4j" % "log4j" % "1.2.17" % "test"
 
@@ -43,7 +41,7 @@ libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 pomExtra := (
   <url>https://github.com/sksamuel/akka-patterns</url>
