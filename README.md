@@ -46,9 +46,9 @@ be sent as normal. This can be thought of as the actor equivalent of the Java Co
 
 #### Grouping Actor
 
-The GroupingActor will buffer incoming messages into lists of a predefined size. O
-nce the required number of messages has been received then those messages will be sent to the target actor
-as an array of messages. This is useful when you want to process messages in batches.
+The GroupingActor will buffer incoming messages into lists of a predefined size. Once the required number of messages
+has been received then those messages will be sent to the target actor as an array of messages. This is useful when
+you want to process messages in batches.
 
 #### Timeout Flow Control Actor
 
