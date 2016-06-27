@@ -46,9 +46,9 @@ be sent as normal. This can be thought of as the actor equivalent of the Java Co
 
 #### Grouping Actor
 
-The GroupingActor will buffer incoming messages into lists of a predefined size. O
-nce the required number of messages has been received then those messages will be sent to the target actor
-as an array of messages. This is useful when you want to process messages in batches.
+The GroupingActor will buffer incoming messages into lists of a predefined size. Once the required number of messages
+has been received then those messages will be sent to the target actor as an array of messages. This is useful when
+you want to process messages in batches.
 
 #### Timeout Flow Control Actor
 
@@ -112,14 +112,14 @@ expected message arrives.
 #### Discarding Throttling Actor
 
 The DiscardingThrottlingActor is a rate limiting actor that will send messages with a minimum defined interval.
-Any messages recevied during this minimum interval will be discarded, with the exception of the most recent,
+Any messages received during this minimum interval will be discarded, with the exception of the most recent,
 which will be sent once the interval has expired. This pattern is useful for cases such as FX quotes
 where only the most recent is required and the receiver can be overloaded (hence the need for throttling).
 
 #### Buffering Throttling Actor
 
 The BufferingThrottlingActor is a rate limiting actor that will send messages with a minimum defined interval.
-Any messages recevied during this minimum interval will be buffered and replayed at the defined interval.
+Any messages received during this minimum interval will be buffered and replayed at the defined interval.
 This pattern is useful when an erratic incoming stream is required to be converted to a consistent stream.
 
 #### Dynamic Router
