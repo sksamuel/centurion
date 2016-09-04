@@ -35,7 +35,7 @@ You can always find the latest version on [maven central](http://search.maven.or
 #### Enveloping Actor
 
 The EnvelopingActor will wrap any incoming messages in an Envelope object, together with attributes
-describing that messsage. This pattern is used when you need to associate metadata with the message.
+describing that message. This pattern is used when you need to associate metadata with the message.
 The typical example would be when a correlation id is needed for a message exchange.
 
 #### Countdown Latch
