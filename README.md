@@ -35,7 +35,7 @@ You can always find the latest version on [maven central](http://search.maven.or
 #### Enveloping Actor
 
 The EnvelopingActor will wrap any incoming messages in an Envelope object, together with attributes
-describing that messsage. This pattern is used when you need to associate metadata with the message.
+describing that message. This pattern is used when you need to associate metadata with the message.
 The typical example would be when a correlation id is needed for a message exchange.
 
 #### Countdown Latch
@@ -53,14 +53,14 @@ you want to process messages in batches.
 #### Timeout Flow Control Actor
 
 The TimeoutFlowControlActor is an actor that will send messages to a target actor while ensuring that the number of
-outstanding (yet to be acknowleged messages) does not exceed a set threshold. Each time an ack is received the next
+outstanding (yet to be acknowledged messages) does not exceed a set threshold. Each time an ack is received the next
 buffered message is sent. If no ack is received within a set period of time then that message is considered lost
 and the next message is sent. This actor is similar to how TCP flow control works except without the reliability side.
 
 #### Reliable Flow Control Actor
 
-The ReliableFlowControlActor will ensure delivery of messages to a target actor wile ensuring that the number of
-outstanding (yet to be acknowleged messages) does not exceed a set threshold. Each time an ack is received the next
+The ReliableFlowControlActor will ensure delivery of messages to a target actor while ensuring that the number of
+outstanding (yet to be acknowledged messages) does not exceed a set threshold. Each time an ack is received the next
 buffered message is sent. If no ack is received within a user defined duration then the message is resent.
 This actor is similar to how TCP flow control works.
 
@@ -76,7 +76,7 @@ The aggregating actor is created with the types of messages that are required be
 
 #### Periodic Actor
 
-The PeriodicActor broadcasts tick messages at a user defined interval interleved with the normal messsages it receives.
+The PeriodicActor broadcasts tick messages at a user defined interval interleaved with the normal messages it receives.
 These tick messages can be used by an implementing actor to perform logic based on durations.
 
 #### Timeout Actor
@@ -92,14 +92,14 @@ keep-alive pings you would see in a TCP connection.
 
 #### Pausable Actor
 
-The PausableActor is a finite state machine will two states - paused or running.
+The PausableActor is a finite state machine with two states - paused or running.
 If paused then any messages are buffered until the actor is resumed. If the actor is running then all messages
 are forwarded as normal to the target actor.
 
 #### Splitter
 
-The Splitter accepts collections of messages and dispatches them singularly to a target actor. The actor is
-understands messages of type Iterable, Iterator, Array, Java Iterables and Java Iterators.
+The Splitter accepts collections of messages and dispatches them singularly to a target actor. The actor understands
+messages of type Iterable, Iterator, Array, Java Iterables and Java Iterators.
 
 #### Resequencer
 
@@ -127,7 +127,7 @@ This pattern is useful when an erratic incoming stream is required to be convert
 #### Discarding Barrier
 
 The DiscardingBarrier accepts a collection of message types and waits until at least one message of each
-specified type has been received. While blocked any messages recived are discard. Once all message types have been
+specified type has been received. While blocked any messages received are discarded. Once all message types have been
 received, then the barrier is unlocked and then it will forward all future messages to the target actor.
 
 #### Buffering Barrier
