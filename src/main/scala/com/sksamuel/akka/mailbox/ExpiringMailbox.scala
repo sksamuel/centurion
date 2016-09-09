@@ -4,11 +4,12 @@ import akka.dispatch.{MessageQueue, Envelope, MailboxType}
 import akka.actor.{ActorSystem, ActorRef}
 import java.util.concurrent.ConcurrentLinkedQueue
 import com.typesafe.config.Config
+import scala.concurrent.duration.MILLISECONDS
 
 /** @author Stephen Samuel */
 class ExpiringMailbox(settings: ActorSystem.Settings, config: Config) extends MailboxType {
 
-  val expiry = config.getMilliseconds("message-expiry")
+  val expiry = config.getDuration("message-expiry", MILLISECONDS)
 
   def create(owner: Option[ActorRef], system: Option[ActorSystem]): MessageQueue = new ExpiringMessageQueue
 

@@ -2,7 +2,5 @@ language: scala
 scala:
   - 2.10.4
   - 2.11.6
-script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean compile
 jdk:
   - oraclejdk7
