@@ -1,34 +1,14 @@
 akka-patterns
 =============
 
+[![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.10*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22avro4s-core_2.11%22)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.11*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Cavro4s-core_2.12)
+
 This project provides implementations of some common enterprise integration patterns and other more general
 patterns for Akka. Many of these patterns are straightforward to implement and certainly not rocket science, but
 are not provided out of the box in akka. Therefore it's useful to have a single library that is well tested
 and saves each project re-inventing the wheel. Contributions welcome.
-
-## Release
-
-The latest release is 0.0.1 - pending.
-
-[![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
-
-To use in an SBT project add the dependency:
-
-```scala
-libraryDependencies += "com.sksamuel.akka" % "akka-patterns_2_2.10" % "0.0.1"
-```
-
-And Maven users should add:
-
-```xml
-<dependency>
-    <groupId>com.sksamuel.akka</groupId>
-    <artifactId>akka-patterns_2.10</artifactId>
-    <version>0.0.1</version>
-</dependency>
-```
-
-You can always find the latest version on [maven central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.sksamuel.akka%22%20AND%20a%3A%akka-patterns%22)
 
 ## Patterns
 
@@ -167,6 +147,25 @@ If the message is not processed before the timeout for that message then it is d
 The OneTimeRouter routes messages to routees that are created for the processing of that single message.
 After processing that message they are then terminated via a poison pill message.
 
+## How to use
+
+To use in an SBT project add the dependency:
+
+```scala
+libraryDependencies += "com.sksamuel.akka" % "akka-patterns_2.11" % "VERSION"
+```
+
+And Maven users should add:
+
+```xml
+<dependency>
+    <groupId>com.sksamuel.akka</groupId>
+    <artifactId>akka-patterns_2.11</artifactId>
+    <version>VERISON</version>
+</dependency>
+```
+
+You can always find the latest version using the links at the top.
 
 ## License
 ```
