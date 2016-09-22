@@ -18,7 +18,7 @@ class FlowControlActor(target: ActorRef, windowSize: Int = 1) extends Actor {
   def receive = {
     case Acknowledged =>
       if (pending > 0) pending = pending - 1
-      if (queue.size > 0) {
+      if (queue.nonEmpty) {
         target ! queue.dequeue()
         pending = pending + 1
       }
