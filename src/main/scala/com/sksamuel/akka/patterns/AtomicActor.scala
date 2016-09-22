@@ -2,7 +2,6 @@ package com.sksamuel.akka.patterns
 
 import akka.actor.{Actor, Stash}
 
-/** @author Stephen Samuel */
 abstract class AtomicActor extends Actor with Stash {
 
   case object Continue
