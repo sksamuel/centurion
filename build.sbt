@@ -2,15 +2,17 @@ organization := "com.sksamuel.akka"
 
 name := "akka-patterns"
 
-version := "0.11.1"
+scalaVersion := "2.11.8"
 
-scalaVersion := "2.11.6"
-
-crossScalaVersions := Seq("2.11.6", "2.10.4")
+crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+
+sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction := PgpKeys.publishSigned.value
+
+sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild := true
 
 publishTo <<= version {
   (v: String) =>
@@ -29,17 +31,17 @@ parallelExecution in Test := false
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9"
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.9"
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.14"
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10"
+
+libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
 libraryDependencies += "org.slf4j" % "log4j-over-slf4j" % "1.7.10" % "test"
 
 libraryDependencies += "log4j" % "log4j" % "1.2.17" % "test"
-
-libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 
