@@ -19,8 +19,8 @@ class ThrottlingActor(duration: FiniteDuration, target: ActorRef) extends Actor 
   def receive = {
     case ReleaseThrottle =>
       throttled = false
-      pending = None
       pending.foreach(target ! _)
+      pending = None
     case msg: AnyRef =>
       throttled match {
         case true =>
