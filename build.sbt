@@ -13,7 +13,7 @@ javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 releaseCrossBuild := true
 
-publishTo := version {
+publishTo <<= version {
   (v: String) =>
     val nexus = "https://oss.sonatype.org/"
     if (v.trim.endsWith("SNAPSHOT"))
