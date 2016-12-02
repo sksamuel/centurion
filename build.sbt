@@ -4,17 +4,16 @@ name := "akka-patterns"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.11.8", "2.10.6")
+crossScalaVersions := Seq("2.12.0", "2.11.8")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
-javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
-sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction := PgpKeys.publishSigned.value
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
+releaseCrossBuild := true
 
-sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild := true
-
-publishTo <<= version {
+publishTo := version {
   (v: String) =>
     val nexus = "https://oss.sonatype.org/"
     if (v.trim.endsWith("SNAPSHOT"))
@@ -31,21 +30,16 @@ parallelExecution in Test := false
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
+val akkaVersion = "2.4.14"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.14"
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.mockito" % "mockito-all" % "1.10.19" % "test"
+)
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10"
-
-libraryDependencies += "commons-io" % "commons-io" % "2.4"
-
-libraryDependencies += "org.slf4j" % "log4j-over-slf4j" % "1.7.10" % "test"
-
-libraryDependencies += "log4j" % "log4j" % "1.2.17" % "test"
-
-libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
-
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 pomExtra := (
   <url>https://github.com/sksamuel/akka-patterns</url>
