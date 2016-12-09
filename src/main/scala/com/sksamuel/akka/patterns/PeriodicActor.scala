@@ -10,7 +10,7 @@ trait PeriodicActor extends DecoratingActor {
 
   implicit val executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   private var signal: Cancellable = _
-  var tickGenerator: IntervalGenerator = new FixedIntervalGenerator(500.millis)
+  def tickGenerator: IntervalGenerator = new FixedIntervalGenerator(500.millis)
 
   abstract override def preStart() = {
     schedule()
