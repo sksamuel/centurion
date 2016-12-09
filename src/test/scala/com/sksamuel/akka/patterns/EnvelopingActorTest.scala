@@ -57,8 +57,8 @@ class EnvelopingActorTest extends BaseSpec {
     msg1.attributes.get(Offset) shouldBe defined
     msg1.attributes.get(CorrelationId) shouldBe defined
 
-    println(msg1)
-    println(msg2)
+    //println(msg1)
+    //println(msg2)
   }
 
   it should "envelope consecutive messages with consecutive timestamps" in {
