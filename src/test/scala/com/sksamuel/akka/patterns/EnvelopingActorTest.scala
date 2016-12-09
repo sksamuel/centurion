@@ -4,7 +4,7 @@ import akka.testkit.{TestProbe, TestActorRef}
 import scala.concurrent.duration._
 import java.util.UUID
 
-object AttributeEnricher {
+object AttributesGenerator {
   var offsetCounter = 0
   def generate(x: Any) = {
     x match {
@@ -44,7 +44,7 @@ class EnvelopingActorTest extends BaseSpec {
   }
 
   it should "envelope messages with the attributes defined by the Attribute Enricher function" in {
-    val enveloper = TestActorRef(new EnvelopingActor(probe.ref, AttributeEnricher.generate))
+    val enveloper = TestActorRef(new EnvelopingActor(probe.ref, AttributesGenerator.generate))
     enveloper ! "hello"
     val msg1 = probe.expectMsgType[Envelope[String]]
     msg1.attributes.get(Timestamp) shouldBe defined

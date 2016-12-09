@@ -26,9 +26,11 @@ The typical examples of metadata are:
  - Sequence: this attribute should be used whenever a large set of data may need to be broken into message-size chunks, send the data as a Message Sequence and mark each message with sequence identification fields.
  - but this may include adding message header fields, encrypting the message, adding security credentials etc.
 
-We can think of the metadata as being the information on the outside of the envelope which it is used by the messaging system to route and track the message.
+We can think of the metadata as being the information on the outside of the envelope which is used by the messaging system to route and track the message.
 
 Normally this is associated with an unwrapping actor that reverses any modifications the wrapper made. This may include removing header fields, decrypting the message or verifying security credentials.
+
+But, multiple wrappers and unwrappers can be chained taking advantage of the layered protocol model. This results in a situation where the payload of a message contains a new envelope, which in turn wraps a header and a payload section.
 
 #### Countdown Latch
 
