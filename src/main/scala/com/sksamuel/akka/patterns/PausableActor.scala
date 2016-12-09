@@ -1,12 +1,10 @@
 package com.sksamuel.akka.patterns
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{ActorRef, Actor, Stash}
 import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
-class PausableActor(target: ActorRef) extends Actor {
-
-  val buffer = new ListBuffer[Any]
+class PausableActor(target: ActorRef) extends Actor with Stash{
   var paused = false
 
   def receive: Actor.Receive = {
@@ -14,10 +12,9 @@ class PausableActor(target: ActorRef) extends Actor {
       paused = true
     case ResumeService =>
       paused = false
-      buffer.foreach(target !)
-      buffer.clear()
+      unstashAll()
     case msg =>
-      if (paused) buffer.append(msg)
+      if (paused) stash()
       else target ! msg
   }
 
