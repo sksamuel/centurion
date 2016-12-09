@@ -26,6 +26,7 @@ class Resequencer(target: ActorRef, sequenceStart: Int = 1) extends Actor {
   private def catchUp() {
     while (buffer.contains(expectedSequenceNo)) {
       buffer.remove(expectedSequenceNo) foreach (target !)
+      expectedSequenceNo +=1
     }
   }
 }
