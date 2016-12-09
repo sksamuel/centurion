@@ -10,7 +10,5 @@ class EnvelopingActor(target: ActorRef, f: (Any => Iterable[(Attribute, Any)]) =
       val attributes = f(msg)
       val e = attributes.foldLeft(Envelope(msg))((envelope, a) => envelope.withAttribute(a._1, a._2))
       target ! e
-
-    case msg: Envelope(msg, attributes)
   }
 }

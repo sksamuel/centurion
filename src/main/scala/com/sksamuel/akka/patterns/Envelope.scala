@@ -17,6 +17,7 @@ case class Envelope[T](
  * example of attributes that can be used
  */
 trait Attribute
+case object SourceName extends Attribute
 case object Timestamp extends Attribute
 case object NanoTime extends Attribute
 case object Priority extends Attribute

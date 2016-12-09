@@ -10,14 +10,22 @@ object AttributeEnricher {
     x match {
       case s: String =>
         offsetCounter +=1
-        Map(Offset -> offsetCounter, CorrelationId -> UUID.randomUUID().toString())
+        Map(
+          Offset -> offsetCounter,
+          CorrelationId -> UUID.randomUUID().toString(),
+          SourceName -> "Generator"
+        )
     }
   }
 
   val anonymousGenerate = (x: Any) => x match {
       case s: String =>
-        counter += 1
-        Map(Offset -> counter)
+        offsetCounter += 1
+        Map(
+          Offset -> offsetCounter,
+          CorrelationId -> UUID.randomUUID().toString(),
+          SourceName -> "Generator"
+        )
     }
 }
 
@@ -48,6 +56,9 @@ class EnvelopingActorTest extends BaseSpec {
     msg2.attributes.get(Timestamp) shouldBe defined
     msg1.attributes.get(Offset) shouldBe defined
     msg1.attributes.get(CorrelationId) shouldBe defined
+
+    println(msg1)
+    println(msg2)
   }
 
   it should "envelope consecutive messages with consecutive timestamps" in {
@@ -62,9 +73,6 @@ class EnvelopingActorTest extends BaseSpec {
 
     msg1.attributes(Timestamp).asInstanceOf[Long] should be <= msg2.attributes(Timestamp).asInstanceOf[Long]
     msg1.attributes(NanoTime).asInstanceOf[Long] should be < msg2.attributes(NanoTime).asInstanceOf[Long]
-
-    // println(msg1)
-    // println(msg2)
   }
 
 }

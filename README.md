@@ -16,6 +16,7 @@ and saves each project re-inventing the wheel. Contributions are welcome.
 
 The EnvelopingActor will wrap any incoming messages in an Envelope object, together with attributes
 describing that message. This pattern is used when you need to associate metadata with the message.
+
 The typical examples of metadata are:
  - [Correlation Id](http://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html)
     which is used to answer a simple question: *How does a requestor that has received a reply know which request this is the reply for?*
@@ -23,8 +24,11 @@ The typical examples of metadata are:
     Otherwise it can be used to track as a message
  - Timestamp and NanoTime: which is the default value set by the current implementation, it is useful to set the time when the message is processed or emitted
  - Sequence: this attribute should be used whenever a large set of data may need to be broken into message-size chunks, send the data as a Message Sequence and mark each message with sequence identification fields.
+ - but this may include adding message header fields, encrypting the message, adding security credentials etc.
 
+We can think of the metadata as being the information on the outside of the envelope which it is used by the messaging system to route and track the message.
 
+Normally this is associated with an unwrapping actor that reverses any modifications the wrapper made. This may include removing header fields, decrypting the message or verifying security credentials.
 
 #### Countdown Latch
 
