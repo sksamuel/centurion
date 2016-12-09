@@ -7,9 +7,8 @@ import akka.actor.{ActorRef, ActorSystem}
 import scala.concurrent.duration._
 
 /** @author Stephen Samuel */
-class TimeoutActorTest extends FlatSpec with MockitoSugar with OneInstancePerTest {
+class TimeoutActorTest extends BaseSpec {
 
-  implicit val system = ActorSystem()
   val probe = TestProbe()
 
   "a timeout actor" should "terminate after no msg in the timeout period" in {

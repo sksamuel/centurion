@@ -1,15 +1,10 @@
 package com.sksamuel.akka.patterns
 
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{FlatSpec, OneInstancePerTest}
 import akka.testkit.{TestProbe, TestActorRef}
 import akka.actor.ActorSystem
 import scala.concurrent.duration._
 
-/** @author Stephen Samuel */
-class AggregatorTest extends FlatSpec with MockitoSugar with OneInstancePerTest {
-
-  implicit val system = ActorSystem()
+class AggregatorTest extends BaseSpec {
   val probe = TestProbe()
 
   val actorRef = TestActorRef(new Aggregator(probe.ref, classOf[String], classOf[BigDecimal]))
