@@ -2,13 +2,13 @@ akka-patterns
 =============
 
 [![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
-[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.10*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22avro4s-core_2.11%22)
-[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.11*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Cavro4s-core_2.12)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.10*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Cakka-patterns_2.11)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.11*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Cakka-patterns_2.12)
 
 This project provides implementations of some common enterprise integration patterns and other more general
 patterns for Akka. Many of these patterns are straightforward to implement and certainly not rocket science, but
 are not provided out of the box in akka. Therefore it's useful to have a single library that is well tested
-and saves each project re-inventing the wheel. Contributions welcome.
+and saves each project re-inventing the wheel. Contributions are welcome.
 
 ## Patterns
 
@@ -16,7 +16,15 @@ and saves each project re-inventing the wheel. Contributions welcome.
 
 The EnvelopingActor will wrap any incoming messages in an Envelope object, together with attributes
 describing that message. This pattern is used when you need to associate metadata with the message.
-The typical example would be when a correlation id is needed for a message exchange.
+The typical examples of metadata are:
+ - [Correlation Id](http://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html)
+    which is used to answer a simple question: *How does a requestor that has received a reply know which request this is the reply for?*
+    Each reply message should contain a Correlation Identifier, a unique identifier that indicates which request message this reply is for.
+    Otherwise it can be used to track as a message
+ - Timestamp and NanoTime: which is the default value set by the current implementation, it is useful to set the time when the message is processed or emitted
+ - Sequence: this attribute should be used whenever a large set of data may need to be broken into message-size chunks, send the data as a Message Sequence and mark each message with sequence identification fields.
+
+
 
 #### Countdown Latch
 

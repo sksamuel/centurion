@@ -1,6 +1,6 @@
 package com.sksamuel.akka.patterns
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FlatSpec, OneInstancePerTest}
 import akka.testkit.{TestProbe, TestActorRef}
 import akka.actor.ActorSystem

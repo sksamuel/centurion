@@ -2,7 +2,7 @@ package com.sksamuel.akka.mailbox
 
 import akka.dispatch.{MessageQueue, MailboxType}
 import akka.actor.{ActorSystem, ActorRef}
-import com.sksamuel.akka.patterns.{Envelope, PriorityAttribute}
+import com.sksamuel.akka.patterns.{Envelope, Priority}
 import java.util.{Comparator, PriorityQueue}
 import akka.dispatch
 import com.typesafe.config.Config
@@ -33,8 +33,8 @@ class PriorityMailbox(settings: ActorSystem.Settings, config: Config) extends Ma
 
   class EnvelopePriorityComparator extends Comparator[dispatch.Envelope] {
     def compare(o1: dispatch.Envelope, o2: dispatch.Envelope): Int = {
-      val priority1 = o1.message.asInstanceOf[Envelope[_]].attributes(PriorityAttribute).toString.toInt
-      val priority2 = o2.message.asInstanceOf[Envelope[_]].attributes(PriorityAttribute).toString.toInt
+      val priority1 = o1.message.asInstanceOf[Envelope[_]].attributes(Priority).toString.toInt
+      val priority2 = o2.message.asInstanceOf[Envelope[_]].attributes(Priority).toString.toInt
       priority1 compareTo priority2
     }
   }

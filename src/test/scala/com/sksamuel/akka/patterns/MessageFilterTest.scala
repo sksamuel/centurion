@@ -1,7 +1,7 @@
 package com.sksamuel.akka.patterns
 
 import org.scalatest.{OneInstancePerTest, FunSuite}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import akka.actor.ActorSystem
 import akka.testkit.{TestActorRef, TestProbe}
 import scala.concurrent.duration._

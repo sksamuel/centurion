@@ -1,18 +1,25 @@
 package com.sksamuel.akka.patterns
 
-/** @author Stephen Samuel */
-case class Envelope[T](msg: T,attributes: Map[Attribute, Any] = Map.empty) {
-  def withAttribute(attribute: Attribute,
-                    value: Any): Envelope[T] = copy(attributes = attributes + (attribute -> value))
+/**
+ * create and Envelope message with a current timestamp as default attribute
+ */
+case class Envelope[T](
+  msg: T,
+  attributes: Map[Attribute, Any] = Map(
+    Timestamp -> System.currentTimeMillis(),
+    NanoTime -> System.nanoTime()
+  )) {
+  def withAttribute(attribute: Attribute, value: Any): Envelope[T] =
+    copy(attributes = attributes + (attribute -> value))
 }
 
-object Envelope {
-  def apply[T](msg: T) = new
-      Envelope(msg = msg, attributes = Map[Attribute, Any](MessageTimestampAttribute -> System.currentTimeMillis()))
-}
-
+/**
+ * example of attributes that can be used
+ */
 trait Attribute
-case object MessageTimestampAttribute extends Attribute
-case object PriorityAttribute extends Attribute
-case object SequenceAttribute extends Attribute
+case object Timestamp extends Attribute
+case object NanoTime extends Attribute
+case object Priority extends Attribute
+case object Offset  extends Attribute
+case object Sequence extends Attribute
 case object CorrelationId extends Attribute

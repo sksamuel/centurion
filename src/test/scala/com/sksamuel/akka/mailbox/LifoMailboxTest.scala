@@ -1,7 +1,7 @@
 package com.sksamuel.akka.mailbox
 
 import org.scalatest.{OneInstancePerTest, FlatSpec}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.TestProbe
 

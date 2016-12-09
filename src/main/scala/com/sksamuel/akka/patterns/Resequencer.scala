@@ -11,7 +11,7 @@ class Resequencer(target: ActorRef, sequenceStart: Int = 1) extends Actor {
 
   def receive = {
     case msg: Envelope[_] =>
-      msg.attributes.get(SequenceAttribute) match {
+      msg.attributes.get(Sequence) match {
         case Some(seq: Int) if expectedSequenceNo == seq =>
           target ! msg
           expectedSequenceNo += 1

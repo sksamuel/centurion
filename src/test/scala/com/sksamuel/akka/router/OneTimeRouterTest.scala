@@ -1,7 +1,7 @@
 package com.sksamuel.akka.router
 
 import akka.actor._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FlatSpec, OneInstancePerTest}
 
 /** @author Stephen Samuel */
