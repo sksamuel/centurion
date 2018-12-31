@@ -30,7 +30,7 @@ class ThrottlingActor(duration: FiniteDuration, target: ActorRef) extends Actor 
           target ! msg
           throttled = true
           context.system.scheduler.scheduleOnce(duration) {
-            target ! ReleaseThrottle
+            self ! ReleaseThrottle
           }
       }
   }
