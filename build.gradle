@@ -1,0 +1,67 @@
+buildscript {
+
+    ext.isTravis = System.getenv("TRAVIS") == "true"
+    ext.travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
+
+    ext.AkkaVersion = "2.5.18"
+    ext.CatsVersion = "1.6.0"
+    ext.CirceVersion = "0.10.0-M1"
+    ext.CommonsIoVersion = "2.4"
+    ext.CSchemaRegistryVersion = "5.1.0"
+    ext.ExtsVersion = "1.60.0"
+    ext.JacksonVersion = "2.9.5"
+    ext.KafkaVersion = "2.1.0"
+    ext.LensesRegistryVersion = "1.0.60"
+    ext.LensesSecurityVersion = "2.2.158"
+    ext.Log4jVersion = "2.11.1"
+    ext.Pulsar4sVersion = "2.1.1"
+    ext.ScalaVersion = "2.12.6"
+    ext.ScalatestVersion = "3.0.5"
+    ext.Slf4jVersion = "1.7.25"
+    ext.UDFVersion = "2.0.0"
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.21'
+}
+
+allprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    group = "com.sksamuel.reactive-hive"
+
+    if (isTravis) {
+        version = "0.10." + travisBuildNumber
+    } else {
+        version = "0.10-SNAPSHOT"
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib"
+        compile "org.slf4j:slf4j-api:1.7.25"
+        compile "org.apache.logging.log4j:log4j-api:$Log4jVersion"
+
+        testCompile "ch.qos.logback:logback-classic:1.2.3"
+        testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.1"
+        testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$Log4jVersion"
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
