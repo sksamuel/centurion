@@ -1,9 +1,0 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm'
-}
-
-dependencies {
-    compile project(":reactive-hive-schemas")
-    compile 'org.apache.parquet:parquet-common:1.10.1'
-    compile 'org.apache.parquet:parquet-avro:1.10.1'
-}

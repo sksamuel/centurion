@@ -1,0 +1,12 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+    compile project(":reactivehive-schemas")
+    compile project(":reactivehive-parquet")
+    compile 'org.apache.parquet:parquet-common:1.10.1'
+    compile 'org.apache.parquet:parquet-hadoop:1.10.1'
+    compile 'org.apache.parquet:parquet-avro:1.10.1'
+    compile 'org.apache.hadoop:hadoop-common:2.7.7'
+}

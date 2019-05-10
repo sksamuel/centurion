@@ -14,3 +14,6 @@ credentials.sbt
 
 # Scala-IDE specific
 .scala_dependencies
+test.pq
+parquetsink.pq
+*.pq.crc
