@@ -1,2 +1,3 @@
 include 'reactive-hive-schemas',
-        'reactive-hive-core'
+        'reactive-hive-core',
+        'reactive-hive-schemas-parquet'

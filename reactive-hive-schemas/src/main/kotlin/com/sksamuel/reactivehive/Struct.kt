@@ -13,5 +13,11 @@ object ByteType : Type
 object IntType : Type
 object LongType : Type
 object ShortType : Type
+object TimestampMillisType : Type
+object TimestampMicrosType : Type
+object TimeMicrosType : Type
+object TimeMillisType : Type
+
+data class EnumType(val values: List<String>) : Type
 
 data class ArrayType(val elementType: Type) : Type
