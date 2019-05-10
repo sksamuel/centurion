@@ -1,1 +1,2 @@
-include 'reactive-hive-schemas'
+include 'reactive-hive-schemas',
+        'reactive-hive-core'
