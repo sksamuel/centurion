@@ -15,6 +15,6 @@ interface PartitionLocator {
  */
 object DefaultPartitionLocator : PartitionLocator {
   override fun path(tablePath: Path, partition: Partition): Path {
-    return partition.entries.fold(tablePath, { path, (key, value) -> Path(path, "${key.value}=$value") })
+    return partition.parts.fold(tablePath, { path, (key, value) -> Path(path, "${key.value}=$value") })
   }
 }

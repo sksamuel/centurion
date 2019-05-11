@@ -64,6 +64,8 @@ data class Struct(val schema: StructType, val values: List<Any?>) {
     require(schema.fields.size == values.size)
   }
 
+  operator fun get(name: String): Any? = values[schema.indexOf(name)]
+
   companion object {
     fun fromMap(schema: StructType, map: Map<String, Any?>): Struct {
       val values = schema.fields.map { map[it.name] }

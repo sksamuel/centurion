@@ -10,7 +10,7 @@ class DefaultPartitionLocatorTest : FunSpec() {
     test("should use hive style paths") {
       DefaultPartitionLocator.path(
           Path("foo/bar"),
-          Partition(PartitionKey("state") to "il", PartitionKey("country") to "us")
+          Partition(PartitionPart(PartitionKey("state"), "il"), PartitionPart(PartitionKey("country"), "us"))
       ) shouldBe Path("foo/bar/state=il/country=us")
     }
   }
