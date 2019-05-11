@@ -21,18 +21,26 @@ import org.apache.parquet.io.api.Converter
 interface Converters {
   companion object {
     fun converterFor(field: StructField, buffer: MutableMap<String, Any?>): Converter {
+      fun <T> receiver(): Receiver<T> = Receiver(field, buffer)
       return when (val type = field.type) {
         is StructType -> NestedStructConverter(type, field, buffer)
-        StringType -> DictionaryStringPrimitiveConverter(field, buffer)
+        StringType -> DictionaryStringPrimitiveConverter(receiver())
         Float32Type, Float64Type, Int64Type, Int32Type, BooleanType, Int16Type, Int8Type, BinaryType ->
-          AppendingPrimitiveConverter(field, buffer)
-        TimestampMillisType -> TimestampConverter(field, buffer)
-        DateType -> DateConverter(field, buffer)
+          AppendingPrimitiveConverter(receiver())
+        TimestampMillisType -> TimestampConverter(receiver())
+        DateType -> DateConverter(receiver())
         is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
-        TimeMillisType -> TimeMillisConverter(field, buffer)
-        is EnumType -> EnumConverter(field, buffer)
+        TimeMillisType -> TimeMillisConverter(receiver())
+        is EnumType -> EnumConverter(receiver())
         else -> throw UnsupportedOperationException("Unsupported data type $type")
       }
     }
+  }
+}
+
+class Receiver<T>(private val field: StructField,
+                  private val buffer: MutableMap<String, Any?>) {
+  fun add(t: T?) {
+    buffer[field.name] = t
   }
 }

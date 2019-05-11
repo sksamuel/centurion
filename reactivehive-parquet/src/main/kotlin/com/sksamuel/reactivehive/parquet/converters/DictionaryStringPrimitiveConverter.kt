@@ -1,12 +1,10 @@
 package com.sksamuel.reactivehive.parquet.converters
 
-import com.sksamuel.reactivehive.StructField
 import org.apache.parquet.column.Dictionary
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.PrimitiveConverter
 
-class DictionaryStringPrimitiveConverter(private val field: StructField,
-                                         private val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
+class DictionaryStringPrimitiveConverter(private val receiver: Receiver<Any>) : PrimitiveConverter() {
 
   private var dictionary: Dictionary? = null
 
@@ -21,6 +19,6 @@ class DictionaryStringPrimitiveConverter(private val field: StructField,
   }
 
   override fun addBinary(x: Binary) {
-    builder[field.name] = x.toStringUsingUTF8()
+    receiver.add(x.toStringUsingUTF8())
   }
 }

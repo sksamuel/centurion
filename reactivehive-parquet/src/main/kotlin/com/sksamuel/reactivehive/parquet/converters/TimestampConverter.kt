@@ -1,21 +1,19 @@
 package com.sksamuel.reactivehive.parquet.converters
 
-import com.sksamuel.reactivehive.StructField
 import org.apache.parquet.io.api.PrimitiveConverter
 import java.sql.Timestamp
 import java.time.Instant
 
 // see https://issues.apache.org/jira/browse/HIVE-6394 and
 // https://issues.apache.org/jira/browse/SPARK-10177 for implementation ideas
-class TimestampConverter(private val field: StructField,
-                         private val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
+class TimestampConverter(private val receiver: Receiver<Timestamp>) : PrimitiveConverter() {
 
   // The Julian Date (JD) is the number of days (with decimal fraction of the day) that
   // have elapsed since 12 noon UTC on the Julian epoch
 //  private val nanosInDay = 24L * 60L * 60 * 1000 * 1000 * 1000
 
   override fun addLong(value: Long) {
-    builder[field.name] = Timestamp.from(Instant.ofEpochMilli(value))
+    receiver.add(Timestamp.from(Instant.ofEpochMilli(value)))
   }
 
 //  override fun addBinary(x: Binary) {
