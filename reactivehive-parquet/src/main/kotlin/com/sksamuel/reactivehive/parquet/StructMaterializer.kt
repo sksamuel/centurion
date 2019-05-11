@@ -2,6 +2,7 @@ package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
+import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.Int16Type
@@ -13,6 +14,7 @@ import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.TimestampMillisType
+import com.sksamuel.reactivehive.parquet.converters.DateConverter
 import com.sksamuel.reactivehive.parquet.converters.TimestampPrimitiveConverter
 import org.apache.parquet.column.Dictionary
 import org.apache.parquet.io.api.Binary
@@ -66,6 +68,7 @@ interface Converters {
         Float32Type, Float64Type, Int64Type, Int32Type, BooleanType, Int16Type, Int8Type, BinaryType ->
           AppendingPrimitiveConverter(field, buffer)
         TimestampMillisType -> TimestampPrimitiveConverter(field, buffer)
+        DateType -> DateConverter(field, buffer)
         else -> throw UnsupportedOperationException("Unsupported data type $type")
       }
     }

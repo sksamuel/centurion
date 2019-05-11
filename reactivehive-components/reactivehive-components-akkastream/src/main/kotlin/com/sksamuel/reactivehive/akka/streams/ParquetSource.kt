@@ -7,7 +7,6 @@ import akka.stream.stage.GraphStageLogic
 import akka.stream.stage.GraphStageWithMaterializedValue
 import akka.stream.stage.OutHandler
 import com.sksamuel.reactivehive.Struct
-import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.parquet.parquetReader
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -15,8 +14,7 @@ import scala.Tuple2
 import java.util.concurrent.CompletableFuture
 
 class ParquetSource(val path: Path,
-                    val conf: Configuration,
-                    val schema: StructType) : GraphStageWithMaterializedValue<SourceShape<Struct>, CompletableFuture<Int>>() {
+                    val conf: Configuration) : GraphStageWithMaterializedValue<SourceShape<Struct>, CompletableFuture<Int>>() {
 
   private val outlet: Outlet<Struct> = Outlet.create("ParquetSource.out")
   override fun shape(): SourceShape<Struct> = SourceShape.of(outlet)

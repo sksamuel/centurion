@@ -84,7 +84,7 @@ object FromParquetSchema {
       PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.originalType)
       PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.originalType)
       PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
-      else -> throw java.lang.UnsupportedOperationException("Unsupported data type ${type.primitiveTypeName}")
+      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type.originalType, type.typeLength)
     }
 
     return if (type.isRepeated()) ArrayType(elementType) else elementType
