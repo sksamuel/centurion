@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 
 /**
- * [[HiveFormat]] encapsulates the ability to read and write files
+ * [[Format]] encapsulates the ability to read and write files
  * in HDFS in file formats that are compatible with hive.
  *
  * Each implementation will support a different underlying file format.
@@ -16,11 +16,12 @@ import org.apache.hadoop.fs.Path
  * org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe serde.
  *
  * Another implementation may use Apache Orc, or Apache Avro, or "your own format".
+ * As long as Hive has a Serde, then anything you write out can be read back in hive itself.
  *
  * The idea behind this trait is similar to the
  * org.apache.hadoop.mapreduce.InputFormat interface that hadoop uses.
  */
-interface HiveFormat {
+interface Format {
   fun serde(): Serde
   fun writer(path: Path, schema: StructType, fs: FileSystem): HiveWriter
   fun reader(path: Path, schema: StructType, fs: FileSystem): HiveReader
@@ -41,7 +42,7 @@ interface HiveReader {
   fun close()
 }
 
-object ParquetFormat : HiveFormat {
+object ParquetFormat : Format {
 
   override fun serde() = Serde(
       "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe",
