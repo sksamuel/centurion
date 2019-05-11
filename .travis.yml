@@ -1,9 +1,13 @@
+sudo: required
+
+services:
+  - docker
+
 language: java
 
 jdk:
   - openjdk11
-
-sudo: false
+  - oraclejdk8
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -15,6 +19,9 @@ cache:
     - "$HOME/.gradle/wrapper/"
     - "$HOME/.m2/repository/"
 
-install: "/bin/true"
+install: /bin/true
 
-script: "./gradlew build"
+script: ./gradlew test
+
+before_install:
+  - docker-compose up -d

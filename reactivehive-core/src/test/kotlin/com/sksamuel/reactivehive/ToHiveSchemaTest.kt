@@ -20,7 +20,8 @@ class ToHiveSchemaTest : FunSpec() {
     }
 
     test("should support decimal") {
-      ToHiveSchema.toHiveType(DecimalType(Precision(12), Scale(4))) shouldBe "decimal(12,4)"
+      ToHiveSchema.toHiveType(DecimalType(Precision(
+          12), Scale(4))) shouldBe "decimal(12,4)"
     }
 
     test("should support booleans") {

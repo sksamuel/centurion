@@ -38,6 +38,7 @@ fun createTable(db: DatabaseName,
     params["EXTERNAL"] = "TRUE"
 
   val sd = StorageDescriptor().apply {
+    // must be set correctly for the hive format used to decode when using spark/impala etc
     inputFormat = format.serde().inputFormat
     outputFormat = format.serde().outputFormat
     serdeInfo = SerDeInfo(null, format.serde().serializationLib, format.serde().params)
@@ -49,9 +50,11 @@ fun createTable(db: DatabaseName,
   val table = Table()
   table.dbName = db.value
   table.tableName = tableName.value
+  // not sure what this does
   table.owner = "hive"
   table.createTime = (System.currentTimeMillis() / 1000).toInt()
   table.parameters = params
+  // the general columns must not include partition fields
   table.partitionKeys = partitionFieldSchemas
   table.tableType = tableType.asString()
   table.sd = sd
