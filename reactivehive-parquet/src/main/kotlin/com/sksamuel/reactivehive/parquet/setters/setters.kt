@@ -4,7 +4,7 @@ import com.sksamuel.reactivehive.ArrayType
 import com.sksamuel.reactivehive.BigIntType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.CharDataType
+import com.sksamuel.reactivehive.CharType
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
 import com.sksamuel.reactivehive.EnumType
@@ -21,7 +21,7 @@ import com.sksamuel.reactivehive.TimeMicrosType
 import com.sksamuel.reactivehive.TimeMillisType
 import com.sksamuel.reactivehive.TimestampMicrosType
 import com.sksamuel.reactivehive.TimestampMillisType
-import com.sksamuel.reactivehive.VarcharDataType
+import com.sksamuel.reactivehive.VarcharType
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.RecordConsumer
 import java.math.RoundingMode
@@ -55,8 +55,8 @@ interface Setter {
         is DecimalType -> TODO()
         is EnumType -> EnumSetter
         is ArrayType -> TODO()
-        is CharDataType -> TODO()
-        is VarcharDataType -> TODO()
+        is CharType -> TODO()
+        is VarcharType -> TODO()
         BigIntType -> TODO()
       }
     }

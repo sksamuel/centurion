@@ -9,6 +9,8 @@ buildscript {
     ext.KafkaVersion = "2.1.0"
     ext.Log4jVersion = "2.11.1"
     ext.Slf4jVersion = "1.7.25"
+    ext.HiveVersion = "2.0.1"
+    ext.HadoopVersion = "2.7.7"
 
     repositories {
         jcenter()

@@ -1,9 +1,11 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id 'scala'
 }
 
 dependencies {
     compile project(":reactivehive-schemas")
     compile project(":reactivehive-parquet")
+    compile project(":reactivehive-core")
     compile 'com.typesafe.akka:akka-stream_2.12:2.5.22'
 }

@@ -80,8 +80,8 @@ object BinaryType : Type()
 // text types
 object StringType : Type()
 
-data class CharDataType(val size: Int) : Type()
-data class VarcharDataType(val size: Int) : Type()
+data class CharType(val size: Int) : Type()
+data class VarcharType(val size: Int) : Type()
 
 // floating point types
 object Float64Type : Type()

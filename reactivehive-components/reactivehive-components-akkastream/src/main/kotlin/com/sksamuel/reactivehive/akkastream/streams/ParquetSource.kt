@@ -1,4 +1,4 @@
-package com.sksamuel.reactivehive.akka.streams
+package com.sksamuel.reactivehive.akkastream.streams
 
 import akka.stream.Attributes
 import akka.stream.Outlet

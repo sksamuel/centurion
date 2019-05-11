@@ -5,5 +5,12 @@ plugins {
 dependencies {
     compile project(":reactivehive-schemas")
     compile project(":reactivehive-parquet")
-    testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.1"
+    compile "org.apache.hadoop:hadoop-common:$HadoopVersion"
+    compile "org.apache.hive:hive-jdbc:$HiveVersion"
+//    compile "org.apache.hive:hive-exec:$HiveVersion"
+    compile "org.apache.hadoop:hadoop-hdfs:$HadoopVersion"
+    compile "org.apache.hadoop:hadoop-mapreduce:$HadoopVersion"
+    compile "org.apache.hadoop:hadoop-mapreduce-client:$HadoopVersion"
+    compile "org.apache.hadoop:hadoop-mapreduce-client-core:$HadoopVersion"
+    testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.2"
 }
