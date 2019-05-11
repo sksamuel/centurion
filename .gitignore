@@ -18,3 +18,4 @@ test.pq
 parquetsink.pq
 *.pq.crc
 .kotlintest
+parquetrt.pq

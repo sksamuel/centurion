@@ -56,6 +56,10 @@ data class StructField(val name: String,
 data class Struct(val schema: StructType, val values: List<Any?>) {
   constructor(type: StructType, vararg values: Any?) : this(type, values.asList())
 
+  init {
+    require(schema.fields.size == values.size)
+  }
+
   companion object {
     fun fromMap(schema: StructType, map: Map<String, Any?>): Struct {
       val values = schema.fields.map { map[it.name] }

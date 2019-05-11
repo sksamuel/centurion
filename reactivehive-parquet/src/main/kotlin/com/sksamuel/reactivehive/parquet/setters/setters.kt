@@ -1,22 +1,21 @@
-package com.sksamuel.reactivehive.parquet
+package com.sksamuel.reactivehive.parquet.setters
 
 import com.sksamuel.reactivehive.ArrayType
 import com.sksamuel.reactivehive.BigIntType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
 import com.sksamuel.reactivehive.CharDataType
-import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
-import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.MapDataType
-import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.StringType
-import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.TimeMicrosType
 import com.sksamuel.reactivehive.TimeMillisType
@@ -47,7 +46,7 @@ interface Setter {
         Int8Type -> IntegerSetter
         Int32Type -> IntegerSetter
         Int16Type -> IntegerSetter
-        TimestampMillisType -> TODO()
+        TimestampMillisType -> TimestampMillisSetter
         TimestampMicrosType -> TODO()
         TimeMicrosType -> TODO()
         TimeMillisType -> TODO()
@@ -97,50 +96,3 @@ object BooleanSetter : Setter {
   override fun set(consumer: RecordConsumer, value: Any) = consumer.addBoolean(value == true)
 }
 
-class StructSetter(private val type: StructType,
-                   roundingMode: RoundingMode,
-    // set to true when the initial root message, otherwise false for GroupType
-                   private val root: Boolean) : Setter {
-
-  override fun set(consumer: RecordConsumer, value: Any) {
-
-    // in parquet, nested types must be wrapped in "groups"
-    fun wrapInGroup(fn: () -> Unit) {
-      consumer.startGroup()
-      fn()
-      consumer.endGroup()
-    }
-
-    // top level types must be wrapped in messages
-    fun wrapInMessage(fn: () -> Unit) {
-      consumer.startMessage()
-      fn()
-      consumer.endMessage()
-    }
-
-    fun write() {
-
-      val values = when (value) {
-        is Struct -> value.values
-        else -> throw UnsupportedOperationException("$value is not recognized as a struct type")
-      }
-
-      type.fields.forEachIndexed { k, field ->
-        val fieldValue = values[k]
-        // null values are handled in parquet by skipping them completely when writing out
-        if (fieldValue != null) {
-          consumer.startField(field.name, k)
-          val writer = Setter.writerFor(field.type)
-          writer.set(consumer, fieldValue)
-          consumer.endField(field.name, k)
-        }
-      }
-    }
-
-    if (root) {
-      wrapInMessage { write() }
-    } else {
-      wrapInGroup { write() }
-    }
-  }
-}

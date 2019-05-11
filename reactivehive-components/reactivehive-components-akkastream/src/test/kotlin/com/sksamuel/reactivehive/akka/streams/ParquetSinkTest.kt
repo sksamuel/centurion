@@ -8,6 +8,7 @@ import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
+import io.kotlintest.matchers.string.shouldNotBeEmpty
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.conf.Configuration
@@ -29,15 +30,19 @@ class ParquetSinkTest : FunSpec() {
       val schema = StructType(StructField("a", StringType), StructField("b", StringType))
       val struct = Struct(schema, "hello", "world")
 
-      val path = Path("parquetsink.pq")
+      val path = Path("parquet.pq")
       if (fs.exists(path))
         fs.delete(path, false)
 
       val sink = ParquetSink(path, conf, schema)
-      val f = Source.from(listOf(struct, struct)).runWith(sink, materializer)
+      val f = Source.from(listOf(struct, struct, struct, struct)).runWith(sink, materializer)
 
       val result = f.get(1, TimeUnit.MINUTES)
-      result shouldBe 2
+      result shouldBe 4
+
+      Thread.sleep(2000)
+
+      fs.open(path).bufferedReader().readText().shouldNotBeEmpty()
     }
   }
 }

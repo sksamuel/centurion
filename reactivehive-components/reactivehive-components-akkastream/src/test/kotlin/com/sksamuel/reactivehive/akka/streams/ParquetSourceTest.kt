@@ -31,7 +31,6 @@ import java.math.MathContext
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ParquetSourceTest : FunSpec() {
