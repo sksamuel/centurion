@@ -1,0 +1,9 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+    compile project(":reactivehive-schemas")
+    compile project(":reactivehive-parquet")
+    testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.1"
+}
