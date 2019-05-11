@@ -53,7 +53,7 @@ interface Setter {
         DateType -> DateSetter
         is MapDataType -> TODO()
         is DecimalType -> TODO()
-        is EnumType -> TODO()
+        is EnumType -> EnumSetter
         is ArrayType -> TODO()
         is CharDataType -> TODO()
         is VarcharDataType -> TODO()

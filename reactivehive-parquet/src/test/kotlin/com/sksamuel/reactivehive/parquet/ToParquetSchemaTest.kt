@@ -2,6 +2,7 @@ package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
+import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Int64Type
@@ -84,6 +85,17 @@ class ToParquetSchemaTest : FunSpec() {
           Types.buildMessage()
               .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED).named("a"))
               .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("b"))
+              .named("mystruct")
+    }
+
+    test("EnumType should be converted to annotated Binary") {
+      val structType = StructType(
+          StructField("a", EnumType("malbec", "shiraz"))
+      )
+      ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
+          Types.buildMessage()
+              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+                  .`as`(OriginalType.ENUM).named("a"))
               .named("mystruct")
     }
   }

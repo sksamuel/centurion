@@ -58,9 +58,18 @@ object ToParquetSchema {
         }
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
       }
-      // note: a Parquet string field, with a defined length, cannot be read in hive, so must not set a length here
-      StringType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+      /**
+       * STRING may only be used to annotate the binary primitive type and indicates that the byte array should be interpreted as a UTF-8 encoded character string.
+       * The sort order used for STRING strings is unsigned byte-wise comparison.
+       * Compatibility
+       * STRING corresponds to UTF8 ConvertedType.
+       *
+       * Note: a Parquet string field, with a defined length, cannot be read in hive, so must not set a length here
+       */
+      StringType ->
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(OriginalType.UTF8).named(name)
+
       is BooleanType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, repetition).named(name)
       BinaryType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition).named(name)
       Float64Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, repetition).named(name)
@@ -112,7 +121,15 @@ object ToParquetSchema {
 
       is DecimalType -> TODO()
 
-      is EnumType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+      /**
+       * ENUM annotates the binary primitive type and indicates that the value
+       * was converted from an enumerated type in another data model (e.g. Thrift, Avro, Protobuf).
+       * Applications using a data model lacking a native enum type should interpret
+       * ENUM annotated field as a UTF-8 encoded string.
+       * The sort order used for ENUM values is unsigned byte-wise comparison.
+       */
+      is EnumType ->
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(OriginalType.ENUM).named(name)
       // in parquet, the elements of a list must be called "element", and they cannot be null
       // the nullability of list elements is handled in the containing type, represented here by repetition

@@ -4,6 +4,7 @@ import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
+import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.Int16Type
@@ -29,6 +30,7 @@ interface Converters {
         DateType -> DateConverter(field, buffer)
         is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
         TimeMillisType -> TimeMillisConverter(field, buffer)
+        is EnumType -> EnumConverter(field, buffer)
         else -> throw UnsupportedOperationException("Unsupported data type $type")
       }
     }

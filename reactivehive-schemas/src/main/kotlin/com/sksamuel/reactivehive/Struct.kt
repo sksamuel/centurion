@@ -103,7 +103,9 @@ object DateType : Type()
 // container types
 data class MapDataType(val keyType: Type, val valueType: Type) : Type()
 
-data class EnumType(val values: List<String>) : Type()
+data class EnumType(val values: List<String>) : Type() {
+  constructor(vararg values: String) : this(values.asList())
+}
 
 data class ArrayType(val elementType: Type) : Type()
 

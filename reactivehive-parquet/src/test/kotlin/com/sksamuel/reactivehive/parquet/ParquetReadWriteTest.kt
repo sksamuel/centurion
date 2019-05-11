@@ -2,6 +2,7 @@ package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BooleanType
 import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.Int16Type
@@ -128,6 +129,25 @@ class ParquetReadWriteTest : FunSpec() {
 
       val reader = parquetReader(path, conf)
       reader.read() shouldBe struct
+      reader.close()
+    }
+
+    test("Read/write enums") {
+
+      val schema = StructType(
+          StructField("a", EnumType(listOf("malbec", "shiraz")))
+      )
+
+      val struct = Struct(schema, "malbec")
+      val messageType = ToParquetSchema.toMessageType(schema, "mystruct")
+
+      val writer = parquetWriter(path, conf, messageType)
+      writer.write(struct)
+      writer.close()
+
+      // enums will lose the values in parquet
+      val reader = parquetReader(path, conf)
+      reader.read() shouldBe Struct(StructType(StructField("a", EnumType())), "malbec")
       reader.close()
     }
   }
