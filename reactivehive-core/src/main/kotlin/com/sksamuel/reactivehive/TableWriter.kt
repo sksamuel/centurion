@@ -4,8 +4,6 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 import org.apache.hadoop.hive.metastore.TableType
-import org.apache.hadoop.hive.metastore.api.Table
-import java.util.*
 
 /**
  * Responsible for writing data to a hive table.
@@ -37,7 +35,6 @@ class TableWriter(private val dbName: DatabaseName,
       fs = fs
   )
 
-  private val tableBasePath = Path(table.sd.location)
 
   private val plan = partitionPlan(table)
 
@@ -48,24 +45,8 @@ class TableWriter(private val dbName: DatabaseName,
     }
   }
 
-  /**
-   * Returns the path to the file that this struct should be written to.
-   * If the table is partitioned then this will be the partition path, otherwise
-   * the base table location.
-   */
-  private fun outputFile(struct: Struct, plan: PartitionPlan?, table: Table): Path {
-    return when (plan) {
-      null -> Path(table.sd.location)
-      else -> {
-        val partition = partition(struct, plan)
-        val dir = locator.path(tableBasePath, partition)
-        Path(dir, UUID.randomUUID().toString())
-      }
-    }
-  }
-
   fun write(struct: Struct) {
-    val path = outputFile(struct, plan, table)
+    val path = outputFile(struct, plan, table, locator)
     val writer = getOrOpen(path)
     writer.write(struct)
   }
