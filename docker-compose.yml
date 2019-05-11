@@ -1,6 +1,7 @@
 version: "2"
 
 services:
+
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
     network_mode: "host"
@@ -10,6 +11,7 @@ services:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop-hive.env
+      -
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
     network_mode: "host"
@@ -19,6 +21,7 @@ services:
       - ./hadoop-hive.env
     environment:
       SERVICE_PRECONDITION: "localhost:50070"
+
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
     network_mode: "host"
@@ -27,6 +30,7 @@ services:
     environment:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://localhost/metastore"
       SERVICE_PRECONDITION: "localhost:9083"
+
   hive-metastore:
     image: bde2020/hive:2.3.2-postgresql-metastore
     network_mode: "host"
@@ -35,10 +39,10 @@ services:
     command: /opt/hive/bin/hive --service metastore
     environment:
       SERVICE_PRECONDITION: "localhost:50070 localhost:50075 localhost:5432"
+
   hive-metastore-postgresql:
     image: bde2020/hive-metastore-postgresql:2.3.0
     network_mode: "host"
-
 
 volumes:
   namenode:
