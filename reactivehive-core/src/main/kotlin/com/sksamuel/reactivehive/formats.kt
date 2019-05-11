@@ -3,7 +3,7 @@ package com.sksamuel.reactivehive
 import com.sksamuel.reactivehive.parquet.ToParquetSchema
 import com.sksamuel.reactivehive.parquet.parquetReader
 import com.sksamuel.reactivehive.parquet.parquetWriter
-import org.apache.hadoop.fs.FileSystem
+import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 
 /**
@@ -23,8 +23,8 @@ import org.apache.hadoop.fs.Path
  */
 interface Format {
   fun serde(): Serde
-  fun writer(path: Path, schema: StructType, fs: FileSystem): HiveWriter
-  fun reader(path: Path, schema: StructType, fs: FileSystem): HiveReader
+  fun writer(path: Path, schema: StructType, conf: Configuration): HiveWriter
+  fun reader(path: Path, schema: StructType, conf: Configuration): HiveReader
 }
 
 data class Serde(val serializationLib: String,
@@ -51,13 +51,13 @@ object ParquetFormat : Format {
       mapOf("org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe" to "1")
   )
 
-  override fun writer(path: Path, schema: StructType, fs: FileSystem): HiveWriter = object : HiveWriter {
+  override fun writer(path: Path, schema: StructType, conf: Configuration): HiveWriter = object : HiveWriter {
     // setting overwrite to false, as it should be considered a bug if a hive writer
     // tries to overwrite an existing file
     // logger.debug(s"Creating parquet writer at $path")
     val writer = parquetWriter(
         path,
-        fs.conf,
+        conf,
         ToParquetSchema.toMessageType(schema)
     )
 
@@ -65,10 +65,10 @@ object ParquetFormat : Format {
     override fun close(): Unit = writer.close()
   }
 
-  override fun reader(path: Path, schema: StructType, fs: FileSystem): HiveReader = object : HiveReader {
+  override fun reader(path: Path, schema: StructType, conf: Configuration): HiveReader = object : HiveReader {
 
     //  logger.debug(s"Creating parquet reader for $path")
-    val reader = parquetReader(path, fs.conf)
+    val reader = parquetReader(path, conf)
 
     override fun iterator() = TODO()// = Iterator.continually(reader.read).takeWhile(_ != null)
     override fun close(): Unit = reader.close()
