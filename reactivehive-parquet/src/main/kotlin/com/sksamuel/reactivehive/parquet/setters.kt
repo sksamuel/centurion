@@ -1,18 +1,20 @@
 package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.ArrayType
+import com.sksamuel.reactivehive.BigIntType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.ByteType
+import com.sksamuel.reactivehive.CharDataType
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
-import com.sksamuel.reactivehive.DoubleType
+import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
-import com.sksamuel.reactivehive.FloatType
-import com.sksamuel.reactivehive.IntType
-import com.sksamuel.reactivehive.LongType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Int32Type
+import com.sksamuel.reactivehive.Int64Type
 import com.sksamuel.reactivehive.MapDataType
-import com.sksamuel.reactivehive.ShortType
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructType
@@ -20,6 +22,7 @@ import com.sksamuel.reactivehive.TimeMicrosType
 import com.sksamuel.reactivehive.TimeMillisType
 import com.sksamuel.reactivehive.TimestampMicrosType
 import com.sksamuel.reactivehive.TimestampMillisType
+import com.sksamuel.reactivehive.VarcharDataType
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.RecordConsumer
 import java.math.RoundingMode
@@ -38,12 +41,12 @@ interface Setter {
         is StructType -> StructSetter(type, RoundingMode.UNNECESSARY, false)
         BooleanType -> BooleanSetter
         BinaryType -> BinarySetter
-        DoubleType -> DoubleSetter
-        FloatType -> FloatSetter
-        LongType -> LongSetter
-        ByteType -> IntegerSetter
-        IntType -> IntegerSetter
-        ShortType -> IntegerSetter
+        Float64Type -> DoubleSetter
+        Float32Type -> FloatSetter
+        Int64Type -> LongSetter
+        Int8Type -> IntegerSetter
+        Int32Type -> IntegerSetter
+        Int16Type -> IntegerSetter
         TimestampMillisType -> TODO()
         TimestampMicrosType -> TODO()
         TimeMicrosType -> TODO()
@@ -53,6 +56,9 @@ interface Setter {
         is DecimalType -> TODO()
         is EnumType -> TODO()
         is ArrayType -> TODO()
+        is CharDataType -> TODO()
+        is VarcharDataType -> TODO()
+        BigIntType -> TODO()
       }
     }
   }

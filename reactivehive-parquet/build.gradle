@@ -9,4 +9,6 @@ dependencies {
     compile 'org.apache.parquet:parquet-hadoop:1.10.1'
     compile 'org.apache.parquet:parquet-avro:1.10.1'
     compile 'org.apache.hadoop:hadoop-common:2.7.7'
+    compile 'org.apache.hadoop:hadoop-client:2.7.7'
+    testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.1"
 }

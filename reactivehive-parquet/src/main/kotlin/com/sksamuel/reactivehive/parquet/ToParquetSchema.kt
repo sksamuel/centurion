@@ -1,18 +1,20 @@
 package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.ArrayType
+import com.sksamuel.reactivehive.BigIntType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.ByteType
+import com.sksamuel.reactivehive.CharDataType
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
-import com.sksamuel.reactivehive.DoubleType
+import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
-import com.sksamuel.reactivehive.FloatType
-import com.sksamuel.reactivehive.IntType
-import com.sksamuel.reactivehive.LongType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Int32Type
+import com.sksamuel.reactivehive.Int64Type
 import com.sksamuel.reactivehive.MapDataType
-import com.sksamuel.reactivehive.ShortType
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.TimeMicrosType
@@ -20,6 +22,7 @@ import com.sksamuel.reactivehive.TimeMillisType
 import com.sksamuel.reactivehive.TimestampMicrosType
 import com.sksamuel.reactivehive.TimestampMillisType
 import com.sksamuel.reactivehive.Type
+import com.sksamuel.reactivehive.VarcharDataType
 import org.apache.parquet.schema.MessageType
 import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
@@ -55,17 +58,17 @@ object ToParquetSchema {
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
       }
       // note: a Parquet string field, with a defined length, cannot be read in hive, so must not set a length here
-      StringType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition).`as`(OriginalType.UTF8).named(
-          name)
+      StringType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+          .`as`(OriginalType.UTF8).named(name)
       is BooleanType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, repetition).named(name)
       BinaryType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition).named(name)
-      DoubleType -> Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, repetition).named(name)
-      FloatType -> Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, repetition).named(name)
-      ByteType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
+      Float64Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, repetition).named(name)
+      Float32Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, repetition).named(name)
+      Int8Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
           .`as`(OriginalType.INT_8).named(name)
-      IntType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition).named(name)
-      LongType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition).named(name)
-      ShortType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
+      Int32Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition).named(name)
+      Int64Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition).named(name)
+      Int16Type -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
           .`as`(OriginalType.INT_16).named(name)
       TimestampMillisType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
           .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
@@ -88,6 +91,9 @@ object ToParquetSchema {
           type.elementType,
           "element",
           false)).named(name)
+      is CharDataType -> TODO()
+      is VarcharDataType -> TODO()
+      BigIntType -> TODO()
     }
   }
 }

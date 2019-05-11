@@ -1,20 +1,19 @@
 package com.sksamuel.reactivehive.parquet
 
+import com.sksamuel.reactivehive.ArrayType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.ByteType
-import com.sksamuel.reactivehive.DoubleType
+import com.sksamuel.reactivehive.Int8Type
+import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
-import com.sksamuel.reactivehive.FloatType
-import com.sksamuel.reactivehive.IntType
-import com.sksamuel.reactivehive.LongType
-import com.sksamuel.reactivehive.ShortType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Int32Type
+import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
-import com.sksamuel.reactivehive.TimeMicrosType
-import com.sksamuel.reactivehive.TimeMillisType
-import com.sksamuel.reactivehive.TimestampMicrosType
 import com.sksamuel.reactivehive.TimestampMillisType
 import com.sksamuel.reactivehive.Type
 import org.apache.parquet.schema.GroupType
@@ -45,54 +44,56 @@ object FromParquetSchema {
       StructField(
           it.name,
           fieldType,
-          it.repetition == org.apache.parquet.schema.Type.Repetition.OPTIONAL
+          it.repetition.isNullable()
       )
     }
     return StructType(fields)
   }
 
   fun fromPrimitiveType(type: PrimitiveType): Type {
-    return when (type.primitiveTypeName) {
-      PrimitiveType.PrimitiveTypeName.BINARY -> {
-        when (type.originalType) {
-          OriginalType.UTF8 -> StringType
-          // todo populate the enum values?
-          OriginalType.ENUM -> EnumType(emptyList())
-          else -> BinaryType
-        }
-      }
-      PrimitiveType.PrimitiveTypeName.INT64 -> {
-        when (type.originalType) {
-          OriginalType.TIME_MICROS -> TimeMicrosType
-          OriginalType.TIMESTAMP_MILLIS -> TimestampMillisType
-          OriginalType.TIMESTAMP_MICROS -> TimestampMicrosType
-          OriginalType.UINT_64 -> LongType
-          OriginalType.INT_64 -> LongType
-          else -> LongType
-        }
-      }
-      PrimitiveType.PrimitiveTypeName.INT32 -> {
-        when (type.originalType) {
-          OriginalType.DATE -> TODO()
-          OriginalType.TIME_MILLIS -> TimeMillisType
-          OriginalType.UINT_8 -> ByteType
-          OriginalType.UINT_16 -> ShortType
-          OriginalType.UINT_32 -> IntType
-          OriginalType.INT_8 -> ByteType
-          OriginalType.INT_16 -> ShortType
-          OriginalType.INT_32 -> IntType
-          else -> IntType
-        }
-      }
-      PrimitiveType.PrimitiveTypeName.BOOLEAN -> BooleanType
-      PrimitiveType.PrimitiveTypeName.FLOAT -> FloatType
-      PrimitiveType.PrimitiveTypeName.DOUBLE -> DoubleType
-      PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
-      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY ->
-        when (type.originalType) {
-          OriginalType.DECIMAL -> TODO()
-          else -> BinaryType
-        }
+
+    fun int32(original: OriginalType?): Type = when (original) {
+      OriginalType.UINT_32 -> Int32Type
+      OriginalType.INT_32 -> Int32Type
+      OriginalType.UINT_16 -> Int16Type
+      OriginalType.INT_16 -> Int16Type
+      OriginalType.UINT_8 -> Int8Type
+      OriginalType.INT_8 -> Int8Type
+      OriginalType.DATE -> DateType
+      else -> Int32Type
     }
+
+    fun int64(original: OriginalType?): Type = when (original) {
+      OriginalType.UINT_64 -> Int64Type
+      OriginalType.INT_64 -> Int64Type
+      OriginalType.TIMESTAMP_MILLIS -> TimestampMillisType
+      else -> Int64Type
+    }
+
+    fun binary(original: OriginalType?, length: Int): Type = when (original) {
+      OriginalType.ENUM -> EnumType(emptyList())
+      OriginalType.UTF8 -> StringType
+      else -> BinaryType
+    }
+
+    val elementType = when (type.primitiveTypeName) {
+      PrimitiveType.PrimitiveTypeName.BINARY -> binary(type.originalType, type.typeLength)
+      PrimitiveType.PrimitiveTypeName.BOOLEAN -> BooleanType
+      PrimitiveType.PrimitiveTypeName.DOUBLE -> Float64Type
+      PrimitiveType.PrimitiveTypeName.FLOAT -> Float32Type
+      PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.originalType)
+      PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.originalType)
+      PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
+      else -> throw java.lang.UnsupportedOperationException("Unsupported data type ${type.primitiveTypeName}")
+    }
+
+    return if (type.isRepeated()) ArrayType(elementType) else elementType
   }
+}
+
+private fun org.apache.parquet.schema.Type.Repetition.isNullable(): Boolean =
+    this == org.apache.parquet.schema.Type.Repetition.OPTIONAL
+
+private fun PrimitiveType.isRepeated(): Boolean {
+  return repetition == org.apache.parquet.schema.Type.Repetition.REPEATED
 }

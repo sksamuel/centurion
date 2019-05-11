@@ -65,14 +65,25 @@ data class Struct(val schema: StructType, val values: List<Any?>) {
 }
 
 object BooleanType : Type()
-object StringType : Type()
 object BinaryType : Type()
-object DoubleType : Type()
-object FloatType : Type()
-object ByteType : Type()
-object IntType : Type()
-object LongType : Type()
-object ShortType : Type()
+
+// text types
+object StringType : Type()
+
+data class CharDataType(val size: Int) : Type()
+data class VarcharDataType(val size: Int) : Type()
+
+// floating point types
+object Float64Type : Type()
+
+object Float32Type : Type()
+
+// integral types
+object Int8Type : Type()
+object Int16Type : Type()
+object Int32Type : Type()
+object Int64Type : Type()
+object BigIntType : Type()
 
 // date time types
 object TimestampMillisType : Type()
@@ -81,9 +92,8 @@ object TimeMicrosType : Type()
 object TimeMillisType : Type()
 object DateType : Type()
 
+// container types
 data class MapDataType(val keyType: Type, val valueType: Type) : Type()
-
-data class DecimalType(val precision: Precision, val scale: Scale) : Type()
 
 data class EnumType(val values: List<String>) : Type()
 
@@ -91,3 +101,4 @@ data class ArrayType(val elementType: Type) : Type()
 
 data class Precision(val value: Int)
 data class Scale(val value: Int)
+data class DecimalType(val precision: Precision, val scale: Scale) : Type()

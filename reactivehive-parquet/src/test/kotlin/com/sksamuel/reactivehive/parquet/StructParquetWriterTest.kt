@@ -1,7 +1,7 @@
 package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.IntType
+import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructField
@@ -31,7 +31,7 @@ class StructParquetWriterTest : FunSpec() {
       if (fs.exists(path))
         fs.delete(path, false)
 
-      val schema = StructType(StructField("a", StringType), StructField("b", IntType), StructField("c", BooleanType))
+      val schema = StructType(StructField("a", StringType), StructField("b", Int32Type), StructField("c", BooleanType))
       val struct = Struct(schema, "a", 1, true)
       val messageType = ToParquetSchema.toMessageType(schema, "element")
 
@@ -50,7 +50,7 @@ class StructParquetWriterTest : FunSpec() {
 
     test("should support overwrite") {
 
-      val schema = StructType(StructField("a", StringType), StructField("b", IntType), StructField("c", BooleanType))
+      val schema = StructType(StructField("a", StringType), StructField("b", Int32Type), StructField("c", BooleanType))
       val struct = Struct(schema, "a", 1, true)
       val messageType = ToParquetSchema.toMessageType(schema, "element")
 

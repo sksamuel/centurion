@@ -2,9 +2,9 @@ package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.DoubleType
-import com.sksamuel.reactivehive.FloatType
-import com.sksamuel.reactivehive.LongType
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Int64Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
@@ -24,8 +24,8 @@ class ToParquetSchemaTest : FunSpec() {
       val structType = StructType(
           StructField("a", StringType),
           StructField("b", BooleanType),
-          StructField("c", DoubleType),
-          StructField("d", LongType)
+          StructField("c", Float64Type),
+          StructField("d", Int64Type)
       )
       ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
           Types.buildMessage()
@@ -58,8 +58,8 @@ class ToParquetSchemaTest : FunSpec() {
       val structType = StructType(
           StructField("a", BooleanType),
           StructField("b", StructType(
-              StructField("c", DoubleType),
-              StructField("d", FloatType)
+              StructField("c", Float64Type),
+              StructField("d", Float32Type)
           ))
       )
 

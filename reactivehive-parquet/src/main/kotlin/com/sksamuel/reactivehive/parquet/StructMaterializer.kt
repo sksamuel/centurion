@@ -2,16 +2,18 @@ package com.sksamuel.reactivehive.parquet
 
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.ByteType
-import com.sksamuel.reactivehive.DoubleType
-import com.sksamuel.reactivehive.FloatType
-import com.sksamuel.reactivehive.IntType
-import com.sksamuel.reactivehive.LongType
-import com.sksamuel.reactivehive.ShortType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int32Type
+import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.TimestampMillisType
+import com.sksamuel.reactivehive.parquet.converters.TimestampPrimitiveConverter
 import org.apache.parquet.column.Dictionary
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.Converter
@@ -21,69 +23,60 @@ import org.apache.parquet.io.api.RecordMaterializer
 
 class StructMaterializer(schema: StructType) : RecordMaterializer<Struct>() {
 
-  private val messageConverter = MessageConverter(schema)
+  private val rootConverter = StructConverter(schema)
 
-  override fun getRootConverter(): GroupConverter = messageConverter
+  override fun getRootConverter(): GroupConverter = rootConverter
 
-  override fun getCurrentRecord(): Struct = messageConverter.struct!!
+  override fun getCurrentRecord(): Struct = rootConverter.struct!!
 }
 
-class MessageConverter(private val schema: StructType) : GroupConverter() {
+open class StructConverter(private val schema: StructType) : GroupConverter() {
 
-  private val values = mutableMapOf<String, Any?>()
+  private val buffer = mutableMapOf<String, Any?>()
   internal var struct: Struct? = null
 
+  // called to start a new group, so we simply clear the map
   override fun start() {
-    values.clear()
+    buffer.clear()
+    struct = null
   }
 
   override fun end() {
-    struct = Struct.fromMap(schema, values)
+    struct = Struct.fromMap(schema, buffer.toMap())
   }
 
-  override fun getConverter(fieldIndex: Int): Converter = Converters.converterFor(schema[fieldIndex])
+  override fun getConverter(fieldIndex: Int): Converter = Converters.converterFor(schema[fieldIndex], buffer)
 }
 
-class StructConverter(private val schema: StructType,
-                      private val field: StructField,
-                      private val parentBuilder: MutableMap<String, Any?>) : GroupConverter() {
-
-  private val values = mutableMapOf<String, Any?>()
-
-  override fun start() {
-    values.clear()
-  }
-
+class NestedStructConverter(schema: StructType,
+                            private val field: StructField,
+                            private val parent: MutableMap<String, Any?>) : StructConverter(schema) {
   override fun end() {
-    parentBuilder[field.name] = values.toMap()
+    super.end()
+    parent[field.name] = struct
   }
-
-  override fun getConverter(fieldIndex: Int): Converter = Converters.converterFor(schema[fieldIndex])
 }
-
 
 interface Converters {
   companion object {
-    fun converterFor(field: StructField): Converter {
+    fun converterFor(field: StructField, buffer: MutableMap<String, Any?>): Converter {
       return when (val type = field.type) {
-        is StructType -> StructConverter(type, field, mutableMapOf())
-        StringType -> DictionaryStringPrimitiveConverter(field, mutableMapOf())
-        FloatType, DoubleType, LongType, IntType, BooleanType, ShortType, ByteType, BinaryType ->
-          AppendingPrimitiveConverter(field, mutableMapOf())
+        is StructType -> NestedStructConverter(type, field, buffer)
+        StringType -> DictionaryStringPrimitiveConverter(field, buffer)
+        Float32Type, Float64Type, Int64Type, Int32Type, BooleanType, Int16Type, Int8Type, BinaryType ->
+          AppendingPrimitiveConverter(field, buffer)
+        TimestampMillisType -> TimestampPrimitiveConverter(field, buffer)
         else -> throw UnsupportedOperationException("Unsupported data type $type")
       }
     }
   }
 }
 
-class DictionaryStringPrimitiveConverter(val field: StructField,
-                                         val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
+
+class DictionaryStringPrimitiveConverter(private val field: StructField,
+                                         private val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
 
   private var dictionary: Dictionary? = null
-
-  override fun addBinary(x: Binary) {
-    builder[field.name] = x.toStringUsingUTF8()
-  }
 
   override fun hasDictionarySupport(): Boolean = true
 
@@ -93,6 +86,10 @@ class DictionaryStringPrimitiveConverter(val field: StructField,
 
   override fun addValueFromDictionary(dictionaryId: Int) {
     addBinary(dictionary!!.decodeToBinary(dictionaryId))
+  }
+
+  override fun addBinary(x: Binary) {
+    builder[field.name] = x.toStringUsingUTF8()
   }
 }
 
