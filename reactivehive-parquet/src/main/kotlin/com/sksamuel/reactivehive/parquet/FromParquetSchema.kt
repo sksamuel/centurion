@@ -17,6 +17,7 @@ import com.sksamuel.reactivehive.Scale
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.TimeMillisType
 import com.sksamuel.reactivehive.TimestampMillisType
 import com.sksamuel.reactivehive.Type
 import org.apache.parquet.schema.GroupType
@@ -63,6 +64,7 @@ object FromParquetSchema {
       OriginalType.UINT_8 -> Int8Type
       OriginalType.INT_8 -> Int8Type
       OriginalType.DATE -> DateType
+      OriginalType.TIME_MILLIS -> TimeMillisType
       else -> Int32Type
     }
 

@@ -10,6 +10,10 @@ data class StructType(val fields: List<StructField>) : Type() {
 
   constructor(vararg fields: StructField) : this(fields.toList())
 
+  init {
+    require(fields.map { it.name }.toSet().size == fields.size) { "Struct type cannot contain duplicated field names" }
+  }
+
   fun indexOf(name: String): Int = fields.indexOfFirst { it.name == name }
 
   operator fun get(index: Int): StructField = fields[index]

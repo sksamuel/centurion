@@ -49,8 +49,8 @@ interface Setter {
         TimestampMillisType -> TimestampMillisSetter
         TimestampMicrosType -> TODO()
         TimeMicrosType -> TODO()
-        TimeMillisType -> TODO()
-        DateType -> TODO()
+        TimeMillisType -> TimeMillisSetter
+        DateType -> DateSetter
         is MapDataType -> TODO()
         is DecimalType -> TODO()
         is EnumType -> TODO()

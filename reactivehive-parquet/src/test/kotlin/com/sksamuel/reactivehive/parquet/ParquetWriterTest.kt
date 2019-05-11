@@ -18,7 +18,7 @@ import org.apache.parquet.schema.PrimitiveType
 import org.apache.parquet.schema.Type
 import org.apache.parquet.schema.Types
 
-class StructParquetWriterTest : FunSpec() {
+class ParquetWriterTest : FunSpec() {
 
   init {
 

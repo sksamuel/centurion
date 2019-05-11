@@ -13,6 +13,7 @@ import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.TimeMillisType
 import com.sksamuel.reactivehive.TimestampMillisType
 import org.apache.parquet.io.api.Converter
 
@@ -27,6 +28,7 @@ interface Converters {
         TimestampMillisType -> TimestampConverter(field, buffer)
         DateType -> DateConverter(field, buffer)
         is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
+        TimeMillisType -> TimeMillisConverter(field, buffer)
         else -> throw UnsupportedOperationException("Unsupported data type $type")
       }
     }

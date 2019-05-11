@@ -5,16 +5,16 @@ import com.sksamuel.reactivehive.BigIntType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
 import com.sksamuel.reactivehive.CharDataType
-import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
-import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.MapDataType
-import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.TimeMicrosType
@@ -46,6 +46,7 @@ object ToParquetSchema {
     return MessageType(name, *types.toTypedArray())
   }
 
+  // https://github.com/apache/parquet-format/blob/master/LogicalTypes.md
   fun toParquetType(type: Type, name: String, nullable: Boolean): org.apache.parquet.schema.Type {
     val repetition = if (nullable) Repetition.OPTIONAL else Repetition.REQUIRED
     return when (type) {
@@ -73,16 +74,44 @@ object ToParquetSchema {
       TimestampMillisType -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
           .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
       TimestampMicrosType -> TODO()
-      TimeMicrosType -> TODO()
-      TimeMillisType -> TODO()
-      DateType -> TODO()
+
+      /**
+       * TIME is used for a logical time type without a date with millisecond or microsecond precision.
+       * The type has two type parameters: UTC adjustment (true or false) and precision (MILLIS or MICROS, NANOS).
+       * TIME with precision MICROS is used for microsecond precision. It must annotate an int64 that stores the number of microseconds after midnight.
+       * The sort order used for TIME is signed.
+       */
+      TimeMicrosType ->
+        Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
+            .`as`(OriginalType.TIME_MICROS).named(name)
+
+      /**
+       * TIME is used for a logical time type without a date with millisecond or microsecond precision.
+       * The type has two type parameters: UTC adjustment (true or false) and precision (MILLIS or MICROS, NANOS).
+       * TIME with precision MILLIS is used for millisecond precision. It must annotate an int32 that stores the number of milliseconds after midnight.
+       * The sort order used for TIME is signed.
+       */
+      TimeMillisType ->
+        Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
+            .`as`(OriginalType.TIME_MILLIS).named(name)
+
+      /**
+       * DATE is used to for a logical date type, without a time of day.
+       * It must annotate an int32 that stores the number of days from the Unix epoch, 1 January 1970.
+       * The sort order used for DATE is signed.
+       */
+      DateType ->
+        Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
+            .`as`(OriginalType.DATE).named(name)
+
       is MapDataType -> {
         val key = toParquetType(type.keyType, "key", false)
         val value = toParquetType(type.valueType, "value", true)
         Types.map(repetition).key(key).value(value).named(name)
       }
-      // https://github.com/Parquet/parquet-format/blob/master/LogicalTypes.md#decimal
+
       is DecimalType -> TODO()
+
       is EnumType -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(OriginalType.ENUM).named(name)
       // in parquet, the elements of a list must be called "element", and they cannot be null
