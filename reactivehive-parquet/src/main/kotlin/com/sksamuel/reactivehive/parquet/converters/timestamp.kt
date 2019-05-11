@@ -10,8 +10,8 @@ import java.time.ZoneOffset
 
 // see https://issues.apache.org/jira/browse/HIVE-6394 and
 // https://issues.apache.org/jira/browse/SPARK-10177 for implementation ideas
-class TimestampPrimitiveConverter(private val field: StructField,
-                                  private val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
+class TimestampConverter(private val field: StructField,
+                         private val builder: MutableMap<String, Any?>) : PrimitiveConverter() {
 
   // The Julian Date (JD) is the number of days (with decimal fraction of the day) that
   // have elapsed since 12 noon UTC on the Julian epoch
@@ -24,7 +24,7 @@ class TimestampPrimitiveConverter(private val field: StructField,
 
     // the first arg is the number of days since Monday, January 1, 4713 BC
     // the second arg is the decimal fraction between 0 and 1 of the number of elapsed nanos, with
-    // 0 being midnight and 1 being 1 nanosecond before the next midnight
+    // 0.0 being midnight and 1.0 being 1 nanosecond before the next day
     val julianDate = JulianDate(nano.julianDay, nano.timeOfDayNanos.toDouble() / nanosOfDay)
     builder[field.name] = Timestamp.from(julianDate.toLocalDateTime().toInstant(ZoneOffset.UTC))
   }

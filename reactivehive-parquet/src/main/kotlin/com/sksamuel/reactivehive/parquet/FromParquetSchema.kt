@@ -5,12 +5,15 @@ import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
 import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.DecimalType
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.Int64Type
 import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Precision
+import com.sksamuel.reactivehive.Scale
 import com.sksamuel.reactivehive.StringType
 import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
@@ -70,21 +73,25 @@ object FromParquetSchema {
       else -> Int64Type
     }
 
-    fun binary(original: OriginalType?, length: Int): Type = when (original) {
+    fun binary(type: PrimitiveType, original: OriginalType?, length: Int): Type = when (original) {
       OriginalType.ENUM -> EnumType(emptyList())
       OriginalType.UTF8 -> StringType
+      OriginalType.DECIMAL -> {
+        val meta = type.decimalMetadata
+        DecimalType(Precision(meta.precision), Scale(meta.scale))
+      }
       else -> BinaryType
     }
 
     val elementType = when (type.primitiveTypeName) {
-      PrimitiveType.PrimitiveTypeName.BINARY -> binary(type.originalType, type.typeLength)
+      PrimitiveType.PrimitiveTypeName.BINARY -> binary(type, type.originalType, type.typeLength)
       PrimitiveType.PrimitiveTypeName.BOOLEAN -> BooleanType
       PrimitiveType.PrimitiveTypeName.DOUBLE -> Float64Type
       PrimitiveType.PrimitiveTypeName.FLOAT -> Float32Type
       PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.originalType)
       PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.originalType)
       PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
-      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type.originalType, type.typeLength)
+      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type, type.originalType, type.typeLength)
     }
 
     return if (type.isRepeated()) ArrayType(elementType) else elementType
