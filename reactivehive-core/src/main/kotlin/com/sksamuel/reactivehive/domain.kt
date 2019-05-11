@@ -7,7 +7,12 @@ data class FieldName(val value: String)
 /**
  * Describes which columns/fields should be partitioned for a particular table.
  */
-data class PartitionPlan(val keys: List<PartitionKey>)
+data class PartitionPlan(val keys: List<PartitionKey>) {
+  constructor(vararg keys: PartitionKey) : this(keys.asList())
+  companion object {
+    val empty = PartitionPlan(emptyList())
+  }
+}
 
 /**
  * Describes a single key/value pair in a [Partition].
