@@ -44,7 +44,7 @@ fun createTable(db: DatabaseName,
     serdeInfo = SerDeInfo(null, format.serde().serializationLib, format.serde().params)
     location = client.getDatabase(db.value).locationUri + "/" + tableName.value
     // partition fields must not be included in the list of general columns
-    this.cols = ToHiveSchema.toHive(schema).filterNot { plan.keys.contains(PartitionKey(it.name)) }
+    this.cols = ToHiveSchema.toHiveSchema(schema).filterNot { plan.keys.contains(PartitionKey(it.name)) }
   }
 
   val table = Table()
