@@ -1,11 +1,14 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.ParquetFormat
+import io.kotlintest.matchers.collections.shouldBeEmpty
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.Database
+import org.apache.hadoop.hive.metastore.api.FieldSchema
 
-class TableWriterTest : FunSpec(), HiveTestConfig {
+class HiveWriterTest : FunSpec(), HiveTestConfig {
 
   init {
 
@@ -45,17 +48,43 @@ class TableWriterTest : FunSpec(), HiveTestConfig {
           fs
       )
       writer.write(users)
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
+          FieldSchema("name", "string", null),
+          FieldSchema("title", "string", null),
+          FieldSchema("salary", "double", null),
+          FieldSchema("employed", "boolean", null)
+      )
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys.shouldBeEmpty()
     }
 
-//    it should "write to a partitioned table" in {
-//      val config = HiveSinkConfig(createTable = true, overwriteTable = true, partitions = Seq(PartitionField("title")))
-//      Await.ready(
-//          Source(users).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("employees_partitioned"),
-//              config)),
-//          Duration.Inf
-//      )
-//    }
+    test("write to a partitioned table") {
+      val writer = TableWriter(
+          DatabaseName("default"),
+          TableName("employees"),
+          schema,
+          ReactiveHiveFileNamer,
+          WriteMode.Overwrite,
+          TableType.MANAGED_TABLE,
+          PartitionPlan(PartitionKey("title")),
+          ParquetFormat,
+          DefaultPartitionLocator,
+          client,
+          fs
+      )
+      writer.write(users)
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
+          FieldSchema("name", "string", null),
+          FieldSchema("salary", "double", null),
+          FieldSchema("employed", "boolean", null)
+      )
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys shouldBe listOf(
+          FieldSchema("title", "string", null)
+      )
+    }
 //
 //    it should "create new partitions in the metastore when using dynamic partitions" in {
 //
