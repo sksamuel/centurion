@@ -3,12 +3,8 @@ package com.sksamuel.reactivehive.processors
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructType
 
-interface StructProcessor {
-  fun process(struct: Struct): Struct
-}
-
 /**
- * An implementation of [StructProcessor] that will align an input
+ * An implementation of [StructTransformer] that will align an input
  * record so that it's structure matches that defined in the metastore.
  *
  * Sometimes an input record will not contain a value for a field defined
@@ -23,7 +19,7 @@ interface StructProcessor {
  * An input record may include all the required fields but in a different
  * order, and so this transformer can reorder the fields as required.
  */
-class MetastoreSchemaAlignMapper(val schema: StructType) : StructProcessor {
+class MetastoreSchemaStructTransformer(val schema: StructType) : StructTransformer {
   override fun process(struct: Struct): Struct = TODO()
 //    schema.fields.foldLeft(Struct(schema)) {
 //      Try(struct.get(field.name)).toOption match {

@@ -6,7 +6,7 @@ import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructType
 
 /**
- * This [StructProcessor] returns a [Struct] with the partition values removed.
+ * This [StructTransformer] returns a [Struct] with the partition values removed.
  *
  * Usually, partition values do not need to be included in the data
  * written to disk. This is because the partition values can usually
@@ -23,7 +23,7 @@ import com.sksamuel.reactivehive.StructType
  * the file. If so, this processor should be removed.
  *
  */
-class StripPartitionsStructProcessor(val plan: PartitionPlan) : StructProcessor {
+class StripPartitionsStructTransformer(val plan: PartitionPlan) : StructTransformer {
 
   override fun process(struct: Struct): Struct {
     val fields = struct.schema.fields.mapNotNull {
