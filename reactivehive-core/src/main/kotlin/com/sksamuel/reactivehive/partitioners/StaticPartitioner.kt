@@ -2,7 +2,6 @@ package com.sksamuel.reactivehive.partitioners
 
 import com.sksamuel.reactivehive.DatabaseName
 import com.sksamuel.reactivehive.Partition
-import com.sksamuel.reactivehive.PartitionLocator
 import com.sksamuel.reactivehive.TableName
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -13,12 +12,11 @@ object StaticPartitioner : Partitioner {
   override fun path(dbName: DatabaseName,
                     tableName: TableName,
                     partition: Partition,
-                    locator: PartitionLocator,
                     client: IMetaStoreClient,
-                    fs: FileSystem): Path? {
+                    fs: FileSystem): Path {
     return try {
-      client.getPartition(dbName.value, tableName.value, partition.parts.map { it.value })
-      null
+      val p = client.getPartition(dbName.value, tableName.value, partition.parts.map { it.value })
+      Path(p.sd.location)
     } catch (t: Throwable) {
       throw RuntimeException("Partition $partition does not exist and static partitioner requires upfront creation", t)
     }

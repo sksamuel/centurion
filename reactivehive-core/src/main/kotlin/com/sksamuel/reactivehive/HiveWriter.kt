@@ -1,6 +1,7 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.StructWriter
+import com.sksamuel.reactivehive.partitioners.Partitioner
 import com.sksamuel.reactivehive.schemas.FromHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -13,23 +14,30 @@ enum class WriteMode {
 /**
  * Responsible for writing data to a hive table.
  * The writer will handle partitioning if required, formats, creating the table if needed.
- * This class will manage multiple writers per partition, but is not thread safe. Do not
- * invoke any methods concurrently.
+ * This class will manage multiple writers per partition, but is not thread safe.
+ * ! Do not invoke any methods concurrently !
  * It is safe to use multiple instances of this class to write into the same table, as each
  * will use seperate output files.
+ *
+ * Before a [Struct] is written to Hive, three things must occur.
+ *
+ * 1. The schema in the metastore must be compatible with the schema in the struct.
+ *    This means either evolving the schema or adjusting the incoming struct.
+ *
+ * 2. If the table has partitions then the struct's partition must exist.
+ *
  */
 class HiveWriter(private val dbName: DatabaseName,
                  private val tableName: TableName,
                  private val namer: FileNamer,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
                  private val mode: WriteMode,
-    // when creating new partitions, the partitions locator will be used for the path
-                 private val locator: PartitionLocator,
+                 private val partitioner: Partitioner,
                  private val createConfig: CreateTableConfig,
                  private val client: IMetaStoreClient,
                  private val fs: FileSystem) {
 
-  // the delegated hive writers, one per partition path
+  // the delegated struct writers, one per partition file
   private val writers = mutableMapOf<Path, StructWriter>()
 
   private val table = when (mode) {
@@ -45,16 +53,29 @@ class HiveWriter(private val dbName: DatabaseName,
   private val plan = partitionPlan(table)
   private val format = serde(table).toFormat()
 
-  // returns a hive writer for the given path, or creates one if one does not already exist.
-  private fun getOrOpen(path: Path): StructWriter {
-    return writers.getOrPut(path) {
+  // returns a hive writer for the given dir, or creates one if one does not already exist.
+  private fun getOrOpen(dir: Path): StructWriter {
+    return writers.getOrPut(dir) {
+      val path = Path(dir, namer.generate(dir))
       format.writer(path, schema, fs.conf)
     }
   }
 
+  // the directory where the data file will be written to
+  // if there are no partitions, then it will be in the table root
+  // otherwise, we'll use a partitioner to work out where it's going
+  fun outputDir(struct: Struct): Path {
+    return if (plan == null) {
+      Path(table.sd.location)
+    } else {
+      val partition = partition(struct, plan)
+      partitioner.path(dbName, tableName, partition, client, fs)
+    }
+  }
+
   fun write(struct: Struct) {
-    val path = outputFile(struct, plan, table, locator, namer)
-    val writer = getOrOpen(path)
+    val dir = outputDir(struct)
+    val writer = getOrOpen(dir)
     writer.write(struct)
   }
 

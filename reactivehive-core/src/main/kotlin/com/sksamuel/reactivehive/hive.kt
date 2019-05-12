@@ -54,20 +54,3 @@ fun Serde.toFormat(): Format = when {
   this.inputFormat == ParquetFormat.serde().inputFormat -> ParquetFormat
   else -> throw UnsupportedOperationException("Unknown serde $this")
 }
-
-/**
- * Returns the path to the file that this struct should be written to.
- * If the table is partitioned then this will be located in the partition path,
- * otherwise in base table location.
- */
-fun outputFile(struct: Struct, plan: PartitionPlan?, table: Table, locator: PartitionLocator, namer: FileNamer): Path {
-  val tableBasePath = Path(table.sd.location)
-  return when (plan) {
-    null -> Path(namer.generate(tableBasePath, null))
-    else -> {
-      val partition = partition(struct, plan)
-      val dir = locator.path(tableBasePath, partition)
-      Path(dir, namer.generate(dir, partition))
-    }
-  }
-}

@@ -24,7 +24,7 @@ interface FileManager {
 class StagingFileManager(val namer: FileNamer) : FileManager {
 
   override fun prepare(dir: Path, partition: Partition?, fs: FileSystem): Path {
-    val filename = namer.generate(dir, partition)
+    val filename = namer.generate(dir)
     val path = Path(dir, ".$filename")
     fs.delete(path, false)
     return path
@@ -40,7 +40,7 @@ class StagingFileManager(val namer: FileNamer) : FileManager {
 class OptimisticFileManager(val namer: FileNamer) : FileManager {
 
   override fun prepare(dir: Path, partition: Partition?, fs: FileSystem): Path {
-    val filename = namer.generate(dir, partition)
+    val filename = namer.generate(dir)
     val path = Path(dir, filename)
     fs.delete(path, false)
     return path

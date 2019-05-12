@@ -13,10 +13,8 @@ import java.util.*
 interface FileNamer {
   /**
    * @param dir the directory that will contain the file
-   * @param partition the partition for the struct that will be written
-   *                  can be null if the table is not partitioned
    */
-  fun generate(dir: Path, partition: Partition?): String
+  fun generate(dir: Path): String
 }
 
 /**
@@ -24,10 +22,10 @@ interface FileNamer {
  * with the name of this project.
  */
 object ReactiveHiveFileNamer : FileNamer {
-  override fun generate(dir: Path, partition: Partition?): String =
+  override fun generate(dir: Path): String =
       "reactivehive_" + UUID.randomUUID().toString().replace("-", "")
 }
 
 object UUIDFileNamer : FileNamer {
-  override fun generate(dir: Path, partition: Partition?): String = UUID.randomUUID().toString()
+  override fun generate(dir: Path): String = UUID.randomUUID().toString()
 }

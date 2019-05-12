@@ -1,6 +1,7 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.ParquetFormat
+import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
@@ -39,7 +40,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
           TableName("employees"),
           ReactiveHiveFileNamer,
           WriteMode.Overwrite,
-          DefaultPartitionLocator,
+          DynamicPartitioner,
           CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
           client,
           fs
