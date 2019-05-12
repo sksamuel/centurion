@@ -1,5 +1,6 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.formats.Serde
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 import org.apache.hadoop.hive.metastore.api.Table

@@ -1,0 +1,42 @@
+package com.sksamuel.reactivehive.formats
+
+import com.sksamuel.reactivehive.Struct
+import com.sksamuel.reactivehive.StructType
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.Path
+
+/**
+ * [[Format]] encapsulates the ability to read and write files
+ * in HDFS in file formats that are compatible with hive.
+ *
+ * Each implementation will support a different underlying file format.
+ * For example, a [[ParquetFormat]] will write files using Apache Parquet,
+ * which would be compatible with the
+ * org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe serde.
+ *
+ * Another implementation may use Apache Orc, or Apache Avro, or "your own format".
+ * As long as Hive has a Serde, then anything you write out can be read back in hive itself.
+ *
+ * The idea behind this trait is similar to the
+ * org.apache.hadoop.mapreduce.InputFormat interface that hadoop uses.
+ */
+interface Format {
+  fun serde(): Serde
+  fun writer(path: Path, schema: StructType, conf: Configuration): HiveWriter
+  fun reader(path: Path, schema: StructType, conf: Configuration): HiveReader
+}
+
+data class Serde(val serializationLib: String,
+                 val inputFormat: String,
+                 val outputFormat: String,
+                 val params: Map<String, String>)
+
+interface HiveWriter {
+  fun write(struct: Struct)
+  fun close()
+}
+
+interface HiveReader {
+  fun iterator(): Iterator<Struct>
+  fun close()
+}

@@ -1,5 +1,6 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.formats.ParquetFormat
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.FunSpec

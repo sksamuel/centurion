@@ -1,5 +1,7 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.formats.Format
+import com.sksamuel.reactivehive.formats.HiveWriter
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
