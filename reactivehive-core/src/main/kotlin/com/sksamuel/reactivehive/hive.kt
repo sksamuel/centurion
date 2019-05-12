@@ -3,7 +3,6 @@ package com.sksamuel.reactivehive
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 import org.apache.hadoop.hive.metastore.api.Table
-import java.util.*
 
 /**
  * Returns the [PartitionPlan] for the given db.table
@@ -53,14 +52,14 @@ fun serde(table: Table): Serde =
  * If the table is partitioned then this will be located in the partition path,
  * otherwise in base table location.
  */
-fun outputFile(struct: Struct, plan: PartitionPlan?, table: Table, locator: PartitionLocator): Path {
+fun outputFile(struct: Struct, plan: PartitionPlan?, table: Table, locator: PartitionLocator, namer: FileNamer): Path {
   val tableBasePath = Path(table.sd.location)
   return when (plan) {
     null -> tableBasePath
     else -> {
       val partition = partition(struct, plan)
       val dir = locator.path(tableBasePath, partition)
-      Path(dir, UUID.randomUUID().toString())
+      Path(dir, namer.generate(dir, partition))
     }
   }
 }

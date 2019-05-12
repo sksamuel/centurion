@@ -17,6 +17,7 @@ class TableWriter(private val dbName: DatabaseName,
                   private val tableName: TableName,
                   private val format: Format,
                   private val schema: StructType,
+                  private val namer: FileNamer,
                   private val client: IMetaStoreClient,
                   private val fs: FileSystem) {
 
@@ -46,7 +47,7 @@ class TableWriter(private val dbName: DatabaseName,
   }
 
   fun write(struct: Struct) {
-    val path = outputFile(struct, plan, table, locator)
+    val path = outputFile(struct, plan, table, locator, namer)
     val writer = getOrOpen(path)
     writer.write(struct)
   }
