@@ -19,22 +19,22 @@ enum class WriteMode {
  * It is safe to use multiple instances of this class to write into the same table, as each
  * will use seperate output files.
  */
-class TableWriter(private val dbName: DatabaseName,
-                  private val tableName: TableName,
-                  private val schema: StructType,
-                  private val namer: FileNamer,
+class HiveWriter(private val dbName: DatabaseName,
+                 private val tableName: TableName,
+                 private val schema: StructType,
+                 private val namer: FileNamer,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
-                  private val mode: WriteMode,
-                  private val tableType: TableType,
+                 private val mode: WriteMode,
+                 private val tableType: TableType,
     // the plan to use when creating the table
     // if the table already exists, then the plan from the existing table will be used instead
-                  private val _plan: PartitionPlan?,
+                 private val _plan: PartitionPlan?,
     // if the table is being created, then the format specified here will be used
-                  private val format: Format,
+                 private val format: Format,
     // when creating new partitions, the partitions locator will be used for the path
-                  private val locator: PartitionLocator,
-                  private val client: IMetaStoreClient,
-                  private val fs: FileSystem) {
+                 private val locator: PartitionLocator,
+                 private val client: IMetaStoreClient,
+                 private val fs: FileSystem) {
 
   // the delegated hive writers, one per partition path
   private val writers = mutableMapOf<Path, StructWriter>()

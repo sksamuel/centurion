@@ -34,7 +34,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     }
 
     test("write to a non partitioned table") {
-      val writer = TableWriter(
+      val writer = HiveWriter(
           DatabaseName("default"),
           TableName("employees"),
           schema,
@@ -60,7 +60,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     }
 
     test("write to a partitioned table") {
-      val writer = TableWriter(
+      val writer = HiveWriter(
           DatabaseName("default"),
           TableName("employees"),
           schema,

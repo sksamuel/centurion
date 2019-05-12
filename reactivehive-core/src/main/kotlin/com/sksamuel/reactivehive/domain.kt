@@ -32,6 +32,7 @@ data class Partition(val parts: List<PartitionPart>) {
   constructor(vararg parts: PartitionPart) : this(parts.asList())
 }
 
+// we only support string partition fields for now
 data class PartitionKey(val value: String)
 
 data class PartitionField(val name: String, val type: Type = StringType, val comment: String? = null)
