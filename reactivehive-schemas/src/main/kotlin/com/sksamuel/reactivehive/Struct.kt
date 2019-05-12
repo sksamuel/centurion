@@ -18,6 +18,10 @@ data class StructType(val fields: List<StructField>) : Type() {
 
   operator fun get(index: Int): StructField = fields[index]
 
+  operator fun get(name: String): StructField? = fields.find { it.name == name }
+
+  fun hasField(name: String) = fields.any { it.name == name }
+
   /**
    * Returns a new StructType which is the same as the existing struct, but with the
    * given field added to the end of the existing fields.

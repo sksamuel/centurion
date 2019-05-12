@@ -67,6 +67,8 @@ object ToHiveSchema {
     }
   }
 
+  fun toHiveSchema(field: StructField): FieldSchema = FieldSchema(field.name, toHiveType(field.type), null)
+
   fun toHiveSchema(schema: StructType): List<FieldSchema> {
     return schema.fields.map {
       FieldSchema(it.name, toHiveType(it.type), null)
