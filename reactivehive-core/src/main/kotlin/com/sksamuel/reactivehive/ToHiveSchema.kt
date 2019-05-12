@@ -38,6 +38,8 @@ object ToHiveSchema {
      * If no precision is specified, it defaults to 10.
      */
     fun decimal(precision: Precision, scale: Scale) = "decimal(${precision.value},${scale.value})"
+
+    fun array(elementType: Type) = "array<${toHiveType(elementType)}>"
   }
 
   fun toHiveType(type: Type): String {
@@ -62,7 +64,7 @@ object ToHiveSchema {
       DateType -> HiveTypes.date
       is MapDataType -> TODO()
       is EnumType -> TODO()
-      is ArrayType -> TODO()
+      is ArrayType -> HiveTypeFns.array(type.elementType)
       is DecimalType -> HiveTypeFns.decimal(type.precision, type.scale)
     }
   }

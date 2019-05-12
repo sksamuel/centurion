@@ -44,6 +44,35 @@ class ToHiveSchemaTest : FunSpec() {
       ToHiveSchema.toHiveType(VarcharType(123)) shouldBe "varchar(123)"
       ToHiveSchema.toHiveType(CharType(53)) shouldBe "char(53)"
     }
+
+    test("should support arrays") {
+      ToHiveSchema.toHiveType(
+          StructType(
+              StructField("a", StringType),
+              StructField("b", ArrayType(BooleanType))
+          )
+      ) shouldBe "struct<a:string,b:array<boolean>>"
+    }
+
+    test("should support structs") {
+      ToHiveSchema.toHiveType(StructType(StructField("a", StringType))) shouldBe "struct<a:string>"
+    }
+
+    test("nested structs") {
+      ToHiveSchema.toHiveType(
+          StructType(
+              StructField("a", StringType),
+              StructField("b", StructType(StructField("c", BooleanType)))
+          )
+      ) shouldBe "struct<a:string,b:struct<c:boolean>>"
+
+      ToHiveSchema.toHiveType(
+          StructType(
+              StructField("a", StringType),
+              StructField("b", ArrayType(BooleanType))
+          )
+      ) shouldBe "struct<a:string,b:array<boolean>>"
+    }
   }
 
 }
