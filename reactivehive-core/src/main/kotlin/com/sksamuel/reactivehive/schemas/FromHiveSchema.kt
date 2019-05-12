@@ -21,6 +21,7 @@ import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.Type
 import com.sksamuel.reactivehive.VarcharType
 import org.apache.hadoop.hive.metastore.api.FieldSchema
+import org.apache.hadoop.hive.metastore.api.Table
 
 object FromHiveSchema {
 
@@ -33,7 +34,17 @@ object FromHiveSchema {
     val varchar_r = "varchar\\(\\s*(\\d+?)\\s*\\)".toRegex()
   }
 
-  fun fromHiveSchema(schema: FieldSchema): Type = fromHiveType(
+  fun fromHiveTable(table: Table): StructType {
+    // in hive prior to 3.0, columns are null, partitions non-null
+    val fields = table.sd.cols.map {
+      StructField(it.name, fromFieldSchema(it), true)
+    } + table.partitionKeys.map {
+      StructField(it.name, fromFieldSchema(it), false)
+    }
+    return StructType(fields)
+  }
+
+  fun fromFieldSchema(schema: FieldSchema): Type = fromHiveType(
       schema.type)
 
   fun fromHiveType(type: String): Type {

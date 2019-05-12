@@ -2,7 +2,6 @@ package com.sksamuel.reactivehive
 
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.hive.metastore.IMetaStoreClient
 
 /**
  * When reading data from Hive, there may be multiple files per partition or table.
@@ -10,7 +9,7 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  * Implementations of this interface will handle the scanning of a directory.
  */
 interface FileScanner {
-  fun scan(path: Path, client: IMetaStoreClient, fs: FileSystem): List<Path>
+  fun scan(path: Path, fs: FileSystem): List<Path>
 }
 
 /**
@@ -21,7 +20,7 @@ interface FileScanner {
  */
 object DefaultFileScanner : FileScanner {
 
-  override fun scan(path: Path, client: IMetaStoreClient, fs: FileSystem): List<Path> {
+  override fun scan(path: Path, fs: FileSystem): List<Path> {
     val iter = fs.listFiles(path, false)
     return RemoteIter(iter).asSequence()
         .filterNot { it.path.name.startsWith(".") }

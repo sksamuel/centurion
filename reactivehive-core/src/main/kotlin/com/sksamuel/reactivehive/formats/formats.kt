@@ -37,6 +37,6 @@ interface StructWriter {
 }
 
 interface StructReader {
-  fun iterator(): Iterator<Struct>
+  fun read(): Struct?
   fun close()
 }

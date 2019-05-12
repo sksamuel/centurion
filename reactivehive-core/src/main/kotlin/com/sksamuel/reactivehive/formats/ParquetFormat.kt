@@ -17,8 +17,7 @@ object ParquetFormat : Format {
       mapOf("org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe" to "1")
   )
 
-  override fun writer(path: Path, schema: StructType, conf: Configuration): HiveWriter = object :
-      HiveWriter {
+  override fun writer(path: Path, schema: StructType, conf: Configuration): StructWriter = object : StructWriter {
     // setting overwrite to false, as it should be considered a bug if a hive writer
     // tries to overwrite an existing file
     // logger.debug(s"Creating parquet writer at $path")
@@ -32,13 +31,9 @@ object ParquetFormat : Format {
     override fun close(): Unit = writer.close()
   }
 
-  override fun reader(path: Path, schema: StructType, conf: Configuration): StructReader = object :
-      StructReader {
-
-    //  logger.debug(s"Creating parquet reader for $path")
+  override fun reader(path: Path, schema: StructType, conf: Configuration): StructReader = object : StructReader {
     val reader = parquetReader(path, conf)
-
-    override fun iterator() = TODO()// = Iterator.continually(reader.read).takeWhile(_ != null)
+    override fun read() = reader.read()
     override fun close(): Unit = reader.close()
   }
 }

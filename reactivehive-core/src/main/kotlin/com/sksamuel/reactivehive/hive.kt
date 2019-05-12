@@ -1,5 +1,7 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.formats.Format
+import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.formats.Serde
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
@@ -47,6 +49,11 @@ fun serde(table: Table): Serde =
         table.sd.outputFormat,
         table.sd.serdeInfo.parameters ?: emptyMap()
     )
+
+fun Serde.toFormat(): Format = when {
+  this.inputFormat == ParquetFormat.serde().inputFormat -> ParquetFormat
+  else -> throw UnsupportedOperationException("Unknown serde $this")
+}
 
 /**
  * Returns the path to the file that this struct should be written to.
