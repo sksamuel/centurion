@@ -1,5 +1,6 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.formats.StructReader
 import com.sksamuel.reactivehive.schemas.FromHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -9,19 +10,36 @@ import org.apache.hadoop.hive.metastore.api.Table
 class HiveReader(private val dbName: DatabaseName,
                  private val tableName: TableName,
                  private val client: IMetaStoreClient,
-                 private val fs: FileSystem) {
+                 private val fs: FileSystem) : Logging {
 
   private val table: Table = client.getTable(dbName.value, tableName.value)
   private val format = serde(table).toFormat()
   private val schema = FromHiveSchema.fromHiveTable(table)
 
-  fun open(): Sequence<Struct> {
-    val files = scanTable(dbName, tableName, table, client, fs)
+  private val files = scanTable(dbName, tableName, table, client, fs).apply {
+    logger.debug("Discovered $size files for table ${dbName.value}.${tableName.value}")
+  }
+
+  private var current: StructReader? = null
+
+  fun read(): Sequence<Struct> {
     val seqs = files.map {
-      val reader by lazy { format.reader(it, schema, fs.conf) }
-      generateSequence { reader.read() }
+      val reader by lazy {
+        val reader = format.reader(it, schema, fs.conf)
+        current = reader
+        reader
+      }
+      generateSequence {
+        val next = reader.read()
+        if (next == null) reader.close()
+        next
+      }
     }
     return seqs.reduce { a, b -> a + b }
+  }
+
+  fun close() {
+    current?.close()
   }
 }
 
