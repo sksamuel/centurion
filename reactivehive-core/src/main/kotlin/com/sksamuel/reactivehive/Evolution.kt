@@ -24,8 +24,17 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  * if the schemas do not match, or you may wish to ignore any mismatches, or
  * you may wish to keep only compatible fields, and so on.
  *
+ * Finally, in some hive formats, the order of fields is important - for example in
+ * sequence or csv files, where a schema is not present in the files. This means
+ * the order of the fields must exactly match the metastore schema. This is not
+ * important for formats like parquet where the schema is present in the files as well
+ * and they can be mapped after reading.
+ *
+ * Therefore implements of this interface must also ensure that output structs are
+ * fully compatible with the meta store.
+ *
  */
-interface StructAlignment {
+interface SchemaHandler {
   fun align(dbName: DatabaseName,
             tableName: TableName,
             metastoreSchema: StructType,
@@ -34,7 +43,7 @@ interface StructAlignment {
 }
 
 /**
- * An implementation of [StructAlignment] that will update the metastore by
+ * An implementation of [SchemaHandler] that will update the metastore by
  * attempting to add new fields in a backwards compatible way.
  *
  * This can be accomplished if the new field is nullable (so that existing data
@@ -43,7 +52,7 @@ interface StructAlignment {
  * If any fields are missing from the metastore schema, but are not nullable,
  * then an exception will be thrown.
  */
-class AdditiveEvolutionStructAlignment : StructAlignment {
+class SchemaEvolutionSchemaHandler : SchemaHandler {
 
   override fun align(dbName: DatabaseName,
                      tableName: TableName,
@@ -75,7 +84,7 @@ class AdditiveEvolutionStructAlignment : StructAlignment {
 }
 
 /**
- * An implementation of [StructAlignment] that is a passthrough operation.
+ * An implementation of [SchemaHandler] that is a passthrough operation.
  *
  * Using this implementation means reactive-hive will make no changes
  * to the metastore or the struct. The schema must be managed externally.
@@ -84,7 +93,7 @@ class AdditiveEvolutionStructAlignment : StructAlignment {
  * with the metastore. Use of this implementation is NOT recommended in
  * production.
  */
-object NoopStructAlignment : StructAlignment {
+object NoopSchemaHandler : SchemaHandler {
   override fun align(dbName: DatabaseName,
                      tableName: TableName,
                      metastoreSchema: StructType,
@@ -93,7 +102,7 @@ object NoopStructAlignment : StructAlignment {
 }
 
 /**
- * An implementation of [StructAlignment] that will return a new struct
+ * An implementation of [SchemaHandler] that will return a new struct
  * that is compatible with the metastore schema. This means that extra fields
  * will be dropped, and missing fields will be padded (if nullable).
  *
@@ -105,7 +114,7 @@ object NoopStructAlignment : StructAlignment {
  * Any fields in the metastore that are not present in the struct must
  * be marked as nullable or an error will be thrown.
  */
-object CompatibleStructAligner : StructAlignment {
+object CompatibleStructSchemaHandler : SchemaHandler {
 
   override fun align(dbName: DatabaseName,
                      tableName: TableName,
@@ -125,7 +134,7 @@ object CompatibleStructAligner : StructAlignment {
 }
 
 /**
- * An implementation of [StructAlignment] that requires the fields
+ * An implementation of [SchemaHandler] that requires the fields
  * in the incoming struct's schema to be the same as the fields in
  * the hive metastore. The order of fields is not important, but the names
  * and types are.
@@ -138,7 +147,7 @@ object CompatibleStructAligner : StructAlignment {
  * Using this implementation means reactive-hive will make no changes
  * to the metastore. Instead, the schema must be managed externally.
  */
-object StrictStructAligner : StructAlignment {
+object StrictSchemaHandler : SchemaHandler {
 
   override fun align(dbName: DatabaseName,
                      tableName: TableName,
