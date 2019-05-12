@@ -1,8 +1,25 @@
-package com.sksamuel.reactivehive
+package com.sksamuel.reactivehive.schemas
 
 import arrow.core.Option
 import arrow.core.getOrElse
 import arrow.core.orElse
+import com.sksamuel.reactivehive.ArrayType
+import com.sksamuel.reactivehive.BooleanType
+import com.sksamuel.reactivehive.CharType
+import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.DecimalType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
+import com.sksamuel.reactivehive.Precision
+import com.sksamuel.reactivehive.Scale
+import com.sksamuel.reactivehive.StringType
+import com.sksamuel.reactivehive.StructField
+import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.Type
+import com.sksamuel.reactivehive.VarcharType
 import org.apache.hadoop.hive.metastore.api.FieldSchema
 
 object FromHiveSchema {
@@ -16,12 +33,13 @@ object FromHiveSchema {
     val varchar_r = "varchar\\(\\s*(\\d+?)\\s*\\)".toRegex()
   }
 
-  fun fromHiveSchema(schema: FieldSchema): Type = fromHiveType(schema.type)
+  fun fromHiveSchema(schema: FieldSchema): Type = fromHiveType(
+      schema.type)
 
   fun fromHiveType(type: String): Type {
 
     fun decimal(): Option<DecimalType> {
-      val match = HiveRegexes.decimal_r.matchEntire(type)
+      val match = FromHiveSchema.HiveRegexes.decimal_r.matchEntire(type)
       return Option.fromNullable(match).map {
         val p = Precision(it.groupValues[1].toInt())
         val s = Scale(it.groupValues[2].toInt())
@@ -30,7 +48,7 @@ object FromHiveSchema {
     }
 
     fun varchar(): Option<VarcharType> {
-      val match = HiveRegexes.varchar_r.matchEntire(type)
+      val match = FromHiveSchema.HiveRegexes.varchar_r.matchEntire(type)
       return Option.fromNullable(match).map {
         val size = it.groupValues[1].toInt()
         VarcharType(size)
@@ -38,7 +56,7 @@ object FromHiveSchema {
     }
 
     fun char(): Option<CharType> {
-      val match = HiveRegexes.char_r.matchEntire(type)
+      val match = FromHiveSchema.HiveRegexes.char_r.matchEntire(type)
       return Option.fromNullable(match).map {
         val size = it.groupValues[1].toInt()
         CharType(size)
@@ -46,17 +64,18 @@ object FromHiveSchema {
     }
 
     fun struct(): Option<StructType> {
-      val match = HiveRegexes.struct_r.matchEntire(type)
+      val match = FromHiveSchema.HiveRegexes.struct_r.matchEntire(type)
       return Option.fromNullable(match).map { structMatch ->
-        val fields = HiveRegexes.struct_field_r.findAll(structMatch.groupValues[1].trim()).map { fieldMatch ->
-          StructField(fieldMatch.groupValues[1].trim(), fromHiveType(fieldMatch.groupValues[2].trim()))
+        val fields = FromHiveSchema.HiveRegexes.struct_field_r.findAll(structMatch.groupValues[1].trim()).map { fieldMatch ->
+          StructField(fieldMatch.groupValues[1].trim(),
+              fromHiveType(fieldMatch.groupValues[2].trim()))
         }
         StructType(fields.toList())
       }
     }
 
     fun array(): Option<ArrayType> {
-      val match = HiveRegexes.array_r.matchEntire(type)
+      val match = FromHiveSchema.HiveRegexes.array_r.matchEntire(type)
       return Option.fromNullable(match).map {
         val elementType = fromHiveType(it.groupValues[1].trim())
         ArrayType(elementType)

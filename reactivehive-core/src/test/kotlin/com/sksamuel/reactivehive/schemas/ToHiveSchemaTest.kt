@@ -1,5 +1,23 @@
-package com.sksamuel.reactivehive
+package com.sksamuel.reactivehive.schemas
 
+import com.sksamuel.reactivehive.ArrayType
+import com.sksamuel.reactivehive.BinaryType
+import com.sksamuel.reactivehive.BooleanType
+import com.sksamuel.reactivehive.CharType
+import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.DecimalType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int32Type
+import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
+import com.sksamuel.reactivehive.Precision
+import com.sksamuel.reactivehive.Scale
+import com.sksamuel.reactivehive.StringType
+import com.sksamuel.reactivehive.StructField
+import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.VarcharType
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
 
@@ -49,27 +67,32 @@ class ToHiveSchemaTest : FunSpec() {
       ToHiveSchema.toHiveType(
           StructType(
               StructField("a", StringType),
-              StructField("b", ArrayType(BooleanType))
+              StructField("b",
+                  ArrayType(BooleanType))
           )
       ) shouldBe "struct<a:string,b:array<boolean>>"
     }
 
     test("should support structs") {
-      ToHiveSchema.toHiveType(StructType(StructField("a", StringType))) shouldBe "struct<a:string>"
+      ToHiveSchema.toHiveType(StructType(StructField("a",
+          StringType))) shouldBe "struct<a:string>"
     }
 
     test("nested structs") {
       ToHiveSchema.toHiveType(
           StructType(
               StructField("a", StringType),
-              StructField("b", StructType(StructField("c", BooleanType)))
+              StructField("b",
+                  StructType(StructField("c",
+                      BooleanType)))
           )
       ) shouldBe "struct<a:string,b:struct<c:boolean>>"
 
       ToHiveSchema.toHiveType(
           StructType(
               StructField("a", StringType),
-              StructField("b", ArrayType(BooleanType))
+              StructField("b",
+                  ArrayType(BooleanType))
           )
       ) shouldBe "struct<a:string,b:array<boolean>>"
     }

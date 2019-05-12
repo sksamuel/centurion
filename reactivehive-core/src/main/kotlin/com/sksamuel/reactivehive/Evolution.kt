@@ -1,5 +1,6 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.schemas.ToHiveSchema
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 
 /**

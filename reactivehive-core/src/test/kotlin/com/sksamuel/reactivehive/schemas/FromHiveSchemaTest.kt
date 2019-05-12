@@ -1,5 +1,21 @@
-package com.sksamuel.reactivehive
+package com.sksamuel.reactivehive.schemas
 
+import com.sksamuel.reactivehive.ArrayType
+import com.sksamuel.reactivehive.BooleanType
+import com.sksamuel.reactivehive.CharType
+import com.sksamuel.reactivehive.DateType
+import com.sksamuel.reactivehive.DecimalType
+import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int64Type
+import com.sksamuel.reactivehive.Int8Type
+import com.sksamuel.reactivehive.Precision
+import com.sksamuel.reactivehive.Scale
+import com.sksamuel.reactivehive.StringType
+import com.sksamuel.reactivehive.StructField
+import com.sksamuel.reactivehive.StructType
+import com.sksamuel.reactivehive.VarcharType
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
 
@@ -48,10 +64,14 @@ class FromHiveSchemaTest : FunSpec() {
     }
 
     test("support decimal") {
-      FromHiveSchema.fromHiveType("decimal(3,4)") shouldBe DecimalType(Precision(3), Scale(4))
-      FromHiveSchema.fromHiveType("decimal(  3,   4)") shouldBe DecimalType(Precision(3), Scale(4))
-      FromHiveSchema.fromHiveType("decimal(  3  ,   4  )") shouldBe DecimalType(Precision(3), Scale(4))
-      FromHiveSchema.fromHiveType("decimal(  3  ,4  )") shouldBe DecimalType(Precision(3), Scale(4))
+      FromHiveSchema.fromHiveType("decimal(3,4)") shouldBe DecimalType(Precision(
+          3), Scale(4))
+      FromHiveSchema.fromHiveType("decimal(  3,   4)") shouldBe DecimalType(Precision(
+          3), Scale(4))
+      FromHiveSchema.fromHiveType("decimal(  3  ,   4  )") shouldBe DecimalType(Precision(
+          3), Scale(4))
+      FromHiveSchema.fromHiveType("decimal(  3  ,4  )") shouldBe DecimalType(Precision(
+          3), Scale(4))
     }
 
     test("support arrays") {
@@ -63,11 +83,18 @@ class FromHiveSchemaTest : FunSpec() {
 
     test("support structs") {
       FromHiveSchema.fromHiveType("struct<a:boolean, b:float>") shouldBe
-          StructType(StructField("a", BooleanType), StructField("b", Float32Type))
+          StructType(StructField("a",
+              BooleanType),
+              StructField("b", Float32Type))
       FromHiveSchema.fromHiveType("struct<  a   : boolean  , b   : float  >") shouldBe
-          StructType(StructField("a", BooleanType), StructField("b", Float32Type))
+          StructType(StructField("a",
+              BooleanType),
+              StructField("b", Float32Type))
       FromHiveSchema.fromHiveType("struct< a:string, b:array<boolean>>") shouldBe
-          StructType(StructField("a", StringType), StructField("b", ArrayType(BooleanType)))
+          StructType(StructField("a",
+              StringType),
+              StructField("b",
+                  ArrayType(BooleanType)))
     }
 
     test("!nested structs") {

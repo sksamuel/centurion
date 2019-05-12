@@ -1,4 +1,4 @@
-package com.sksamuel.reactivehive
+package com.sksamuel.reactivehive.schemas
 
 object HiveTypes {
   const val string = "string"
