@@ -4,6 +4,7 @@ import com.sksamuel.reactivehive.formats.ParquetFormat
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.FunSpec
+import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.FieldSchema
 
@@ -27,9 +28,7 @@ class CreateTableTest : FunSpec(), HiveTestConfig {
       createTable(
           DatabaseName("default"),
           TableName("foo"),
-          schema,
-          PartitionPlan.empty,
-          TableType.MANAGED_TABLE,
+          CreateTableConfig(schema, PartitionPlan.empty, TableType.MANAGED_TABLE, ParquetFormat),
           client = client,
           fs = fs
       ) shouldNotBe null
@@ -64,9 +63,7 @@ class CreateTableTest : FunSpec(), HiveTestConfig {
       createTable(
           DatabaseName("default"),
           TableName("foo"),
-          schema,
-          plan,
-          TableType.MANAGED_TABLE,
+          CreateTableConfig(schema, plan, TableType.MANAGED_TABLE, ParquetFormat),
           client = client,
           fs = fs
       ) shouldNotBe null
@@ -85,6 +82,30 @@ class CreateTableTest : FunSpec(), HiveTestConfig {
       table.sd.serdeInfo.serializationLib shouldBe ParquetFormat.serde().serializationLib
     }
 
-  }
+    test("create external table with custom location") {
 
+      try {
+        client.dropTable("default", "foo")
+      } catch (t: Throwable) {
+      }
+
+      val schema = StructType(StructField("a", StringType))
+
+      createTable(
+          DatabaseName("default"),
+          TableName("foo"),
+          CreateTableConfig(schema,
+              PartitionPlan.empty,
+              TableType.EXTERNAL_TABLE,
+              ParquetFormat,
+              Path("/user/hive/warehouse/wibble")
+          ),
+          client = client,
+          fs = fs
+      ) shouldNotBe null
+
+      val table = client.getTable("default", "foo")
+      table.sd.location shouldBe "hdfs://localhost:8020/user/hive/warehouse/wibble"
+    }
+  }
 }

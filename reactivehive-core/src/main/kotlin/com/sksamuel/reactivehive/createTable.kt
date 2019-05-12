@@ -1,7 +1,6 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.Format
-import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.schemas.ToHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -21,33 +20,51 @@ fun TableType.asString(): String {
   }
 }
 
+// config for when creating a new table
+data class CreateTableConfig(
+    val schema: StructType,
+    // partitions, can be null if not partitioned
+    val plan: PartitionPlan?,
+    val tableType: TableType,
+    val format: Format,
+    // specify a location to be used if the table is created as an external table
+    val location: Path? = null
+)
+
 fun createTable(dbName: DatabaseName,
                 tableName: TableName,
-                schema: StructType,
-                plan: PartitionPlan?,
-                tableType: TableType,
-                format: Format = ParquetFormat,
+                createConfig: CreateTableConfig,
                 client: IMetaStoreClient,
                 fs: FileSystem): Table {
 
   val params = mutableMapOf<String, String>()
   params["CREATED_BY"] = "reactive-hive"
 
-  val partitionFieldSchemas = plan?.keys?.map {
+  val partitionFieldSchemas = createConfig.plan?.keys?.map {
     FieldSchema(it.value, ToHiveSchema.toHiveType(StringType), null)
   } ?: emptyList()
 
-  if (tableType == TableType.EXTERNAL_TABLE)
+  if (createConfig.tableType == TableType.EXTERNAL_TABLE)
     params["EXTERNAL"] = "TRUE"
 
   val sd = StorageDescriptor().apply {
     // must be set correctly for the hive format used to decode when using spark/impala etc
-    inputFormat = format.serde().inputFormat
-    outputFormat = format.serde().outputFormat
-    serdeInfo = SerDeInfo(null, format.serde().serializationLib, format.serde().params)
-    location = client.getDatabase(dbName.value).locationUri + "/" + tableName.value
+    inputFormat = createConfig.format.serde().inputFormat
+    outputFormat = createConfig.format.serde().outputFormat
+    serdeInfo = SerDeInfo(
+        null,
+        createConfig.format.serde().serializationLib,
+        createConfig.format.serde().params
+    )
+    location = when (createConfig.tableType) {
+      TableType.EXTERNAL_TABLE -> createConfig.location?.toString()
+          ?: throw UnsupportedOperationException("Table location must be specified when creating EXTERNAL TABLE")
+      else -> client.getDatabase(dbName.value).locationUri + "/" + tableName.value
+    }
     // partition fields must not be included in the list of general columns
-    this.cols = ToHiveSchema.toHiveSchema(schema).filterNot { plan?.keys?.contains(PartitionKey(it.name)) ?: false }
+    this.cols = ToHiveSchema.toHiveSchema(createConfig.schema).filterNot {
+      createConfig.plan?.keys?.contains(PartitionKey(it.name)) ?: false
+    }
   }
 
   val table = Table()
@@ -59,7 +76,7 @@ fun createTable(dbName: DatabaseName,
   table.parameters = params
   // the general columns must not include partition fields
   table.partitionKeys = partitionFieldSchemas
-  table.tableType = tableType.asString()
+  table.tableType = createConfig.tableType.asString()
   table.sd = sd
 
   client.createTable(table)
@@ -71,13 +88,10 @@ fun createTable(dbName: DatabaseName,
 
 fun getOrCreateTable(dbName: DatabaseName,
                      tableName: TableName,
-                     schema: StructType,
-                     plan: PartitionPlan?,
-                     tableType: TableType,
-                     format: Format = ParquetFormat,
+                     createTableConfig: CreateTableConfig,
                      client: IMetaStoreClient,
                      fs: FileSystem): Table {
   return if (client.tableExists(dbName.value, tableName.value)) {
     client.getTable(dbName.value, tableName.value)
-  } else createTable(dbName, tableName, schema, plan, tableType, format, client, fs)
+  } else createTable(dbName, tableName, createTableConfig, client, fs)
 }

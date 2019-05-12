@@ -1,11 +1,10 @@
 package com.sksamuel.reactivehive
 
-import com.sksamuel.reactivehive.formats.Format
 import com.sksamuel.reactivehive.formats.StructWriter
+import com.sksamuel.reactivehive.schemas.FromHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
-import org.apache.hadoop.hive.metastore.TableType
 
 enum class WriteMode {
   Create, Overwrite, Write
@@ -21,18 +20,12 @@ enum class WriteMode {
  */
 class HiveWriter(private val dbName: DatabaseName,
                  private val tableName: TableName,
-                 private val schema: StructType,
                  private val namer: FileNamer,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
                  private val mode: WriteMode,
-                 private val tableType: TableType,
-    // the plan to use when creating the table
-    // if the table already exists, then the plan from the existing table will be used instead
-                 private val _plan: PartitionPlan?,
-    // if the table is being created, then the format specified here will be used
-                 private val format: Format,
     // when creating new partitions, the partitions locator will be used for the path
                  private val locator: PartitionLocator,
+                 private val createConfig: CreateTableConfig,
                  private val client: IMetaStoreClient,
                  private val fs: FileSystem) {
 
@@ -40,15 +33,17 @@ class HiveWriter(private val dbName: DatabaseName,
   private val writers = mutableMapOf<Path, StructWriter>()
 
   private val table = when (mode) {
-    WriteMode.Create -> getOrCreateTable(dbName, tableName, schema, _plan, tableType, format, client, fs)
+    WriteMode.Create -> getOrCreateTable(dbName, tableName, createConfig, client, fs)
     WriteMode.Overwrite -> {
       dropTable(dbName, tableName, client, fs)
-      getOrCreateTable(dbName, tableName, schema, _plan, tableType, format, client, fs)
+      getOrCreateTable(dbName, tableName, createConfig, client, fs)
     }
     WriteMode.Write -> client.getTable(dbName.value, tableName.value)
   }
 
+  private val schema = FromHiveSchema.fromHiveTable(table)
   private val plan = partitionPlan(table)
+  private val format = serde(table).toFormat()
 
   // returns a hive writer for the given path, or creates one if one does not already exist.
   private fun getOrOpen(path: Path): StructWriter {
