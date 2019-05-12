@@ -69,5 +69,19 @@ class FromHiveSchemaTest : FunSpec() {
       FromHiveSchema.fromHiveType("struct< a:string, b:array<boolean>>") shouldBe
           StructType(StructField("a", StringType), StructField("b", ArrayType(BooleanType)))
     }
+
+    test("!nested structs") {
+      FromHiveSchema.fromHiveType("struct<a:boolean, b:float, c:struct<d:string, e:tinyint>>") shouldBe
+          StructType(
+              StructField("a", BooleanType),
+              StructField("b", Float32Type),
+              StructField("c",
+                  StructType(
+                      StructField("d", StringType),
+                      StructField("e", Int8Type)
+                  )
+              )
+          )
+    }
   }
 }

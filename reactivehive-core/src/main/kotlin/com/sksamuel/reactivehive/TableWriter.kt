@@ -63,6 +63,8 @@ class TableWriter(private val dbName: DatabaseName,
     writer.write(struct)
   }
 
+  fun write(structs: List<Struct>) = structs.forEach { write(it) }
+
   fun close() {
     writers.forEach { it.value.close() }
     writers.clear()

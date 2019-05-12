@@ -56,7 +56,7 @@ fun serde(table: Table): Serde =
 fun outputFile(struct: Struct, plan: PartitionPlan?, table: Table, locator: PartitionLocator, namer: FileNamer): Path {
   val tableBasePath = Path(table.sd.location)
   return when (plan) {
-    null -> tableBasePath
+    null -> Path(namer.generate(tableBasePath, null))
     else -> {
       val partition = partition(struct, plan)
       val dir = locator.path(tableBasePath, partition)
