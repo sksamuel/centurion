@@ -22,8 +22,8 @@ import org.apache.hadoop.fs.Path
  */
 interface Format {
   fun serde(): Serde
-  fun writer(path: Path, schema: StructType, conf: Configuration): HiveWriter
-  fun reader(path: Path, schema: StructType, conf: Configuration): HiveReader
+  fun writer(path: Path, schema: StructType, conf: Configuration): StructWriter
+  fun reader(path: Path, schema: StructType, conf: Configuration): StructReader
 }
 
 data class Serde(val serializationLib: String,
@@ -31,12 +31,12 @@ data class Serde(val serializationLib: String,
                  val outputFormat: String,
                  val params: Map<String, String>)
 
-interface HiveWriter {
+interface StructWriter {
   fun write(struct: Struct)
   fun close()
 }
 
-interface HiveReader {
+interface StructReader {
   fun iterator(): Iterator<Struct>
   fun close()
 }

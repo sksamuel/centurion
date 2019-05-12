@@ -1,7 +1,7 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.Format
-import com.sksamuel.reactivehive.formats.HiveWriter
+import com.sksamuel.reactivehive.formats.StructWriter
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
@@ -37,7 +37,7 @@ class TableWriter(private val dbName: DatabaseName,
                   private val fs: FileSystem) {
 
   // the delegated hive writers, one per partition path
-  private val writers = mutableMapOf<Path, HiveWriter>()
+  private val writers = mutableMapOf<Path, StructWriter>()
 
   private val table = when (mode) {
     WriteMode.Create -> getOrCreateTable(dbName, tableName, schema, _plan, tableType, format, client, fs)
@@ -51,7 +51,7 @@ class TableWriter(private val dbName: DatabaseName,
   private val plan = partitionPlan(table)
 
   // returns a hive writer for the given path, or creates one if one does not already exist.
-  private fun getOrOpen(path: Path): HiveWriter {
+  private fun getOrOpen(path: Path): StructWriter {
     return writers.getOrPut(path) {
       format.writer(path, schema, fs.conf)
     }

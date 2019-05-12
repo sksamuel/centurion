@@ -32,8 +32,8 @@ object ParquetFormat : Format {
     override fun close(): Unit = writer.close()
   }
 
-  override fun reader(path: Path, schema: StructType, conf: Configuration): HiveReader = object :
-      HiveReader {
+  override fun reader(path: Path, schema: StructType, conf: Configuration): StructReader = object :
+      StructReader {
 
     //  logger.debug(s"Creating parquet reader for $path")
     val reader = parquetReader(path, conf)

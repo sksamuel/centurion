@@ -27,3 +27,7 @@ object ReactiveHiveFileNamer : FileNamer {
   override fun generate(dir: Path, partition: Partition?): String =
       "reactivehive_" + UUID.randomUUID().toString().replace("-", "")
 }
+
+object UUIDFileNamer : FileNamer {
+  override fun generate(dir: Path, partition: Partition?): String = UUID.randomUUID().toString()
+}
