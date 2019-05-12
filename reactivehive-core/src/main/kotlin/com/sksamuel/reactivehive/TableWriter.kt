@@ -7,6 +7,10 @@ import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 import org.apache.hadoop.hive.metastore.TableType
 
+enum class WriteMode {
+  Create, Overwrite, Write
+}
+
 /**
  * Responsible for writing data to a hive table.
  * The writer will handle partitioning if required, formats, creating the table if needed.
@@ -17,27 +21,32 @@ import org.apache.hadoop.hive.metastore.TableType
  */
 class TableWriter(private val dbName: DatabaseName,
                   private val tableName: TableName,
-                  private val format: Format,
                   private val schema: StructType,
                   private val namer: FileNamer,
+    // the write mode determines if the table should be created and/or overwritten, or just appended to
+                  private val mode: WriteMode,
+                  private val tableType: TableType,
+    // the plan to use when creating the table
+    // if the table already exists, then the plan from the existing table will be used instead
+                  private val _plan: PartitionPlan?,
+    // if the table is being created, then the format specified here will be used
+                  private val format: Format,
+    // when creating new partitions, the partitions locator will be used for the path
+                  private val locator: PartitionLocator,
                   private val client: IMetaStoreClient,
                   private val fs: FileSystem) {
 
   // the delegated hive writers, one per partition path
   private val writers = mutableMapOf<Path, HiveWriter>()
 
-  private val locator = DefaultPartitionLocator
-
-  private val table = createTable(
-      dbName,
-      tableName,
-      schema,
-      PartitionPlan.empty,
-      TableType.MANAGED_TABLE,
-      client = client,
-      fs = fs
-  )
-
+  private val table = when (mode) {
+    WriteMode.Create -> getOrCreateTable(dbName, tableName, schema, _plan, tableType, format, client, fs)
+    WriteMode.Overwrite -> {
+      dropTable(dbName, tableName, client, fs)
+      getOrCreateTable(dbName, tableName, schema, _plan, tableType, format, client, fs)
+    }
+    WriteMode.Write -> client.getTable(dbName.value, tableName.value)
+  }
 
   private val plan = partitionPlan(table)
 

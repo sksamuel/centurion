@@ -20,10 +20,10 @@ fun TableType.asString(): String {
   }
 }
 
-fun createTable(db: DatabaseName,
+fun createTable(dbName: DatabaseName,
                 tableName: TableName,
                 schema: StructType,
-                plan: PartitionPlan,
+                plan: PartitionPlan?,
                 tableType: TableType,
                 format: Format = ParquetFormat,
                 client: IMetaStoreClient,
@@ -32,9 +32,9 @@ fun createTable(db: DatabaseName,
   val params = mutableMapOf<String, String>()
   params["CREATED_BY"] = "reactive-hive"
 
-  val partitionFieldSchemas = plan.keys.map {
+  val partitionFieldSchemas = plan?.keys?.map {
     FieldSchema(it.value, ToHiveSchema.toHiveType(StringType), null)
-  }
+  } ?: emptyList()
 
   if (tableType == TableType.EXTERNAL_TABLE)
     params["EXTERNAL"] = "TRUE"
@@ -44,13 +44,13 @@ fun createTable(db: DatabaseName,
     inputFormat = format.serde().inputFormat
     outputFormat = format.serde().outputFormat
     serdeInfo = SerDeInfo(null, format.serde().serializationLib, format.serde().params)
-    location = client.getDatabase(db.value).locationUri + "/" + tableName.value
+    location = client.getDatabase(dbName.value).locationUri + "/" + tableName.value
     // partition fields must not be included in the list of general columns
-    this.cols = ToHiveSchema.toHiveSchema(schema).filterNot { plan.keys.contains(PartitionKey(it.name)) }
+    this.cols = ToHiveSchema.toHiveSchema(schema).filterNot { plan?.keys?.contains(PartitionKey(it.name)) ?: false }
   }
 
   val table = Table()
-  table.dbName = db.value
+  table.dbName = dbName.value
   table.tableName = tableName.value
   // not sure what this does
   table.owner = "hive"
@@ -66,4 +66,17 @@ fun createTable(db: DatabaseName,
   fs.mkdirs(Path(table.sd.location))
 
   return table
+}
+
+fun getOrCreateTable(dbName: DatabaseName,
+                     tableName: TableName,
+                     schema: StructType,
+                     plan: PartitionPlan?,
+                     tableType: TableType,
+                     format: Format = ParquetFormat,
+                     client: IMetaStoreClient,
+                     fs: FileSystem): Table {
+  return if (client.tableExists(dbName.value, tableName.value)) {
+    client.getTable(dbName.value, tableName.value)
+  } else createTable(dbName, tableName, schema, plan, tableType, format, client, fs)
 }
