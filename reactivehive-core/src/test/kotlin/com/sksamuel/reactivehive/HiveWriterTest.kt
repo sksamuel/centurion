@@ -42,11 +42,9 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
           DatabaseName("default"),
           TableName("employees"),
           WriteMode.Overwrite,
-          DynamicPartitioner,
-          OptimisticFileManager(ReactiveHiveFileNamer),
-          CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
-          client,
-          fs
+          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
+          client = client,
+          fs = fs
       )
       writer.write(users)
       writer.close()
@@ -68,9 +66,9 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
           WriteMode.Overwrite,
           DynamicPartitioner,
           OptimisticFileManager(ReactiveHiveFileNamer),
-          CreateTableConfig(schema, PartitionPlan(PartitionKey("title"))),
-          client,
-          fs
+          createConfig = CreateTableConfig(schema, PartitionPlan(PartitionKey("title"))),
+          client = client,
+          fs = fs
       )
       writer.write(users)
       writer.close()
@@ -107,9 +105,9 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
           WriteMode.Overwrite,
           DynamicPartitioner,
           OptimisticFileManager(ReactiveHiveFileNamer),
-          createConfig,
-          client,
-          fs
+          createConfig = createConfig,
+          client = client,
+          fs = fs
       )
 
       writer.write(users)
@@ -143,9 +141,9 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
             WriteMode.Overwrite,
             DynamicPartitioner,
             OptimisticFileManager(ReactiveHiveFileNamer),
-            createConfig,
-            client,
-            fs
+            createConfig = createConfig,
+            client = client,
+            fs = fs
         )
 
         writer.write(users)

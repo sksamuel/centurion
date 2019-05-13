@@ -1,6 +1,32 @@
 reactive-hive
 =============
 
-[![Build Status](https://travis-ci.org/sksamuel/akka-patterns.png)](https://travis-ci.org/sksamuel/akka-patterns)
-[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.10*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22avro4s-core_2.11%22)
-[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/akka-patterns_2.11*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Cavro4s-core_2.12)
+[![Build Status](https://travis-ci.org/sksamuel/reactive-hive.png)](https://travis-ci.org/sksamuel/reactive-hive)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/reactive-hive*.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22reactive-hive)
+
+
+Processing Steps for writing struct data to hive:
+
+Presteps:
+
+* If the table exists and overwrite mode is used, delete the table
+* If the table does not exist and overwrite/create mode is used, create the table from the supplied schema or derive it from the first record. Partition columns must be specified
+
+For each struct:
+
+* Resolve the schema in the struct with the schema in the metastore using a SchemaResolver.
+* If the table is partitioned:
+    * Calculate the partition for this struct
+    * Using a partitioner: locate the partition write directory and ensure that the partition exists in the metastore and on the filesystem
+* If the table is not partitioned:
+    * Return the base table location
+* Calculate the write schema from the input schema, the metastore schema, and the partitions (if any)
+* Derive an updated struct using the incoming struct and the write schema
+* Get or create a writer for the write location
+    * If the writer has not been created, create a new file using the file manager.
+* Write the aligned struct using a struct writer
+
+After all structs:
+
+* Close each writer to flush any data
+* For each file, complete the file via the file manager.

@@ -21,7 +21,7 @@ interface FileManager {
  * An implementation of [FileManager] which creates invisible files for writing,
  *  and then makes them visible once the file is completed.
  */
-class StagingFileManager(val namer: FileNamer) : FileManager {
+class StagingFileManager(val namer: FileNamer = ReactiveHiveFileNamer) : FileManager {
 
   override fun prepare(dir: Path, fs: FileSystem): Path {
     val filename = namer.generate(dir)
