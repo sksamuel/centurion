@@ -3,9 +3,13 @@ package com.sksamuel.reactivehive
 import arrow.core.Try
 import com.sksamuel.reactivehive.HiveTestConfig.client
 import com.sksamuel.reactivehive.HiveTestConfig.fs
+import com.sksamuel.reactivehive.evolution.NoopSchemaEvolver
+import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.partitioners.StaticPartitioner
+import com.sksamuel.reactivehive.resolver.LenientStructResolver
 import io.kotlintest.shouldThrowAny
 import io.kotlintest.specs.FunSpec
+import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.Database
 
 class StaticPartitionerTest : FunSpec() {
@@ -41,7 +45,10 @@ class StaticPartitionerTest : FunSpec() {
           DatabaseName("tests"),
           TableName("static_test"),
           WriteMode.Overwrite,
-          createConfig = CreateTableConfig(schema, PartitionPlan(PartitionKey("title"))),
+          createConfig = CreateTableConfig(schema, PartitionPlan(PartitionKey("title")), TableType.MANAGED_TABLE, ParquetFormat, null),
+          fileManager = OptimisticFileManager(),
+          evolver = NoopSchemaEvolver,
+          resolver = LenientStructResolver,
           partitioner = StaticPartitioner,
           client = client,
           fs = fs

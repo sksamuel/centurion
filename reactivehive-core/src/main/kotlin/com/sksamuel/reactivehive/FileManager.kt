@@ -38,7 +38,7 @@ class StagingFileManager(val namer: FileNamer = ReactiveHiveFileNamer) : FileMan
   }
 }
 
-class OptimisticFileManager(val namer: FileNamer) : FileManager {
+class OptimisticFileManager(val namer: FileNamer = ReactiveHiveFileNamer) : FileManager {
 
   override fun prepare(dir: Path, fs: FileSystem): Path {
     val filename = namer.generate(dir)

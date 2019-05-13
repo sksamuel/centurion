@@ -1,11 +1,8 @@
 package com.sksamuel.reactivehive
 
-import com.sksamuel.reactivehive.evolution.NoopSchemaEvolver
 import com.sksamuel.reactivehive.evolution.SchemaEvolver
 import com.sksamuel.reactivehive.formats.StructWriter
-import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import com.sksamuel.reactivehive.partitioners.Partitioner
-import com.sksamuel.reactivehive.resolver.LenientStructResolver
 import com.sksamuel.reactivehive.resolver.StructResolver
 import com.sksamuel.reactivehive.schemas.FromHiveSchema
 import org.apache.hadoop.fs.FileSystem
@@ -35,12 +32,12 @@ enum class WriteMode {
 class HiveWriter(private val dbName: DatabaseName,
                  private val tableName: TableName,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
-                 private val mode: WriteMode = WriteMode.Write,
-                 private val partitioner: Partitioner = DynamicPartitioner,
-                 private val fileManager: FileManager = StagingFileManager(),
-                 private val evolver: SchemaEvolver = NoopSchemaEvolver,
-                 private val resolver: StructResolver = LenientStructResolver,
-                 private val createConfig: CreateTableConfig? = null,
+                 private val mode: WriteMode,
+                 private val partitioner: Partitioner,
+                 private val fileManager: FileManager,
+                 private val evolver: SchemaEvolver,
+                 private val resolver: StructResolver,
+                 private val createConfig: CreateTableConfig?,
                  private val client: IMetaStoreClient,
                  private val fs: FileSystem) {
 

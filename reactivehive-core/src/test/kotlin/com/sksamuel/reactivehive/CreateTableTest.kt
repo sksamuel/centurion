@@ -40,7 +40,7 @@ class CreateTableTest : FunSpec() {
       createTable(
           DatabaseName("tests"),
           TableName("foo"),
-          CreateTableConfig(schema, PartitionPlan.empty, TableType.MANAGED_TABLE, ParquetFormat),
+          CreateTableConfig(schema, PartitionPlan.empty, TableType.MANAGED_TABLE, ParquetFormat, null),
           client = client,
           fs = fs
       ) shouldNotBe null
@@ -74,7 +74,7 @@ class CreateTableTest : FunSpec() {
       createTable(
           DatabaseName("tests"),
           TableName("foo"),
-          CreateTableConfig(schema, plan, TableType.MANAGED_TABLE, ParquetFormat),
+          CreateTableConfig(schema, plan, TableType.MANAGED_TABLE, ParquetFormat, null),
           client = client,
           fs = fs
       ) shouldNotBe null

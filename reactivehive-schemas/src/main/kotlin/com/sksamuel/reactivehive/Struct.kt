@@ -48,7 +48,9 @@ data class StructType(val fields: List<StructField>) : Type() {
  */
 data class StructField(val name: String,
                        val type: Type,
-                       val nullable: Boolean = true) {
+                       val nullable: Boolean) {
+
+  constructor(name: String, type: Type) : this(name, type, true)
 
   /**
    * Returns a new StructField with the same name as this field, but lowercased.

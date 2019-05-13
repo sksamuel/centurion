@@ -16,9 +16,11 @@ import com.sksamuel.reactivehive.StructField
 import com.sksamuel.reactivehive.StructType
 import com.sksamuel.reactivehive.TableName
 import com.sksamuel.reactivehive.WriteMode
+import com.sksamuel.reactivehive.evolution.NoopSchemaEvolver
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.parquet.parquetReader
 import com.sksamuel.reactivehive.parquet.readAll
+import com.sksamuel.reactivehive.partitioners.StaticPartitioner
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
@@ -62,7 +64,10 @@ class LenientWriteTest : FunSpec() {
           TableName("lenientdata"),
           WriteMode.Overwrite,
           fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
-          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
+          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat, null),
+          evolver = NoopSchemaEvolver,
+          partitioner = StaticPartitioner,
+          resolver = LenientStructResolver,
           client = HiveTestConfig.client,
           fs = HiveTestConfig.fs
       )

@@ -3,8 +3,10 @@ package com.sksamuel.reactivehive
 import arrow.core.Try
 import com.sksamuel.reactivehive.HiveTestConfig.client
 import com.sksamuel.reactivehive.HiveTestConfig.fs
+import com.sksamuel.reactivehive.evolution.NoopSchemaEvolver
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
+import com.sksamuel.reactivehive.resolver.LenientStructResolver
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.hive.metastore.TableType
@@ -45,15 +47,18 @@ class DynamicPartitionerTest : FunSpec() {
           schema,
           PartitionPlan(PartitionKey("title")),
           TableType.MANAGED_TABLE,
-          ParquetFormat
+          ParquetFormat,
+          null
       )
 
       val writer = HiveWriter(
           DatabaseName("tests"),
           TableName("employees3"),
           WriteMode.Overwrite,
-          DynamicPartitioner,
-          OptimisticFileManager(ReactiveHiveFileNamer),
+          partitioner = DynamicPartitioner,
+          fileManager = OptimisticFileManager(ReactiveHiveFileNamer),
+          evolver = NoopSchemaEvolver,
+          resolver = LenientStructResolver,
           createConfig = createConfig,
           client = client,
           fs = fs

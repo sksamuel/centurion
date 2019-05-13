@@ -1,4 +1,4 @@
-package com.sksamuel.reactivehive.akkastream.streams
+package com.sksamuel.reactivehive.akkastream
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -45,7 +45,8 @@ class ParquetSourceTest : FunSpec() {
     test("reading with parquet source") {
 
       val f = Source
-          .fromGraph(ParquetSource(Path(this.javaClass.getResource("/spark.parquet").toURI()), conf))
+          .fromGraph(ParquetSource(Path(this.javaClass.getResource("/spark.parquet").toURI()),
+              conf))
           .runWith(Sink.seq(), materializer)
 
       val struct = f.toCompletableFuture().get(1, TimeUnit.MINUTES).first()

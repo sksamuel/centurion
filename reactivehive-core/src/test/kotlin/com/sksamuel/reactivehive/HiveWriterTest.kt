@@ -4,10 +4,13 @@ import arrow.core.Try
 import com.sksamuel.reactivehive.HiveTestConfig.client
 import com.sksamuel.reactivehive.HiveTestConfig.conf
 import com.sksamuel.reactivehive.HiveTestConfig.fs
+import com.sksamuel.reactivehive.evolution.NoopSchemaEvolver
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.parquet.parquetReader
 import com.sksamuel.reactivehive.parquet.readAll
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
+import com.sksamuel.reactivehive.partitioners.StaticPartitioner
+import com.sksamuel.reactivehive.resolver.LenientStructResolver
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
@@ -52,8 +55,11 @@ class HiveWriterTest : FunSpec() {
           DatabaseName("tests"),
           TableName("employees"),
           WriteMode.Overwrite,
+          partitioner = StaticPartitioner,
+          evolver = NoopSchemaEvolver,
+          resolver = LenientStructResolver,
           fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
-          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
+          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat, null),
           client = client,
           fs = fs
       )
@@ -97,7 +103,13 @@ class HiveWriterTest : FunSpec() {
           WriteMode.Overwrite,
           DynamicPartitioner,
           OptimisticFileManager(ReactiveHiveFileNamer),
-          createConfig = CreateTableConfig(schema, PartitionPlan(PartitionKey("title"))),
+          evolver = NoopSchemaEvolver,
+          resolver = LenientStructResolver,
+          createConfig = CreateTableConfig(schema,
+              PartitionPlan(PartitionKey("title")),
+              TableType.MANAGED_TABLE,
+              ParquetFormat,
+              null),
           client = client,
           fs = fs
       )
@@ -134,7 +146,13 @@ class HiveWriterTest : FunSpec() {
           client.dropTable("tests", "employees4")
         }
 
-        val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/employees4"))
+        val createConfig = CreateTableConfig(
+            schema,
+            null,
+            tableType,
+            ParquetFormat,
+            location = Path("/user/hive/warehouse/employees4")
+        )
 
         val writer = HiveWriter(
             DatabaseName("tests"),
@@ -142,6 +160,8 @@ class HiveWriterTest : FunSpec() {
             WriteMode.Overwrite,
             DynamicPartitioner,
             OptimisticFileManager(ReactiveHiveFileNamer),
+            evolver = NoopSchemaEvolver,
+            resolver = LenientStructResolver,
             createConfig = createConfig,
             client = client,
             fs = fs
@@ -167,13 +187,21 @@ class HiveWriterTest : FunSpec() {
             StructField("c", Int32Type)
         )
 
-        val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/aligntest"))
+        val createConfig = CreateTableConfig(
+            schema,
+            null,
+            tableType,
+            ParquetFormat,
+            Path("/user/hive/warehouse/aligntest")
+        )
 
         val writer = HiveWriter(
             DatabaseName("tests"),
             TableName("aligntest"),
             WriteMode.Overwrite,
             DynamicPartitioner,
+            evolver = NoopSchemaEvolver,
+            resolver = LenientStructResolver,
             fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
             createConfig = createConfig,
             client = client,

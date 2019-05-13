@@ -26,10 +26,10 @@ data class CreateTableConfig(
     val schema: StructType,
     // partitions, can be null if not partitioned
     val plan: PartitionPlan?,
-    val tableType: TableType = TableType.MANAGED_TABLE,
-    val format: Format = ParquetFormat,
+    val tableType: TableType,
+    val format: Format,
     // specify a location to be used if the table is created as an external table
-    val location: Path? = null
+    val location: Path?
 )
 
 fun createTable(dbName: DatabaseName,
