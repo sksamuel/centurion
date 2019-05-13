@@ -9,7 +9,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 
 // see https://issues.apache.org/jira/browse/HIVE-6394 and
-// https://issues.apache.org/jira/browse/SPARK-10177 for implementation ideas
+// https://issues.apache.org/jira/browse/SPARK-10177
 class TimestampConverter(private val receiver: Receiver<Timestamp>) : PrimitiveConverter() {
 
   // The Julian Date (JD) is the number of days (with decimal fraction of the day) that
@@ -24,6 +24,7 @@ class TimestampConverter(private val receiver: Receiver<Timestamp>) : PrimitiveC
    * Since INT96 is sometimes used as timestamps too
    * See https://issues.apache.org/jira/browse/PARQUET-323
    * https://issues.apache.org/jira/browse/PARQUET-861
+   * https://stackoverflow.com/questions/42628287/sparks-int96-time-type
    *
    *  Timestamps saved as an `int96` are made up of the nanoseconds in the day
    *  (first 8 byte) and the Julian day (last 4 bytes). No timezone is attached to this value.
