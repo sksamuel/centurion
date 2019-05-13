@@ -4,7 +4,10 @@ services:
 
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
-    network_mode: "host"
+    ports:
+      - "9870:9870"
+      - "50070:50070"
+      - "8020:8020"
     volumes:
       - namenode:/hadoop/dfs/name
     environment:
@@ -14,35 +17,42 @@ services:
 
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
-    network_mode: "host"
+    depends_on:
+      - namenode
+    ports:
+      - "9864:9864"
+      - "50075:50075"
     volumes:
       - datanode:/hadoop/dfs/data
     env_file:
       - ./hadoop-hive.env
     environment:
-      SERVICE_PRECONDITION: "localhost:50070"
+      SERVICE_PRECONDITION: "namenode:50070"
 
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
-    network_mode: "host"
     env_file:
       - ./hadoop-hive.env
+    ports:
+      - "10000:10000"
+      - "10002:10002"
     environment:
-      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://localhost/metastore"
-      SERVICE_PRECONDITION: "localhost:9083"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
 
   hive-metastore:
     image: bde2020/hive:2.3.2-postgresql-metastore
-    network_mode: "host"
+    ports:
+      - "9083:9083"
     env_file:
       - ./hadoop-hive.env
     command: /opt/hive/bin/hive --service metastore
     environment:
-      SERVICE_PRECONDITION: "localhost:50070 localhost:50075 localhost:5432"
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
 
   hive-metastore-postgresql:
     image: bde2020/hive-metastore-postgresql:2.3.0
-    network_mode: "host"
+
 
 volumes:
   namenode:
