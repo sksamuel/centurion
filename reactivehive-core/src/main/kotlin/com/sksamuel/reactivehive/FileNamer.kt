@@ -29,3 +29,11 @@ object ReactiveHiveFileNamer : FileNamer {
 object UUIDFileNamer : FileNamer {
   override fun generate(dir: Path): String = UUID.randomUUID().toString()
 }
+
+/**
+ * Useful for testing, this implementation of [FileNamer] always returns
+ * the same file name as supplied in the constructor.
+ */
+class ConstantFileNamer(val name: String) : FileNamer {
+  override fun generate(dir: Path): String = name
+}

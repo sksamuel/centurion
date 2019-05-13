@@ -2,6 +2,7 @@ package com.sksamuel.reactivehive
 
 import arrow.core.Try
 import com.sksamuel.reactivehive.formats.ParquetFormat
+import com.sksamuel.reactivehive.parquet.parquetReader
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
@@ -90,7 +91,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
         client.dropTable("tests", "employees3")
       }
 
-      fun partitions() = client.listPartitions("default", "employees3", Short.MAX_VALUE)
+      fun partitions() = client.listPartitions("tests", "employees3", Short.MAX_VALUE)
 
       val createConfig = CreateTableConfig(
           schema,
@@ -136,7 +137,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
         val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/employees4"))
 
         val writer = HiveWriter(
-            DatabaseName("default"),
+            DatabaseName("tests"),
             TableName("employees4"),
             WriteMode.Overwrite,
             DynamicPartitioner,
@@ -153,105 +154,46 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       }
     }
 
-//    it should "not include partition keys in the general columns" in {
-//
-//      val schema = StructDataType(
-//          StructField("a", StringDataType),
-//          StructField("b", StringDataType),
-//          StructField("c", DoubleDataType),
-//          StructField("d", BooleanDataType)
-//      )
-//
-//      val struct = Struct(schema, Seq("x", "y", 1.0, true))
-//      val partitionFields = Seq(PartitionField("a"), PartitionField("d"))
-//
-//      val config = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.MANAGED_TABLE,
-//          partitions = partitionFields
-//      )
-//
-//      Await.ready(
-//          Source.single(struct).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("woo"),
-//              config)),
-//          Duration.Inf
-//      )
-//
-//      val table = client.getTable("sink_test", "woo")
-//      table.getPartitionKeys.asScala.map(_.getName) shouldBe Seq("a", "d")
-//      table.getSd.getCols.asScala.map(_.getName) shouldBe Seq("b", "c")
-//    }
-//
-//    it should "throw an exception if a partition doesn't exist with strict partitioning" in {
-//
-//      val schema = StructDataType(
-//          StructField("a", StringDataType),
-//          StructField("b", StringDataType),
-//          StructField("c", DoubleDataType),
-//          StructField("d", BooleanDataType)
-//      )
-//
-//      val struct = Struct(schema, Seq("x", "y", 1.0, true))
-//      val partitionFields = Seq(PartitionField("a"), PartitionField("d"))
-//
-//      val config = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.MANAGED_TABLE,
-//          partitions = partitionFields,
-//          partitioningPolicy = StrictPartitioning
-//      )
-//
-//      Await.ready(
-//          Source.single(struct).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("woo"),
-//              config)),
-//          Duration.Inf
-//      )
-//    }
-//
-//    it should "support writing structs" in {
-//
-//      val config = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.MANAGED_TABLE
-//      )
-//
-//      val schema = StructDataType(
-//          StructField("a", StringDataType),
-//          StructField("b",
-//              StructDataType(
-//                  StructField("ba", StringDataType),
-//                  StructField("bb", StringDataType)
-//              )
-//          )
-//      )
-//      val structs = List(
-//          Struct(schema, Seq("foo", Seq("woo", "goo"))),
-//          Struct(schema, Seq("moo", Seq("voo", "roo")))
-//      )
-//
-//      Await.ready(
-//          Source(structs).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("woo"),
-//              config)),
-//          Duration.Inf
-//      )
-//
-//      val table = client.getTable("sink_test", "woo")
-//
-//      val data = Await.result(com.sksamuel.reactive.scoop.parquet.source(new Path (table.getSd.getLocation)).runWith(
-//          Sink.seq), Duration.Inf)
-//
-//      data.map(_.values).toSet shouldBe Set(
-//          List("foo", List("woo", "goo")),
-//          List("moo", List("voo", "roo"))
-//      )
-//    }
-//
+    test("partition fields should not be included in the data written to data files") {
 
+      Try {
+        client.dropTable("tests", "test10")
+      }
+
+      fun partitions() = client.listPartitions("tests", "test10", Short.MAX_VALUE)
+
+      val createConfig = CreateTableConfig(
+          schema,
+          PartitionPlan(PartitionKey("title"))
+      )
+
+      val writer = HiveWriter(
+          DatabaseName("tests"),
+          TableName("test10"),
+          WriteMode.Overwrite,
+          DynamicPartitioner,
+          OptimisticFileManager(ConstantFileNamer("test.pq")),
+          createConfig = createConfig,
+          client = client,
+          fs = fs
+      )
+
+      writer.write(users)
+      writer.close()
+
+      Thread.sleep(2000)
+
+      partitions().map { it.values } shouldBe listOf(listOf("mr"), listOf("ms"))
+      partitions().forEach {
+        val file = Path(it.sd.location, "test.pq")
+        val reader = parquetReader(file, conf)
+        val struct = reader.read()
+        struct.schema shouldBe StructType(
+            StructField(name = "name", type = StringType, nullable = true),
+            StructField(name = "salary", type = Float64Type, nullable = true),
+            StructField(name = "employed", type = BooleanType, nullable = true)
+        )
+      }
+    }
   }
 }

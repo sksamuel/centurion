@@ -100,7 +100,7 @@ class HiveWriter(private val dbName: DatabaseName,
     val partition = if (plan == null) null else partition(resolvedStruct, plan)
 
     // calculate the write schema
-    val writeSchema = metastoreSchema
+    val writeSchema = if (plan == null) metastoreSchema else DefaultDiskSchemas.writerSchema(resolvedStruct, metastoreSchema, plan)
 
     // grab a writer for the partition
     val writer = getOrOpenWriter(partition, writeSchema)
