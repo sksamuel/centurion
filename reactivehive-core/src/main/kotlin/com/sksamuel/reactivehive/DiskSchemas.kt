@@ -14,15 +14,21 @@ package com.sksamuel.reactivehive
  * implementations are free to implement any behavior they wish. Remember though, that
  * any data written will need to be compatible with other systems such as Spark and Impala.
  */
-interface DataSchemas {
-  fun writerSchema(struct: Struct, partition: PartitionPlan): Struct
+interface DiskSchemas {
+  fun writerSchema(struct: Struct, metastoreSchema: StructType, partition: PartitionPlan): StructType
+  fun expand(struct: Struct, partition: Partition): Struct
 }
 
-object DefaultDataSchemas : DataSchemas {
+object DefaultDiskSchemas : DiskSchemas {
 
   override fun writerSchema(struct: Struct,
-                            partition: PartitionPlan): Struct {
-    return struct
+                            metastoreSchema: StructType,
+                            partition: PartitionPlan): StructType {
+    val fields = metastoreSchema.fields.filterNot { partition.keys.contains(PartitionKey(it.name)) }
+    return StructType(fields)
   }
 
+  override fun expand(struct: Struct, partition: Partition): Struct {
+    return struct
+  }
 }

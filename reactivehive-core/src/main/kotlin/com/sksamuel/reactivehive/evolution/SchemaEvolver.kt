@@ -1,6 +1,5 @@
-package com.sksamuel.reactivehive.resolver
+package com.sksamuel.reactivehive.evolution
 
-import arrow.core.Tuple2
 import com.sksamuel.reactivehive.DatabaseName
 import com.sksamuel.reactivehive.Struct
 import com.sksamuel.reactivehive.StructType
@@ -8,10 +7,10 @@ import com.sksamuel.reactivehive.TableName
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
 
 /**
- * Implementations of [SchemaResolver] ensure that incoming [Struct] records have a schema
+ * Implementations of [SchemaEvolver] ensure that incoming [Struct] records have a schema
  * that is compatible with the schema in the hive metastore. It does this by either changing
  * the schema in the metastore, or returning an updated struct, or a combination of the two
- * (or neither if you prefer! - see [NoopSchemaResolver]).
+ * (or neither if you prefer! - see [NoopSchemaEvolver]).
  *
  * Normally, before a struct is passed to reactive-hive it would have been pre-processed
  * in some way so that the schema is in the format that should be persisted.
@@ -37,17 +36,11 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  * you may wish to keep only compatible fields, and so on.
  *
  */
-interface SchemaResolver {
+interface SchemaEvolver {
 
-  /**
-   * Perform the resolution. Must return a tuple, where the first argument
-   * indicates whether the schema in the metastore was changed as a result
-   * of this function call. This is so the hive writer can cache the metastore
-   * and known when to fetch an update version.
-   */
-  fun align(dbName: DatabaseName,
-            tableName: TableName,
-            metastoreSchema: StructType,
-            struct: Struct,
-            client: IMetaStoreClient): Tuple2<Boolean, Struct>
+  fun evolve(dbName: DatabaseName,
+             tableName: TableName,
+             metastoreSchema: StructType,
+             struct: Struct,
+             client: IMetaStoreClient): StructType
 }

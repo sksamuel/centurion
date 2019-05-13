@@ -1,8 +1,7 @@
 package com.sksamuel.reactivehive
 
 /**
- * An implementation of [Partitioner] returns a [Partition] for a [Struct]
- * for a given [PartitionPlan].
+ * Creates a [Partition] for the given struct and plan.
  */
 fun partition(struct: Struct, plan: PartitionPlan): Partition {
   val parts = plan.keys.map {
