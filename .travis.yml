@@ -28,3 +28,9 @@ script: ./gradlew test --stacktrace
 
 before_install:
   - docker-compose up -d
+
+addons:
+  hosts:
+    - hive-metastore
+    - namenode
+    - datanode
