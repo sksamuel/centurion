@@ -11,6 +11,7 @@ import com.sksamuel.reactivehive.DecimalType
 import com.sksamuel.reactivehive.Float32Type
 import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.Int64Type
 import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.Precision
@@ -95,10 +96,11 @@ object FromHiveSchema {
 
     return when (type) {
       HiveTypes.string -> StringType
-      HiveTypes.float -> Float32Type
-      HiveTypes.double -> Float64Type
-      HiveTypes.bigint -> Int64Type
       HiveTypes.boolean -> BooleanType
+      HiveTypes.double -> Float64Type
+      HiveTypes.float -> Float32Type
+      HiveTypes.bigint -> Int64Type
+      HiveTypes.int -> Int32Type
       HiveTypes.smallint -> Int16Type
       HiveTypes.tinyint -> Int8Type
       HiveTypes.date -> DateType

@@ -18,6 +18,8 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema
 
 class HiveWriterTest : FunSpec() {
 
+  private fun partitions() = client.listPartitions("tests", "test10", Short.MAX_VALUE)
+
   init {
 
     Try {
@@ -88,6 +90,7 @@ class HiveWriterTest : FunSpec() {
     }
 
     test("write to a partitioned table") {
+
       val writer = HiveWriter(
           DatabaseName("tests"),
           TableName("employees"),
@@ -110,6 +113,18 @@ class HiveWriterTest : FunSpec() {
       HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys shouldBe listOf(
           FieldSchema("title", "string", null)
       )
+
+      partitions().map { it.values } shouldBe listOf(listOf("mr"), listOf("ms"))
+      partitions().forEach {
+        val file = Path(it.sd.location, "test.pq")
+        val reader = parquetReader(file, conf)
+        val struct = reader.read()
+        struct.schema shouldBe StructType(
+            StructField(name = "name", type = StringType, nullable = true),
+            StructField(name = "salary", type = Float64Type, nullable = true),
+            StructField(name = "employed", type = BooleanType, nullable = true)
+        )
+      }
     }
 
     test("setting table type of new tables") {
@@ -139,44 +154,69 @@ class HiveWriterTest : FunSpec() {
       }
     }
 
-    test("partition fields should not be included in the data written to data files") {
+    test("align data with the target schema") {
 
-      Try {
-        client.dropTable("tests", "test10")
-      }
+      for (tableType in listOf(TableType.EXTERNAL_TABLE, TableType.MANAGED_TABLE)) {
+        Try {
+          client.dropTable("tests", "aligntest")
+        }
 
-      fun partitions() = client.listPartitions("tests", "test10", Short.MAX_VALUE)
+        val schema = StructType(
+            StructField("a", StringType),
+            StructField("b", BooleanType),
+            StructField("c", Int32Type)
+        )
 
-      val createConfig = CreateTableConfig(
-          schema,
-          PartitionPlan(PartitionKey("title"))
-      )
+        val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/aligntest"))
 
-      val writer = HiveWriter(
-          DatabaseName("tests"),
-          TableName("test10"),
-          WriteMode.Overwrite,
-          DynamicPartitioner,
-          OptimisticFileManager(ConstantFileNamer("test.pq")),
-          createConfig = createConfig,
-          client = client,
-          fs = fs
-      )
+        val writer = HiveWriter(
+            DatabaseName("tests"),
+            TableName("aligntest"),
+            WriteMode.Overwrite,
+            DynamicPartitioner,
+            fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
+            createConfig = createConfig,
+            client = client,
+            fs = fs
+        )
 
-      writer.write(users)
-      writer.close()
+        val structs = listOf(
+            Struct(
+                StructType(StructField("b", StringType), StructField("a", BooleanType), StructField("c", Int32Type)),
+                true,
+                "x",
+                1
+            ),
+            Struct(
+                StructType(StructField("a", StringType), StructField("c", BooleanType), StructField("b", Int32Type)),
+                "y",
+                2,
+                false
+            ),
+            Struct(
+                StructType(StructField("c", StringType), StructField("b", BooleanType), StructField("a", Int32Type)),
+                3,
+                true,
+                "z"
+            )
+        )
 
-      Thread.sleep(2000)
+        writer.write(structs)
+        writer.close()
 
-      partitions().map { it.values } shouldBe listOf(listOf("mr"), listOf("ms"))
-      partitions().forEach {
-        val file = Path(it.sd.location, "test.pq")
+        val table = client.getTable("tests", "aligntest")
+        val file = Path(table.sd.location, "test.pq")
         val reader = parquetReader(file, conf)
-        val struct = reader.read()
-        struct.schema shouldBe StructType(
-            StructField(name = "name", type = StringType, nullable = true),
-            StructField(name = "salary", type = Float64Type, nullable = true),
-            StructField(name = "employed", type = BooleanType, nullable = true)
+        val struct = reader.readAll().toList()
+        struct.first().schema shouldBe StructType(
+            StructField(name = "a", type = StringType, nullable = true),
+            StructField(name = "b", type = BooleanType, nullable = true),
+            StructField(name = "c", type = Int32Type, nullable = true)
+        )
+        struct.map { it.values }.toList() shouldBe listOf(
+            listOf("x", true, 1),
+            listOf("y", false, 2),
+            listOf("z", true, 3)
         )
       }
     }
