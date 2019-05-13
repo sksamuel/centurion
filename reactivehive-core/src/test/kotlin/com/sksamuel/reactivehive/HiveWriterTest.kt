@@ -31,7 +31,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     )
 
     try {
-      client.createDatabase(Database("sink_test", null, "/user/hive/warehouse/sink_test", emptyMap()))
+      client.createDatabase(Database("tests", null, "/user/hive/warehouse/sink_test", emptyMap()))
     } catch (t: Throwable) {
 
     }
@@ -39,7 +39,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     test("write to a non partitioned table") {
 
       val writer = HiveWriter(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("employees"),
           WriteMode.Overwrite,
           createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
@@ -49,19 +49,19 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       writer.write(users)
       writer.close()
 
-      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
+      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
           FieldSchema("title", "string", null),
           FieldSchema("salary", "double", null),
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys.shouldBeEmpty()
+      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys.shouldBeEmpty()
     }
 
     test("write to a partitioned table") {
       val writer = HiveWriter(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("employees"),
           WriteMode.Overwrite,
           DynamicPartitioner,
@@ -73,13 +73,13 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       writer.write(users)
       writer.close()
 
-      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
+      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
           FieldSchema("salary", "double", null),
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys shouldBe listOf(
+      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys shouldBe listOf(
           FieldSchema("title", "string", null)
       )
     }
@@ -87,7 +87,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     test("create new partitions in the metastore when using dynamic partitions") {
 
       Try {
-        client.dropTable("default", "employees3")
+        client.dropTable("tests", "employees3")
       }
 
       fun partitions() = client.listPartitions("default", "employees3", Short.MAX_VALUE)
@@ -100,7 +100,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       )
 
       val writer = HiveWriter(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("employees3"),
           WriteMode.Overwrite,
           DynamicPartitioner,
@@ -130,7 +130,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
 
       for (tableType in listOf(TableType.EXTERNAL_TABLE, TableType.MANAGED_TABLE)) {
         Try {
-          client.dropTable("default", "employees4")
+          client.dropTable("tests", "employees4")
         }
 
         val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/employees4"))
@@ -149,7 +149,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
         writer.write(users)
         writer.close()
 
-        client.getTable("default", "employees4").tableType shouldBe tableType.asString()
+        client.getTable("tests", "employees4").tableType shouldBe tableType.asString()
       }
     }
 
