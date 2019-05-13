@@ -20,6 +20,15 @@ class HiveWriterTest : FunSpec() {
 
   init {
 
+    Try {
+      client.dropDatabase("tests")
+    }
+
+    Try {
+      val db = Database("tests", "test database", "/user/hive/warehouse/tests", emptyMap())
+      client.createDatabase(db)
+    }
+
     val schema = StructType(
         StructField("name", StringType),
         StructField("title", StringType),
@@ -34,10 +43,6 @@ class HiveWriterTest : FunSpec() {
         Struct(schema, "laura", "ms", 421.512, true),
         Struct(schema, "kelly", "ms", 925.162, false)
     )
-
-    Try {
-      client.createDatabase(Database("tests", null, "/user/hive/warehouse/tests", emptyMap()))
-    }
 
     test("write to a non partitioned table") {
 

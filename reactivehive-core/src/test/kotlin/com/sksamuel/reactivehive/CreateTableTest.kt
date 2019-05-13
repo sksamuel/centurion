@@ -1,5 +1,6 @@
 package com.sksamuel.reactivehive
 
+import arrow.core.Try
 import com.sksamuel.reactivehive.HiveTestConfig.client
 import com.sksamuel.reactivehive.HiveTestConfig.fs
 import com.sksamuel.reactivehive.formats.ParquetFormat
@@ -8,17 +9,26 @@ import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.TableType
+import org.apache.hadoop.hive.metastore.api.Database
 import org.apache.hadoop.hive.metastore.api.FieldSchema
 
 class CreateTableTest : FunSpec() {
 
   init {
 
+    Try {
+      client.dropDatabase("tests")
+    }
+
+    Try {
+      val db = Database("tests", "test database", "/user/hive/warehouse/tests", emptyMap())
+      client.createDatabase(db)
+    }
+
     test("creating a table w/o partitions") {
 
-      try {
-        client.dropTable("default", "foo")
-      } catch (t: Throwable) {
+      Try {
+        client.dropTable("tests", "foo")
       }
 
       val schema = StructType(
@@ -28,14 +38,14 @@ class CreateTableTest : FunSpec() {
       )
 
       createTable(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("foo"),
           CreateTableConfig(schema, PartitionPlan.empty, TableType.MANAGED_TABLE, ParquetFormat),
           client = client,
           fs = fs
       ) shouldNotBe null
 
-      val table = client.getTable("default", "foo")
+      val table = client.getTable("tests", "foo")
       table.tableName shouldBe "foo"
       table.sd.cols shouldBe listOf(
           FieldSchema("a", "string", null),
@@ -49,9 +59,8 @@ class CreateTableTest : FunSpec() {
 
     test("creating a table with partitions") {
 
-      try {
-        client.dropTable("default", "foo")
-      } catch (t: Throwable) {
+      Try {
+        client.dropTable("tests", "foo")
       }
 
       val schema = StructType(
@@ -63,14 +72,14 @@ class CreateTableTest : FunSpec() {
       val plan = PartitionPlan(PartitionKey("b"), PartitionKey("c"))
 
       createTable(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("foo"),
           CreateTableConfig(schema, plan, TableType.MANAGED_TABLE, ParquetFormat),
           client = client,
           fs = fs
       ) shouldNotBe null
 
-      val table = client.getTable("default", "foo")
+      val table = client.getTable("tests", "foo")
       table.tableName shouldBe "foo"
       table.sd.cols shouldBe listOf(
           FieldSchema("a", "string", null)
@@ -86,15 +95,14 @@ class CreateTableTest : FunSpec() {
 
     test("create external table with custom location") {
 
-      try {
-        client.dropTable("default", "foo")
-      } catch (t: Throwable) {
+      Try {
+        client.dropTable("tests", "foo")
       }
 
       val schema = StructType(StructField("a", StringType))
 
       createTable(
-          DatabaseName("default"),
+          DatabaseName("tests"),
           TableName("foo"),
           CreateTableConfig(schema,
               PartitionPlan.empty,
@@ -106,8 +114,8 @@ class CreateTableTest : FunSpec() {
           fs = fs
       ) shouldNotBe null
 
-      val table = client.getTable("default", "foo")
-      table.sd.location shouldBe "hdfs://localhost:8020/user/hive/warehouse/wibble"
+      val table = client.getTable("tests", "foo")
+      table.sd.location shouldBe "hdfs://namenode:8020/user/hive/warehouse/wibble"
     }
   }
 }

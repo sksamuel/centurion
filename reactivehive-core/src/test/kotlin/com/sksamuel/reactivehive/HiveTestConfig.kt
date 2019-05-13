@@ -11,7 +11,7 @@ object HiveTestConfig {
   val hiveConf: HiveConf by lazy {
     HiveConf().apply {
       set("hive.metastore", "thrift")
-      set("hive.metastore.uris", "thrift://localhost:9083")
+      set("hive.metastore.uris", "thrift://hive-metastore:9083")
     }
   }
 
@@ -27,7 +27,7 @@ object HiveTestConfig {
 
   val conf: Configuration by lazy {
     Configuration().apply {
-      set("fs.defaultFS", "hdfs://localhost:8020")
+      set("fs.defaultFS", "hdfs://namenode:8020")
     }
   }
 
