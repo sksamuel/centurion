@@ -1,5 +1,5 @@
-include 'reactivehive-schemas',
-        'reactivehive-parquet',
-        'reactivehive-core',
-        'reactivehive-components:reactivehive-components-akkastream_2.12',
-        'reactivehive-components:reactivehive-components-coroutines'
+include 'rxhive-schemas',
+        'rxhive-parquet',
+        'rxhive-core',
+        'rxhive-components:rxhive-components-akkastream_2.12',
+        'rxhive-components:rxhive-components-coroutines'

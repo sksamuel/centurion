@@ -1,0 +1,98 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+if (project.hasProperty("jvm")) {
+    apply plugin: 'org.jetbrains.dokka'
+
+    dokka {
+        outputFormat = 'javadoc'
+        outputDirectory = javadoc.destinationDir
+    }
+
+    dokka.dependsOn javadoc
+
+    // task javadocJar(type: Jar, dependsOn: dokka) {
+    task javadocJar(type: Jar) {
+        from javadoc.destinationDir
+        archiveClassifier = 'javadoc'
+    }
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.kotlin
+        archiveClassifier = 'sources'
+    }
+
+    tasks.withType(Javadoc) {
+        onlyIf { isReleaseVersion }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+
+            name 'deploy'
+
+            url = isTravis ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username = System.getenv("OSSRH_USERNAME") ?: ossrhUsername
+                password = System.getenv("OSSRH_PASSWORD") ?: ossrhPassword
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+
+            if (project.hasProperty("jvm")) {
+                from components.java
+            }
+
+            if (isReleaseVersion) {
+                if (project.hasProperty("jvm")) {
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+            }
+
+            pom {
+                name = 'rxhive'
+                description = 'Hive Reactive Streams Components'
+                url = 'http://www.github.com/sksamuel/rxhive'
+
+                scm {
+                    connection = 'scm:git:http://www.github.com/sksamuel/rxhive'
+                    developerConnection = 'scm:git:http://github.com/sksamuel'
+                    url = 'http://www.github.com/sksamuel/rxhive'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache 2.0 License'
+                        url = 'https://opensource.org/licenses/Apache-2.0'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'sksamuel'
+                        name = 'Stephen Samuel'
+                        email = 'sam@sksamuel.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}

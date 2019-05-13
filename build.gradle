@@ -2,6 +2,9 @@ buildscript {
 
     ext.isTravis = System.getenv("TRAVIS") == "true"
     ext.travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
+    ext.isReleaseVersion = !isTravis
+
+    ext.localVersion = "0.10"
 
     ext.kotlin_version = '1.3.21'
     ext.CommonsIoVersion = "2.4"
@@ -34,12 +37,12 @@ allprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group = "com.sksamuel.reactive-hive"
+    group = "com.sksamuel.rxhive"
 
     if (isTravis) {
         version = "0.10." + travisBuildNumber
     } else {
-        version = "0.10-SNAPSHOT"
+        version = localVersion + "-SNAPSHOT"
     }
 
     dependencies {

@@ -1,0 +1,8 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+}
+
+apply from: '../publish.gradle'
