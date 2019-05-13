@@ -29,11 +29,11 @@ enum class WriteMode {
  */
 class HiveWriter(private val dbName: DatabaseName,
                  private val tableName: TableName,
-                 private val namer: FileNamer,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
                  private val mode: WriteMode,
                  private val partitioner: Partitioner,
-                 private val createConfig: CreateTableConfig,
+                 private val fileManager: FileManager,
+                 private val createConfig: CreateTableConfig?,
                  private val client: IMetaStoreClient,
                  private val fs: FileSystem) {
 
@@ -41,8 +41,14 @@ class HiveWriter(private val dbName: DatabaseName,
   private val writers = mutableMapOf<Path, StructWriter>()
 
   private val table = when (mode) {
-    WriteMode.Create -> getOrCreateTable(dbName, tableName, createConfig, client, fs)
+    WriteMode.Create -> {
+      if (createConfig == null)
+        throw IllegalArgumentException("CreateTableConfig cannot be null if mode is WriteMode.Create")
+      getOrCreateTable(dbName, tableName, createConfig, client, fs)
+    }
     WriteMode.Overwrite -> {
+      if (createConfig == null)
+        throw IllegalArgumentException("CreateTableConfig cannot be null if mode is WriteMode.Overwrite")
       dropTable(dbName, tableName, client, fs)
       getOrCreateTable(dbName, tableName, createConfig, client, fs)
     }
@@ -56,7 +62,7 @@ class HiveWriter(private val dbName: DatabaseName,
   // returns a hive writer for the given dir, or creates one if one does not already exist.
   private fun getOrOpen(dir: Path): StructWriter {
     return writers.getOrPut(dir) {
-      val path = Path(dir, namer.generate(dir))
+      val path = fileManager.prepare(dir, fs)
       format.writer(path, schema, fs.conf)
     }
   }
@@ -82,7 +88,10 @@ class HiveWriter(private val dbName: DatabaseName,
   fun write(structs: List<Struct>) = structs.forEach { write(it) }
 
   fun close() {
-    writers.forEach { it.value.close() }
+    writers.forEach {
+      it.value.close()
+      fileManager.complete(it.key, fs)
+    }
     writers.clear()
   }
 }

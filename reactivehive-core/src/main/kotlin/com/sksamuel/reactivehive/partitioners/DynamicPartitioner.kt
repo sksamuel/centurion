@@ -6,6 +6,7 @@ import com.sksamuel.reactivehive.TableName
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.IMetaStoreClient
+import org.apache.hadoop.hive.metastore.api.NoSuchObjectException
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor
 
 /**
@@ -25,8 +26,10 @@ object DynamicPartitioner : Partitioner {
                     fs: FileSystem): Path {
 
     // the partition is fetched using values only, as the order matters in the hive metastore
-    val p = client.getPartition(dbName.value, tableName.value, partition.parts.map { it.value })
-    return if (p == null) {
+    try {
+      val p = client.getPartition(dbName.value, tableName.value, partition.parts.map { it.value })
+      return Path(p.sd.location)
+    } catch (e: NoSuchObjectException) {
 
       val table = client.getTable(dbName.value, tableName.value)
       val tablePath = Path(table.sd.location)
@@ -44,10 +47,7 @@ object DynamicPartitioner : Partitioner {
       val p2 = org.apache.hadoop.hive.metastore.api.Partition(values, dbName.value, tableName.value, ts, 0, sd, params)
       client.add_partition(p2)
 
-      path
-
-    } else {
-      Path(p.sd.location)
+      return path
     }
   }
 }

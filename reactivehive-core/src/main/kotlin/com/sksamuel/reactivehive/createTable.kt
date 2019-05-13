@@ -1,6 +1,7 @@
 package com.sksamuel.reactivehive
 
 import com.sksamuel.reactivehive.formats.Format
+import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.schemas.ToHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -25,8 +26,8 @@ data class CreateTableConfig(
     val schema: StructType,
     // partitions, can be null if not partitioned
     val plan: PartitionPlan?,
-    val tableType: TableType,
-    val format: Format,
+    val tableType: TableType = TableType.MANAGED_TABLE,
+    val format: Format = ParquetFormat,
     // specify a location to be used if the table is created as an external table
     val location: Path? = null
 )

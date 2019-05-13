@@ -1,10 +1,12 @@
 package com.sksamuel.reactivehive
 
+import arrow.core.Try
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FunSpec
+import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.Database
 import org.apache.hadoop.hive.metastore.api.FieldSchema
@@ -35,17 +37,19 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     }
 
     test("write to a non partitioned table") {
+
       val writer = HiveWriter(
           DatabaseName("default"),
           TableName("employees"),
-          ReactiveHiveFileNamer,
           WriteMode.Overwrite,
           DynamicPartitioner,
+          OptimisticFileManager(ReactiveHiveFileNamer),
           CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
           client,
           fs
       )
       writer.write(users)
+      writer.close()
 
       HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
@@ -57,98 +61,100 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys.shouldBeEmpty()
     }
 
-//    test("write to a partitioned table") {
-//      val writer = HiveWriter(
-//          DatabaseName("default"),
-//          TableName("employees"),
-//          ReactiveHiveFileNamer,
-//          WriteMode.Overwrite,
-//          DefaultPartitionLocator,
-//          CreateTableConfig(schema, PartitionPlan(PartitionKey("title")), TableType.MANAGED_TABLE, ParquetFormat),
-//          client,
-//          fs
-//      )
-//      writer.write(users)
-//
-//      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
-//          FieldSchema("name", "string", null),
-//          FieldSchema("salary", "double", null),
-//          FieldSchema("employed", "boolean", null)
-//      )
-//
-//      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys shouldBe listOf(
-//          FieldSchema("title", "string", null)
-//      )
-//    }
-//
-//    it should "create new partitions in the metastore when using dynamic partitions" in {
-//
-//      Try {
-//        client.dropTable("sink_test", "employees3")
-//      }
-//
-//      def partitions = client . listPartitions ("sink_test", "employees3", Short.MaxValue).asScala
-//
-//      val config = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          partitions = Seq(PartitionField("title")),
-//          partitioningPolicy = new DynamicPartitioning ()
-//      )
-//
-//      Await.ready(
-//          Source(users).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("employees3"),
-//              config)),
-//          Duration.Inf
-//      )
-//
-//      partitions.exists {
-//        partition =>
-//        partition.getValues.asScala.toList == List("mr")
-//      } shouldBe true
-//
-//      partitions.exists {
-//        partition =>
-//        partition.getValues.asScala.toList == List("ms")
-//      } shouldBe true
-//
-//      partitions.exists {
-//        partition =>
-//        partition.getValues.asScala.toList == List("qq")
-//      } shouldBe false
-//    }
-//
-//    it should "allow setting table type of new tables" in {
-//      val config1 = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.MANAGED_TABLE
-//      )
-//
-//      Await.ready(
-//          Source(users).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("abc"),
-//              config1)),
-//          Duration.Inf
-//      )
-//      client.getTable("sink_test", "abc").getTableType shouldBe "MANAGED_TABLE"
-//
-//      val config2 = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.EXTERNAL_TABLE
-//      )
-//      Await.ready(
-//          Source(users).runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"),
-//              TableName("abc"),
-//              config2)),
-//          Duration.Inf
-//      )
-//
-//      client.getTable("sink_test", "abc").getTableType shouldBe "EXTERNAL_TABLE"
-//    }
-//
+    test("write to a partitioned table") {
+      val writer = HiveWriter(
+          DatabaseName("default"),
+          TableName("employees"),
+          WriteMode.Overwrite,
+          DynamicPartitioner,
+          OptimisticFileManager(ReactiveHiveFileNamer),
+          CreateTableConfig(schema, PartitionPlan(PartitionKey("title"))),
+          client,
+          fs
+      )
+      writer.write(users)
+      writer.close()
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).sd.cols shouldBe listOf(
+          FieldSchema("name", "string", null),
+          FieldSchema("salary", "double", null),
+          FieldSchema("employed", "boolean", null)
+      )
+
+      HiveUtils(client).table(DatabaseName("default"), TableName("employees")).partitionKeys shouldBe listOf(
+          FieldSchema("title", "string", null)
+      )
+    }
+
+    test("create new partitions in the metastore when using dynamic partitions") {
+
+      Try {
+        client.dropTable("sink_test", "employees3")
+      }
+
+      fun partitions() = client.listPartitions("sink_test", "employees3", Short.MAX_VALUE)
+
+      val createConfig = CreateTableConfig(
+          schema,
+          PartitionPlan(PartitionKey("title")),
+          TableType.MANAGED_TABLE,
+          ParquetFormat
+      )
+
+      val writer = HiveWriter(
+          DatabaseName("default"),
+          TableName("employees3"),
+          WriteMode.Overwrite,
+          DynamicPartitioner,
+          OptimisticFileManager(ReactiveHiveFileNamer),
+          createConfig,
+          client,
+          fs
+      )
+
+      writer.write(users)
+      writer.close()
+
+      partitions().any {
+        it.values == listOf("mr")
+      } shouldBe true
+
+      partitions().any {
+        it.values == listOf("ms")
+      } shouldBe true
+
+      partitions().any {
+        it.values == listOf("qq")
+      } shouldBe false
+    }
+
+    test("setting table type of new tables") {
+
+      for (tableType in listOf(TableType.EXTERNAL_TABLE, TableType.MANAGED_TABLE)) {
+        Try {
+          client.dropTable("default", "employees4")
+        }
+
+        val createConfig = CreateTableConfig(schema, null, tableType, location = Path("/user/hive/warehouse/employees4"))
+
+        val writer = HiveWriter(
+            DatabaseName("default"),
+            TableName("employees4"),
+            WriteMode.Overwrite,
+            DynamicPartitioner,
+            OptimisticFileManager(ReactiveHiveFileNamer),
+            createConfig,
+            client,
+            fs
+        )
+
+        writer.write(users)
+        writer.close()
+
+        client.getTable("default", "employees4").tableType shouldBe tableType.asString()
+      }
+    }
+
 //    it should "not include partition keys in the general columns" in {
 //
 //      val schema = StructDataType(
@@ -248,19 +254,6 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
 //      )
 //    }
 //
-//    it should "return the count of records written" in {
-//
-//      val config = HiveSinkConfig(
-//          createTable = true,
-//          overwriteTable = true,
-//          tableType = TableType.MANAGED_TABLE
-//      )
-//
-//      val schema = StructDataType(StructField("a", StringDataType))
-//      val struct = Struct(schema, Seq("foo"))
-//      val f = Source(List.fill(99)(struct))
-//          .runWith(com.sksamuel.reactive.scoop.hive.sink(DatabaseName("sink_test"), TableName("woo"), config))
-//      Await.result(f, Duration.Inf) shouldBe 99
-//    }
+
   }
 }

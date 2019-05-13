@@ -85,7 +85,7 @@ object DoubleSetter : Setter {
 }
 
 object StringSetter : Setter {
-  override fun set(consumer: RecordConsumer, value: Any) = consumer.addBinary(Binary.fromString(value.toString()))
+  override fun set(consumer: RecordConsumer, value: Any) = consumer.addBinary(Binary.fromReusedByteArray(value.toString().toByteArray()))
 }
 
 object FloatSetter : Setter {
