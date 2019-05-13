@@ -12,15 +12,15 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  * the schema in the metastore, or returning an updated struct, or a combination of the two
  * (or neither if you prefer! - see [NoopSchemaEvolver]).
  *
- * Normally, before a struct is passed to reactive-hive it would have been pre-processed
+ * Normally, before a struct is passed to rxhive it would have been pre-processed
  * in some way so that the schema is in the format that should be persisted.
  *
  * For example, if you have payment data where you didn't want to persist the credit card
  * number, then as part of your stream pipeline you would perform a transformation operation
  * (projection in SQL parlance) to remove any unwanted fields before the struct is passed
- * to the reactive-hive component.
+ * to the rxhive component.
  *
- * However, the schema in the hive metastore may not match the schema passed to reactive-hive.
+ * However, the schema in the hive metastore may not match the schema passed to rxhive.
  * For example, your pipeline may have changed to include a new field that wasn't
  * present when the table was created, or you may have renamed a field and want to use the new
  * name in an existing table. Or you may have many free-form structs and you want any
@@ -28,7 +28,7 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  *
  * You can of course change the metastore schema externally through some tool
  * like impala, spark, or the hive CLI. However, through implements of this interface,
- * reactive-hive can handle all these scenarios for you.
+ * rxhive can handle all these scenarios for you.
  *
  * For example, you may wish to update the metastore schema so that it has
  * new missing fields added (schema evolution), or you may wish to throw an exception

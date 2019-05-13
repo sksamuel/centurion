@@ -6,7 +6,6 @@ services:
 language: java
 
 jdk:
-  - openjdk11
   - oraclejdk8
 
 before_cache:
@@ -19,12 +18,12 @@ cache:
     - "$HOME/.gradle/wrapper/"
     - "$HOME/.m2/repository/"
 
-install: /bin/true
+install: "/bin/true"
 
 before_script:
   - sleep 30
 
-script: ./gradlew test --stacktrace
+script: "./gradlew test"
 
 before_install:
   - docker-compose up -d

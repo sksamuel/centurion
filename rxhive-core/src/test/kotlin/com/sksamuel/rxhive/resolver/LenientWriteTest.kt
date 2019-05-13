@@ -44,19 +44,33 @@ class LenientWriteTest : FunSpec() {
 
     test("writing data with lenient mode should align structs") {
 
-      val schema = StructType(
+      Try {
+        HiveTestConfig.client.dropTable("tests", "lenientdata", true, true)
+      }
+
+      val metastoreSchema = StructType(
           StructField("name", StringType),
           StructField("title", StringType),
           StructField("salary", Float64Type),
           StructField("employed", BooleanType)
       )
 
-      val users = listOf(
-          Struct(schema, "sam", "mr", 100.43, false),
-          Struct(schema, null, "mr", 230.523, false),
-          Struct(schema, "tom", "mr", 60.98, true),
-          Struct(schema, "laura", "ms", null, true),
-          Struct(schema, "kelly", "ms", 925.162, null)
+      val u1 = Struct(
+          StructType(
+              StructField("name", StringType),
+              StructField("title", StringType),
+              StructField("employed", BooleanType)
+          ),
+          listOf("sam", "mr", true)
+      )
+
+      val u2 = Struct(
+          StructType(
+              StructField("name", StringType),
+              StructField("salary", Float64Type),
+              StructField("employed", BooleanType)
+          ),
+          listOf("bob", 3485.63, false)
       )
 
       val writer = HiveWriter(
@@ -64,17 +78,17 @@ class LenientWriteTest : FunSpec() {
           TableName("lenientdata"),
           WriteMode.Overwrite,
           fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
-          createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat, null),
+          createConfig = CreateTableConfig(metastoreSchema, null, TableType.MANAGED_TABLE, ParquetFormat, null),
           evolver = NoopSchemaEvolver,
           partitioner = StaticPartitioner,
           resolver = LenientStructResolver,
           client = HiveTestConfig.client,
           fs = HiveTestConfig.fs
       )
-      writer.write(users)
+      writer.write(listOf(u1, u2))
       writer.close()
 
-      val table = HiveUtils(HiveTestConfig.client).table(DatabaseName("tests"), TableName("employees"))
+      val table = HiveUtils(HiveTestConfig.client).table(DatabaseName("tests"), TableName("lenientdata"))
 
       table.sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
@@ -95,11 +109,8 @@ class LenientWriteTest : FunSpec() {
           StructField(name = "employed", type = BooleanType, nullable = true)
       )
       struct.map { it.values }.toList() shouldBe listOf(
-          listOf("sam", "mr", 100.43, false),
-          listOf(null, "mr", 230.523, false),
-          listOf("tom", "mr", 60.98, true),
-          listOf("laura", "ms", null, true),
-          listOf("kelly", "ms", 925.162, null)
+          listOf("sam", "mr", null, true),
+          listOf("bob", null, 3485.63, false)
       )
     }
   }

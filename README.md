@@ -1,8 +1,12 @@
-reactive-hive
-=============
+rxhive
+=======
 
-[![Build Status](https://travis-ci.org/sksamuel/reactive-hive.png)](https://travis-ci.org/sksamuel/reactive-hive)
-[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/reactive-hive*.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22reactive-hive)
+[![Build Status](https://travis-ci.org/sksamuel/rxhive.png)](https://travis-ci.org/sksamuel/rxhive)
+[<img src="https://img.shields.io/maven-central/v/com.sksamuel.akka/rxhive*.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rxhive)
+
+
+Coming soon
+-----------
 
 
 Processing Steps for writing struct data to hive:

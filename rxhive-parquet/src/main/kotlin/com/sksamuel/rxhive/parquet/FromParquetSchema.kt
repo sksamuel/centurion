@@ -26,7 +26,7 @@ import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
 
 /**
- * Conversion functions from parquet types to reactive-hive types.
+ * Conversion functions from parquet types to rxhive types.
  *
  * Parquet types are defined at the parquet repo:
  * https://github.com/apache/parquet-format/blob/c6d306daad4910d21927b8b4447dc6e9fae6c714/LogicalTypes.md

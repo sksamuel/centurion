@@ -38,7 +38,7 @@ fun createTable(dbName: DatabaseName,
                 fs: FileSystem): Table {
 
   val params = mutableMapOf<String, String>()
-  params["CREATED_BY"] = "reactive-hive"
+  params["CREATED_BY"] = "rxhive"
 
   val partitionFieldSchemas = createConfig.plan?.keys?.map {
     FieldSchema(it.value, ToHiveSchema.toHiveType(StringType), null)

@@ -21,7 +21,7 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema
 
 class HiveWriterTest : FunSpec() {
 
-  private fun partitions() = client.listPartitions("tests", "test10", Short.MAX_VALUE)
+  private fun partitions(name: String) = client.listPartitions("tests", name, Short.MAX_VALUE)
 
   init {
 
@@ -99,10 +99,10 @@ class HiveWriterTest : FunSpec() {
 
       val writer = HiveWriter(
           DatabaseName("tests"),
-          TableName("employees"),
+          TableName("partitionedtest"),
           WriteMode.Overwrite,
           DynamicPartitioner,
-          OptimisticFileManager(RxHiveFileNamer),
+          OptimisticFileManager(ConstantFileNamer("test.pq")),
           evolver = NoopSchemaEvolver,
           resolver = LenientStructResolver,
           createConfig = CreateTableConfig(schema,
@@ -116,18 +116,18 @@ class HiveWriterTest : FunSpec() {
       writer.write(users)
       writer.close()
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).sd.cols shouldBe listOf(
+      HiveUtils(client).table(DatabaseName("tests"), TableName("partitionedtest")).sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
           FieldSchema("salary", "double", null),
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys shouldBe listOf(
+      HiveUtils(client).table(DatabaseName("tests"), TableName("partitionedtest")).partitionKeys shouldBe listOf(
           FieldSchema("title", "string", null)
       )
 
-      partitions().map { it.values } shouldBe listOf(listOf("mr"), listOf("ms"))
-      partitions().forEach {
+      partitions("partitionedtest").map { it.values } shouldBe listOf(listOf("mr"), listOf("ms"))
+      partitions("partitionedtest").forEach {
         val file = Path(it.sd.location, "test.pq")
         val reader = parquetReader(file, conf)
         val struct = reader.read()

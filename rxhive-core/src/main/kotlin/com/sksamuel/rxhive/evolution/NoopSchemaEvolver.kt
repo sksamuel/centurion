@@ -9,7 +9,7 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
 /**
  * An implementation of [SchemaEvolver] that is a passthrough operation.
  *
- * Using this implementation means reactive-hive will make no changes
+ * Using this implementation means rxhive will make no changes
  * to the metastore. The schema must be managed externally.
  */
 object NoopSchemaEvolver : SchemaEvolver {
