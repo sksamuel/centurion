@@ -34,3 +34,5 @@ addons:
     - hive-metastore
     - namenode
     - datanode
+
+after_success: "./snapshot_deploy.sh"
