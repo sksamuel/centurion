@@ -3,15 +3,15 @@ package com.sksamuel.reactivehive.parquet
 import com.sksamuel.reactivehive.ArrayType
 import com.sksamuel.reactivehive.BinaryType
 import com.sksamuel.reactivehive.BooleanType
-import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.DateType
 import com.sksamuel.reactivehive.DecimalType
-import com.sksamuel.reactivehive.Float64Type
 import com.sksamuel.reactivehive.EnumType
 import com.sksamuel.reactivehive.Float32Type
+import com.sksamuel.reactivehive.Float64Type
+import com.sksamuel.reactivehive.Int16Type
 import com.sksamuel.reactivehive.Int32Type
 import com.sksamuel.reactivehive.Int64Type
-import com.sksamuel.reactivehive.Int16Type
+import com.sksamuel.reactivehive.Int8Type
 import com.sksamuel.reactivehive.Precision
 import com.sksamuel.reactivehive.Scale
 import com.sksamuel.reactivehive.StringType
@@ -92,6 +92,9 @@ object FromParquetSchema {
       PrimitiveType.PrimitiveTypeName.FLOAT -> Float32Type
       PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.originalType)
       PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.originalType)
+      // INT96 is deprecated, but it's commonly used (wrongly) for timestamp millis
+      // Spark does this, so we must do too
+      // https://issues.apache.org/jira/browse/PARQUET-323
       PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
       PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type, type.originalType, type.typeLength)
     }
