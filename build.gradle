@@ -52,6 +52,10 @@ allprojects {
         testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$Log4jVersion"
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()

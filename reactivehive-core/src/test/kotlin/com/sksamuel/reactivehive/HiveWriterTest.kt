@@ -87,10 +87,10 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
     test("create new partitions in the metastore when using dynamic partitions") {
 
       Try {
-        client.dropTable("sink_test", "employees3")
+        client.dropTable("default", "employees3")
       }
 
-      fun partitions() = client.listPartitions("sink_test", "employees3", Short.MAX_VALUE)
+      fun partitions() = client.listPartitions("default", "employees3", Short.MAX_VALUE)
 
       val createConfig = CreateTableConfig(
           schema,

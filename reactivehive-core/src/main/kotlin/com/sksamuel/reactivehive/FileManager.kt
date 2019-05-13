@@ -18,8 +18,9 @@ interface FileManager {
 }
 
 /**
- * An implementation of [FileManager] which creates invisible files for writing,
- *  and then makes them visible once the file is completed.
+ * An implementation of [FileManager] which stages files when writing and commits them
+ * once completed. This works by creating new files as hidden, and then renaming
+ * them so they are visible once complete.
  */
 class StagingFileManager(val namer: FileNamer = ReactiveHiveFileNamer) : FileManager {
 
