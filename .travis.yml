@@ -21,6 +21,9 @@ cache:
 
 install: /bin/true
 
+before_script:
+  - sleep 30
+
 script: ./gradlew test --stacktrace
 
 before_install:

@@ -3,6 +3,7 @@ package com.sksamuel.reactivehive
 import arrow.core.Try
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.parquet.parquetReader
+import com.sksamuel.reactivehive.parquet.readAll
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.shouldBe
@@ -31,10 +32,8 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
         Struct(schema, "kelly", "ms", 925.162, false)
     )
 
-    try {
-      client.createDatabase(Database("tests", null, "/user/hive/warehouse/sink_test", emptyMap()))
-    } catch (t: Throwable) {
-
+    Try {
+      client.createDatabase(Database("tests", null, "/user/hive/warehouse/tests", emptyMap()))
     }
 
     test("write to a non partitioned table") {
@@ -43,6 +42,7 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
           DatabaseName("tests"),
           TableName("employees"),
           WriteMode.Overwrite,
+          fileManager = OptimisticFileManager(ConstantFileNamer("test.pq")),
           createConfig = CreateTableConfig(schema, null, TableType.MANAGED_TABLE, ParquetFormat),
           client = client,
           fs = fs
@@ -50,7 +50,9 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       writer.write(users)
       writer.close()
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).sd.cols shouldBe listOf(
+      val table = HiveUtils(client).table(DatabaseName("tests"), TableName("employees"))
+
+      table.sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
           FieldSchema("title", "string", null),
           FieldSchema("salary", "double", null),
@@ -58,6 +60,23 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       )
 
       HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys.shouldBeEmpty()
+
+      val file = Path(table.sd.location, "test.pq")
+      val reader = parquetReader(file, conf)
+      val struct = reader.readAll().toList()
+      struct.first().schema shouldBe StructType(
+          StructField(name = "name", type = StringType, nullable = true),
+          StructField(name = "title", type = StringType, nullable = true),
+          StructField(name = "salary", type = Float64Type, nullable = true),
+          StructField(name = "employed", type = BooleanType, nullable = true)
+      )
+      struct.map { it.values }.toList() shouldBe listOf(
+          listOf("sam", "mr", 100.43, false),
+          listOf("ben", "mr", 230.523, false),
+          listOf("tom", "mr", 60.98, true),
+          listOf("laura", "ms", 421.512, true),
+          listOf("kelly", "ms", 925.162, false)
+      )
     }
 
     test("write to a partitioned table") {
@@ -83,48 +102,6 @@ class HiveWriterTest : FunSpec(), HiveTestConfig {
       HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys shouldBe listOf(
           FieldSchema("title", "string", null)
       )
-    }
-
-    test("create new partitions in the metastore when using dynamic partitions") {
-
-      Try {
-        client.dropTable("tests", "employees3")
-      }
-
-      fun partitions() = client.listPartitions("tests", "employees3", Short.MAX_VALUE)
-
-      val createConfig = CreateTableConfig(
-          schema,
-          PartitionPlan(PartitionKey("title")),
-          TableType.MANAGED_TABLE,
-          ParquetFormat
-      )
-
-      val writer = HiveWriter(
-          DatabaseName("tests"),
-          TableName("employees3"),
-          WriteMode.Overwrite,
-          DynamicPartitioner,
-          OptimisticFileManager(ReactiveHiveFileNamer),
-          createConfig = createConfig,
-          client = client,
-          fs = fs
-      )
-
-      writer.write(users)
-      writer.close()
-
-      partitions().any {
-        it.values == listOf("mr")
-      } shouldBe true
-
-      partitions().any {
-        it.values == listOf("ms")
-      } shouldBe true
-
-      partitions().any {
-        it.values == listOf("qq")
-      } shouldBe false
     }
 
     test("setting table type of new tables") {

@@ -28,3 +28,4 @@ fun parquetReader(path: Path, conf: Configuration): ParquetReader<Struct> {
       .build()
 }
 
+fun <T : Any> ParquetReader<T>.readAll(): Sequence<T> = generateSequence { read() }
