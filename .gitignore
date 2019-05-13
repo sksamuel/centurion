@@ -6,6 +6,8 @@
 # sbt specific
 dist/*
 target/
+build/
+out/
 lib_managed/
 src_managed/
 project/boot/

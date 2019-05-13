@@ -1,5 +1,5 @@
 include 'reactivehive-schemas',
         'reactivehive-parquet',
         'reactivehive-core',
-        'reactivehive-components:reactivehive-components-akkastream',
+        'reactivehive-components:reactivehive-components-akkastream_2.12',
         'reactivehive-components:reactivehive-components-coroutines'
