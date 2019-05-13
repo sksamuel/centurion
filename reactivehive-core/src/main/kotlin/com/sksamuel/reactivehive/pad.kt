@@ -9,9 +9,9 @@ fun align(struct: Struct, schema: StructType): Struct {
 
   val value = schema.fields.map {
     val value = struct[it.name]
-    value ?: {
-      if (it.nullable) null else throw IllegalStateException("Field ${it.name} is missing from input and not nullable so cannot be padded")
-    }
+    if (value == null && !it.nullable)
+      throw IllegalStateException("Field ${it.name} is missing from input and not nullable so cannot be padded")
+    value
   }
 
   return Struct(schema, value)

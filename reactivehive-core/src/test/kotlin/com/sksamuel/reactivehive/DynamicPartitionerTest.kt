@@ -1,6 +1,8 @@
 package com.sksamuel.reactivehive
 
 import arrow.core.Try
+import com.sksamuel.reactivehive.HiveTestConfig.client
+import com.sksamuel.reactivehive.HiveTestConfig.fs
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import com.sksamuel.reactivehive.partitioners.DynamicPartitioner
 import io.kotlintest.shouldBe
@@ -8,7 +10,7 @@ import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.Database
 
-class DynamicPartitionerTest : FunSpec(), HiveTestConfig {
+class DynamicPartitionerTest : FunSpec() {
 
   val schema = StructType(
       StructField("name", StringType),

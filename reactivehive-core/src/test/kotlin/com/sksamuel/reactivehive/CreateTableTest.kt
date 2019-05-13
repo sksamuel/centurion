@@ -1,5 +1,7 @@
 package com.sksamuel.reactivehive
 
+import com.sksamuel.reactivehive.HiveTestConfig.client
+import com.sksamuel.reactivehive.HiveTestConfig.fs
 import com.sksamuel.reactivehive.formats.ParquetFormat
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
@@ -8,7 +10,7 @@ import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.metastore.TableType
 import org.apache.hadoop.hive.metastore.api.FieldSchema
 
-class CreateTableTest : FunSpec(), HiveTestConfig {
+class CreateTableTest : FunSpec() {
 
   init {
 

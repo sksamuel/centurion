@@ -1,12 +1,14 @@
 package com.sksamuel.reactivehive
 
 import arrow.core.Try
+import com.sksamuel.reactivehive.HiveTestConfig.client
+import com.sksamuel.reactivehive.HiveTestConfig.fs
 import com.sksamuel.reactivehive.partitioners.StaticPartitioner
 import io.kotlintest.shouldThrowAny
 import io.kotlintest.specs.FunSpec
 import org.apache.hadoop.hive.metastore.api.Database
 
-class StaticPartitionerTest : FunSpec(), HiveTestConfig {
+class StaticPartitionerTest : FunSpec() {
 
   init {
 
