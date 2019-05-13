@@ -1,0 +1,150 @@
+buildscript {
+
+    ext.isTravis = System.getenv("TRAVIS") == "true"
+    ext.travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
+    ext.isReleaseVersion = !isTravis
+
+    ext.kotlin_version = '1.3.21'
+    ext.CommonsIoVersion = "2.4"
+    ext.JacksonVersion = "2.9.6"
+    ext.KafkaVersion = "2.1.0"
+    ext.Log4jVersion = "2.11.1"
+    ext.Slf4jVersion = "1.7.25"
+    ext.HiveVersion = "2.0.1"
+    ext.HadoopVersion = "2.7.7"
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+}
+
+allprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    group = "com.sksamuel.rxhive"
+
+    if (isTravis) {
+        version "0.10." + travisBuildNumber + "-SNAPSHOT"
+    } else {
+        version "0.10.LOCAL"
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc.destinationDir
+        archiveClassifier = 'javadoc'
+    }
+
+    task sourcesJar(type: Jar) {
+       // from sourceSets.main.kotlin
+        archiveClassifier = 'sources'
+    }
+
+    tasks.withType(Javadoc) {
+        onlyIf { isReleaseVersion }
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        compile "org.slf4j:slf4j-api:1.7.25"
+        compile "org.apache.logging.log4j:log4j-api:$Log4jVersion"
+
+        testCompile "ch.qos.logback:logback-classic:1.2.3"
+        testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.2"
+        testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$Log4jVersion"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    publishing {
+        repositories {
+            maven {
+
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+
+                name 'deploy'
+
+                url = isTravis ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME") ?: ossrhUsername
+                    password = System.getenv("OSSRH_PASSWORD") ?: ossrhPassword
+                }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+
+                from components.java
+
+                if (isReleaseVersion) {
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+
+                pom {
+                    name = 'rxhive'
+                    description = 'Hive Reactive Streams Components'
+                    url = 'http://www.github.com/sksamuel/rxhive'
+
+                    scm {
+                        connection = 'scm:git:http://www.github.com/sksamuel/rxhive'
+                        developerConnection = 'scm:git:http://github.com/sksamuel'
+                        url = 'http://www.github.com/sksamuel/rxhive'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache 2.0 License'
+                            url = 'https://opensource.org/licenses/Apache-2.0'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'sksamuel'
+                            name = 'Stephen Samuel'
+                            email = 'sam@sksamuel.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd()
+        sign publishing.publications.mavenJava
+    }
+
+    tasks.withType(Sign) {
+        onlyIf { isReleaseVersion }
+    }
+
+}
+
+project(":") {
+    publish.enabled = false
+}

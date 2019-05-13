@@ -1,0 +1,12 @@
+plugins {
+    id 'scala'
+}
+
+dependencies {
+    compile project(":rxhive-schemas")
+    compile project(":rxhive-parquet")
+    compile project(":rxhive-core")
+    compile 'com.typesafe.akka:akka-stream_2.12:2.5.22'
+    testCompile 'org.scalatest:scalatest_2.12:3.0.4'
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+}

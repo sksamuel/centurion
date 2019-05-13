@@ -1,0 +1,5 @@
+include 'rxhive-schemas',
+        'rxhive-parquet',
+        'rxhive-core',
+        'rxhive-components:rxhive-components-akkastream_2.12',
+        'rxhive-components:rxhive-components-coroutines'

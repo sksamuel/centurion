@@ -1,6 +1,37 @@
-language: scala
-scala:
-  - 2.10.6
-  - 2.11.8
+sudo: required
+
+services:
+  - docker
+
+language: java
+
 jdk:
   - oraclejdk8
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+    - "$HOME/.m2/repository/"
+
+install: "/bin/true"
+
+before_script:
+  - sleep 30
+
+script: "./gradlew test"
+
+before_install:
+  - docker-compose up -d
+
+addons:
+  hosts:
+    - hive-metastore
+    - namenode
+    - datanode
+
+after_success: "./snapshot_deploy.sh"
