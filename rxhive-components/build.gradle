@@ -1,0 +1,3 @@
+project(":") {
+    publish.enabled = false
+}
