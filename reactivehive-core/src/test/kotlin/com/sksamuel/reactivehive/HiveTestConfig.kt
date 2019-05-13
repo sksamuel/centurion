@@ -4,6 +4,7 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient
+import org.apache.hadoop.hive.metastore.api.MetaException
 
 object HiveTestConfig {
 
@@ -15,7 +16,13 @@ object HiveTestConfig {
   }
 
   val client: HiveMetaStoreClient by lazy {
-    HiveMetaStoreClient(hiveConf)
+    try {
+      HiveMetaStoreClient(hiveConf)
+    } catch (t: MetaException) {
+      println("Error $t")
+      t.printStackTrace()
+      throw t
+    }
   }
 
   val conf: Configuration by lazy {
