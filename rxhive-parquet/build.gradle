@@ -10,5 +10,3 @@ dependencies {
     compile 'org.apache.hadoop:hadoop-client:2.7.7'
     testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.1"
 }
-
-apply from: '../publish.gradle'

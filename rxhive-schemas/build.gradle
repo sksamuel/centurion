@@ -4,5 +4,3 @@ plugins {
 
 dependencies {
 }
-
-apply from: '../publish.gradle'

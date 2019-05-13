@@ -10,5 +10,3 @@ dependencies {
     testCompile 'org.scalatest:scalatest_2.12:3.0.4'
     testRuntime 'org.pegdown:pegdown:1.4.2'
 }
-
-apply from: '../../publish.gradle'

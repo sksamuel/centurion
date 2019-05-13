@@ -16,5 +16,3 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.26'
     testCompile "io.kotlintest:kotlintest-runner-junit5:3.3.2"
 }
-
-apply from: '../publish.gradle'
