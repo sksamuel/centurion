@@ -1,6 +1,7 @@
 package com.sksamuel.rxhive
 
 import com.sksamuel.rxhive.formats.Format
+import com.sksamuel.rxhive.formats.ParquetFormat
 import com.sksamuel.rxhive.schemas.ToHiveSchema
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -29,7 +30,16 @@ data class CreateTableConfig(
     val format: Format,
     // specify a location to be used if the table is created as an external table
     val location: Path?
-)
+) {
+  companion object {
+    fun fromKotlin(schema: StructType,
+                   plan: PartitionPlan? = null,
+                   tableType: TableType = TableType.MANAGED_TABLE,
+                   format: Format = ParquetFormat,
+                   location: Path? = null): CreateTableConfig =
+        CreateTableConfig(schema, plan, tableType, format, location)
+  }
+}
 
 fun createTable(dbName: DatabaseName,
                 tableName: TableName,

@@ -7,6 +7,8 @@ import com.sksamuel.rxhive.CreateTableConfig
 import com.sksamuel.rxhive.DatabaseName
 import com.sksamuel.rxhive.Float64Type
 import com.sksamuel.rxhive.HiveTestConfig
+import com.sksamuel.rxhive.HiveTestConfig.client
+import com.sksamuel.rxhive.HiveTestConfig.fs
 import com.sksamuel.rxhive.HiveUtils
 import com.sksamuel.rxhive.HiveWriter
 import com.sksamuel.rxhive.OptimisticFileManager
@@ -88,7 +90,7 @@ class LenientWriteTest : FunSpec() {
       writer.write(listOf(u1, u2))
       writer.close()
 
-      val table = HiveUtils(HiveTestConfig.client).table(DatabaseName("tests"), TableName("lenientdata"))
+      val table = HiveUtils(client, fs).table(DatabaseName("tests"), TableName("lenientdata"))
 
       table.sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
@@ -97,7 +99,7 @@ class LenientWriteTest : FunSpec() {
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(HiveTestConfig.client).table(DatabaseName("tests"), TableName("lenientdata")).partitionKeys.shouldBeEmpty()
+      HiveUtils(client, fs).table(DatabaseName("tests"), TableName("lenientdata")).partitionKeys.shouldBeEmpty()
 
       val file = Path(table.sd.location, "test.pq")
       val reader = parquetReader(file, HiveTestConfig.conf)

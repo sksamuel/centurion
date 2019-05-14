@@ -1,8 +1,11 @@
 package com.sksamuel.rxhive
 
+import com.sksamuel.rxhive.evolution.NoopSchemaEvolver
 import com.sksamuel.rxhive.evolution.SchemaEvolver
 import com.sksamuel.rxhive.formats.StructWriter
+import com.sksamuel.rxhive.partitioners.DynamicPartitioner
 import com.sksamuel.rxhive.partitioners.Partitioner
+import com.sksamuel.rxhive.resolver.LenientStructResolver
 import com.sksamuel.rxhive.resolver.StructResolver
 import com.sksamuel.rxhive.schemas.FromHiveSchema
 import org.apache.hadoop.fs.FileSystem
@@ -40,6 +43,20 @@ class HiveWriter(private val dbName: DatabaseName,
                  private val createConfig: CreateTableConfig?,
                  private val client: IMetaStoreClient,
                  private val fs: FileSystem) : Logging {
+
+  companion object {
+    fun fromKotlin(dbName: DatabaseName,
+                   tableName: TableName,
+                   mode: WriteMode = WriteMode.Create,
+                   partitioner: Partitioner = DynamicPartitioner,
+                   fileManager: FileManager = StagingFileManager(),
+                   evolver: SchemaEvolver = NoopSchemaEvolver,
+                   resolver: StructResolver = LenientStructResolver,
+                   createConfig: CreateTableConfig? = null,
+                   client: IMetaStoreClient,
+                   fs: FileSystem): HiveWriter =
+        HiveWriter(dbName, tableName, mode, partitioner, fileManager, evolver, resolver, createConfig, client, fs)
+  }
 
   // the delegated struct writers, one per partition
   private val writers = mutableMapOf<Path, StructWriter>()

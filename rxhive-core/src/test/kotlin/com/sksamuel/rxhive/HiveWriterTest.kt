@@ -66,7 +66,7 @@ class HiveWriterTest : FunSpec() {
       writer.write(users)
       writer.close()
 
-      val table = HiveUtils(client).table(DatabaseName("tests"), TableName("employees"))
+      val table = HiveUtils(client, fs).table(DatabaseName("tests"), TableName("employees"))
 
       table.sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
@@ -75,7 +75,7 @@ class HiveWriterTest : FunSpec() {
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("employees")).partitionKeys.shouldBeEmpty()
+      HiveUtils(client, fs).table(DatabaseName("tests"), TableName("employees")).partitionKeys.shouldBeEmpty()
 
       val file = Path(table.sd.location, "test.pq")
       val reader = parquetReader(file, conf)
@@ -116,13 +116,13 @@ class HiveWriterTest : FunSpec() {
       writer.write(users)
       writer.close()
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("partitionedtest")).sd.cols shouldBe listOf(
+      HiveUtils(client, fs).table(DatabaseName("tests"), TableName("partitionedtest")).sd.cols shouldBe listOf(
           FieldSchema("name", "string", null),
           FieldSchema("salary", "double", null),
           FieldSchema("employed", "boolean", null)
       )
 
-      HiveUtils(client).table(DatabaseName("tests"), TableName("partitionedtest")).partitionKeys shouldBe listOf(
+      HiveUtils(client, fs).table(DatabaseName("tests"), TableName("partitionedtest")).partitionKeys shouldBe listOf(
           FieldSchema("title", "string", null)
       )
 
