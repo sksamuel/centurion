@@ -10,7 +10,7 @@ services:
       - "8020:8020"
     volumes:
       - namenode:/hadoop/dfs/name
-    environmHiveSourceent:
+    environment:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop-hive.env
