@@ -9,9 +9,9 @@ import scala.concurrent.Future
 
 object Hive {
 
-  def source(db: String, table: String)
+  def source(db: String, table: String, settings: HiveSourceSettings)
             (implicit client: IMetaStoreClient, fs: FileSystem): Source[Struct, Future[Long]] =
-    Source.fromGraph(new HiveSource(db, table))
+    Source.fromGraph(new HiveSource(db, table, settings))
 
   def sink(db: String, table: String, settings: HiveSinkSettings)
           (implicit client: IMetaStoreClient, fs: FileSystem): Sink[Struct, Future[Long]] =
