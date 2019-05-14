@@ -53,6 +53,12 @@ class HiveReader(private val dbName: DatabaseName,
   }
 }
 
+fun scanTable(dbName: DatabaseName,
+              tableName: TableName,
+              client: IMetaStoreClient,
+              fs: FileSystem): List<Path> =
+    scanTable(dbName, tableName, client.getTable(dbName.value, tableName.value), client, fs)
+
 /**
  * Scans a table for all files, including those inside partitions.
  * Looks up partition folders from the metastore.
