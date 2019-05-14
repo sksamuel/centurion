@@ -46,7 +46,7 @@ class HiveSourceTest extends FunSuite with Matchers with HiveTestConfig {
 
     Await.result(f, 10.seconds) shouldBe 5
 
-    val g = Hive.source("tests", "hivesrc").runWith(Sink.seq)
+    val g = Hive.source("tests", "hivesrc", HiveSourceSettings()).runWith(Sink.seq)
     val results = Await.result(g, 10.seconds)
 
     results shouldBe Vector(
