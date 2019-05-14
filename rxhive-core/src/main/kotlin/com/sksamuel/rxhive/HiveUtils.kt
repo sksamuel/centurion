@@ -24,7 +24,12 @@ class HiveUtils(val client: IMetaStoreClient, val fs: FileSystem) {
   }
 
   fun schema(dbName: DatabaseName, tableName: TableName): StructType {
-    val table = client.getTable(dbName.value, tableName.value)
+    val table = table(dbName, tableName)
     return FromHiveSchema.fromHiveTable(table)
+  }
+
+  fun count(dbName: DatabaseName, tableName: TableName): Long {
+    val paths = scanTable(dbName, tableName, client, fs)
+    return com.sksamuel.rxhive.parquet.count(paths, fs.conf)
   }
 }
