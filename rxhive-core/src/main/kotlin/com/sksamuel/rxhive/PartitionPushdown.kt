@@ -8,12 +8,16 @@ interface PartitionPushdown {
 
   fun match(partition: Partition): Boolean
 
+  fun isDefinedOn(plan: PartitionPlan): Boolean
+
   class EqualsPartitionPushdown(val key: String, val value: String) : PartitionPushdown {
+    override fun isDefinedOn(plan: PartitionPlan): Boolean = plan.keys.contains(PartitionKey(key))
     override fun match(partition: Partition): Boolean =
         partition.parts.contains(PartitionPart(PartitionKey(key), value))
   }
 
   class NotEqualsPartitionPushdown(val key: String, val value: String) : PartitionPushdown {
+    override fun isDefinedOn(plan: PartitionPlan): Boolean = plan.keys.contains(PartitionKey(key))
     override fun match(partition: Partition): Boolean = !EqualsPartitionPushdown(key, value).match(partition)
   }
 
@@ -23,10 +27,12 @@ interface PartitionPushdown {
 
     fun and(left: PartitionPushdown,
             right: PartitionPushdown): PartitionPushdown = object : PartitionPushdown {
+      override fun isDefinedOn(plan: PartitionPlan): Boolean = left.isDefinedOn(plan) && right.isDefinedOn(plan)
       override fun match(partition: Partition): Boolean = left.match(partition) && right.match(partition)
     }
 
     fun or(left: PartitionPushdown, right: PartitionPushdown): PartitionPushdown = object : PartitionPushdown {
+      override fun isDefinedOn(plan: PartitionPlan): Boolean = left.isDefinedOn(plan) && right.isDefinedOn(plan)
       override fun match(partition: Partition): Boolean = left.match(partition) || right.match(partition)
     }
   }
