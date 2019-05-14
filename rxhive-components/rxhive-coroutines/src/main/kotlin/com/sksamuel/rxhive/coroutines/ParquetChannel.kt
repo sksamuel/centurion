@@ -1,4 +1,4 @@
-package com.sksamuel.rxhive.components.coroutines
+package com.sksamuel.rxhive.coroutines
 
 import com.sksamuel.rxhive.Struct
 import com.sksamuel.rxhive.parquet.parquetWriter

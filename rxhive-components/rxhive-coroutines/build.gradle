@@ -5,5 +5,6 @@ plugins {
 dependencies {
     compile project(":rxhive-schemas")
     compile project(":rxhive-parquet")
+    compile project(":rxhive-core")
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
 }
