@@ -22,7 +22,7 @@ interface FileManager {
  * once completed. This works by creating new files as hidden, and then renaming
  * them so they are visible once complete.
  */
-class StagingFileManager(val namer: FileNamer = RxHiveFileNamer) : FileManager {
+class StagingFileManager(private val namer: FileNamer = RxHiveFileNamer) : FileManager {
 
   override fun prepare(dir: Path, fs: FileSystem): Path {
     val filename = namer.generate(dir)
@@ -38,7 +38,7 @@ class StagingFileManager(val namer: FileNamer = RxHiveFileNamer) : FileManager {
   }
 }
 
-class OptimisticFileManager(val namer: FileNamer = RxHiveFileNamer) : FileManager {
+class OptimisticFileManager(private val namer: FileNamer = RxHiveFileNamer) : FileManager {
 
   override fun prepare(dir: Path, fs: FileSystem): Path {
     val filename = namer.generate(dir)

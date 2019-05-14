@@ -2,7 +2,7 @@ package com.sksamuel.rxhive.akkastream
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{Sink, Source}
 import com.sksamuel.rxhive.{BooleanType, Float64Type, StringType, Struct, StructField, StructType}
 import org.apache.hadoop.hive.metastore.api.{Database, NoSuchObjectException}
 import org.scalatest.{FunSuite, Matchers}
@@ -46,7 +46,17 @@ class HiveSourceTest extends FunSuite with Matchers with HiveTestConfig {
 
     Await.result(f, 10.seconds) shouldBe 5
 
-    new HiveSource("tests", "hivesrc")
+    val g = Hive.source("tests", "hivesrc").runWith(Sink.seq)
+    val results = Await.result(g, 10.seconds)
+
+    results shouldBe Vector(
+      new Struct(schema, "sam", "mr", java.lang.Double.valueOf(100.43), java.lang.Boolean.valueOf(false)),
+      new Struct(schema, "ben", "mr", java.lang.Double.valueOf(230.523), java.lang.Boolean.valueOf(false)),
+      new Struct(schema, "tom", "mr", java.lang.Double.valueOf(60.98), java.lang.Boolean.valueOf(true)),
+      new Struct(schema, "laura", "ms", java.lang.Double.valueOf(421.512), java.lang.Boolean.valueOf(true)),
+      new Struct(schema, "kelly", "ms", java.lang.Double.valueOf(925.162), java.lang.Boolean.valueOf(false))
+    )
+
   }
 
   test("invalid database should fail future") {

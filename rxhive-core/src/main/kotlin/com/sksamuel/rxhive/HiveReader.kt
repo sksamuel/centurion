@@ -20,13 +20,12 @@ class HiveReader(private val dbName: DatabaseName,
     logger.debug("Discovered $size files for table ${dbName.value}.${tableName.value}")
   }
 
-  private var index = -1
+  private var index = 0
   private var current: StructReader? = null
 
   private fun advanceReader() {
     current = if (index == files.size) null else {
-      index++
-      format.reader(files[index], schema, fs.conf)
+      format.reader(files[index++], schema, fs.conf)
     }
   }
 

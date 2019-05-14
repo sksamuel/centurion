@@ -39,10 +39,12 @@ class HiveWriter(private val dbName: DatabaseName,
                  private val resolver: StructResolver,
                  private val createConfig: CreateTableConfig?,
                  private val client: IMetaStoreClient,
-                 private val fs: FileSystem) {
+                 private val fs: FileSystem) : Logging {
 
-  // the delegated struct writers, one per partition file
+  // the delegated struct writers, one per partition
   private val writers = mutableMapOf<Path, StructWriter>()
+  // the files we have created via the writers
+  private val files = mutableSetOf<Path>()
 
   private var table = when (mode) {
     WriteMode.Create -> {
@@ -65,12 +67,15 @@ class HiveWriter(private val dbName: DatabaseName,
 
   private fun loadTable() = client.getTable(dbName.value, tableName.value)
 
-  // returns a hive writer for the given struct, creating one if one does not already exist.
-  // creating a new writer uses a file manager to handle the target file
+  // returns a hive writer for the given partition, creating one if one does not already exist.
+  // creating a new writer uses a file manager to manage the lifecycle of the target file
   private fun getOrOpenWriter(partition: Partition?, writeSchema: StructType): StructWriter {
     val dir = outputDir(partition)
     return writers.getOrPut(dir) {
+      logger.debug("No writer exists for partition $partition, preparing new file")
       val path = fileManager.prepare(dir, fs)
+      files.add(path)
+      logger.debug("Writing will be created for file $path")
       format.writer(path, writeSchema, fs.conf)
     }
   }
@@ -97,7 +102,9 @@ class HiveWriter(private val dbName: DatabaseName,
     val partition = if (plan == null) null else partition(resolvedStruct, plan)
 
     // calculate the write schema
-    val writeSchema = if (plan == null) metastoreSchema else DefaultDiskSchemas.writerSchema(resolvedStruct, metastoreSchema, plan)
+    val writeSchema = if (plan == null) metastoreSchema else DefaultDiskSchemas.writerSchema(resolvedStruct,
+        metastoreSchema,
+        plan)
 
     // grab a writer for the partition
     val writer = getOrOpenWriter(partition, writeSchema)
@@ -111,10 +118,23 @@ class HiveWriter(private val dbName: DatabaseName,
   fun write(structs: List<Struct>) = structs.forEach { write(it) }
 
   fun close() {
+    logger.debug("Closing ${writers.size} struct writers")
     writers.forEach {
-      it.value.close()
-      fileManager.complete(it.key, fs)
+      try {
+        it.value.close()
+      } catch (t: Throwable) {
+        logger.error("Error closing writer", t)
+      }
     }
     writers.clear()
+    logger.debug("Completing ${files.size} files")
+    files.forEach {
+      try {
+        fileManager.complete(it, fs)
+      } catch (t: Throwable) {
+        logger.error("Error completing file", t)
+      }
+    }
+    files.clear()
   }
 }

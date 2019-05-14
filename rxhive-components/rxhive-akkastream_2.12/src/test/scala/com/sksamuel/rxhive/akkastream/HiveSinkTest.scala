@@ -1,9 +1,12 @@
 package com.sksamuel.rxhive.akkastream
 
+import java.util.concurrent.{CountDownLatch, TimeUnit}
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
-import com.sksamuel.rxhive.{BooleanType, Float64Type, StringType, Struct, StructField, StructType}
+import com.sksamuel.rxhive.{BooleanType, FileManager, Float64Type, StringType, Struct, StructField, StructType}
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.hive.metastore.api.{Database, NoSuchObjectException}
 import org.scalatest.{FunSuite, Matchers}
 
@@ -37,6 +40,11 @@ class HiveSinkTest extends FunSuite with Matchers with HiveTestConfig {
 
   test("hive sink happy path") {
 
+
+    Try {
+      client.dropTable("tests", "hivesrc", true, true)
+    }
+
     val f = Source(users)
       .runWith(new HiveSink("tests", "users", HiveSinkSettings()))
 
@@ -49,5 +57,33 @@ class HiveSinkTest extends FunSuite with Matchers with HiveTestConfig {
     intercept[NoSuchObjectException] {
       Await.result(f, 10.seconds) shouldBe 5
     }
+  }
+
+  test("files should be completed") {
+
+    Try {
+      client.dropTable("tests", "hivesrc", true, true)
+    }
+
+    val latch = new CountDownLatch(1)
+
+    val manager = new FileManager {
+      override def prepare(dir: Path, fs: FileSystem): Path = {
+        val path = new Path(dir, "foo")
+        fs.delete(path, false)
+        path
+      }
+      override def complete(path: Path, fs: FileSystem): Path = {
+        latch.countDown()
+        path
+      }
+    }
+
+    val f = Source(users)
+      .runWith(Hive.sink("tests", "users", HiveSinkSettings(fileManager = manager)))
+
+    Await.ready(f, 10.seconds)
+
+    latch.await(10, TimeUnit.SECONDS) shouldBe true
   }
 }

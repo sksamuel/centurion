@@ -14,6 +14,7 @@ trait HiveTestConfig {
   implicit val client: HiveMetaStoreClient = new HiveMetaStoreClient(hiveConf)
 
   implicit val conf: Configuration = new Configuration()
+  conf.setBoolean("fs.hdfs.impl.disable.cache", true)
   conf.set("fs.defaultFS", "hdfs://namenode:8020")
 
   implicit val fs: FileSystem = FileSystem.get(conf)

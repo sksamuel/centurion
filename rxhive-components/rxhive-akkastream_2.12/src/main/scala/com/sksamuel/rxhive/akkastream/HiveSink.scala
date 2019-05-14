@@ -42,10 +42,16 @@ class HiveSink(dbName: String, tableName: String, settings: HiveSinkSettings)
 
       override def onUpstreamFailure(t: Throwable): Unit = {
         super.onUpstreamFailure(t)
+        if (writer != null)
+          writer.close()
+        failStage(t)
         promise.tryFailure(t)
       }
 
       override def onUpstreamFinish(): Unit = {
+        if (writer != null)
+        writer.close()
+        completeStage()
         promise.trySuccess(count)
       }
 
@@ -71,6 +77,8 @@ class HiveSink(dbName: String, tableName: String, settings: HiveSinkSettings)
         } catch {
           case t: Throwable =>
             promise.tryFailure(t)
+            if (writer != null)
+              writer.close()
             failStage(t)
         }
       }
