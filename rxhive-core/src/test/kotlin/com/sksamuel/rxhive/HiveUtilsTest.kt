@@ -40,9 +40,11 @@ class HiveUtilsTest : FunSpec() {
       )
       writer.write(users)
       writer.close()
-      scanTable(DatabaseName("tests"), TableName("wibble"), client, fs).shouldNotBeEmpty()
+
+      val scanner = TableScanner(client, fs)
+      scanner.scan(DatabaseName("tests"), TableName("wibble"), null).shouldNotBeEmpty()
       utils.truncateTable(DatabaseName("tests"), TableName("wibble"))
-      scanTable(DatabaseName("tests"), TableName("wibble"), client, fs).shouldBeEmpty()
+      scanner.scan(DatabaseName("tests"), TableName("wibble"), null).shouldBeEmpty()
     }
   }
 }

@@ -8,7 +8,8 @@ import org.apache.hadoop.hive.metastore.IMetaStoreClient
  * Scans for paths to read data from.
  * Will scan partitions if they exist, and take into account partition pushdowns.
  */
-class TableScanner(val client: IMetaStoreClient, val fs: FileSystem) {
+class TableScanner(private val client: IMetaStoreClient,
+                   private val fs: FileSystem) {
 
   private val scanner = DefaultFileScanner
 
