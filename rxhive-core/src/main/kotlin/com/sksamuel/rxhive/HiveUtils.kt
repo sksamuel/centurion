@@ -21,7 +21,7 @@ class HiveUtils(val client: IMetaStoreClient, val fs: FileSystem) {
 
   fun truncateTable(dbName: DatabaseName, tableName: TableName) {
     val scanner = TableScanner(client, fs)
-    scanner.scan(dbName, tableName, null)
+    scanner.scan(dbName, tableName, null).forEach { fs.delete(it, false) }
   }
 
   fun schema(dbName: DatabaseName, tableName: TableName): StructType {

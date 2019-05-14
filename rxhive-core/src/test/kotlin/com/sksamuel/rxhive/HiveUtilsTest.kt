@@ -27,9 +27,11 @@ class HiveUtilsTest : FunSpec() {
   )
 
   init {
+
     test("list databases") {
       utils.listDatabases().shouldContain(DatabaseName("default"))
     }
+
     test("truncate table") {
       val writer = HiveWriter.fromKotlin(
           DatabaseName("tests"),
