@@ -20,22 +20,33 @@ class HiveReader(private val dbName: DatabaseName,
     logger.debug("Discovered $size files for table ${dbName.value}.${tableName.value}")
   }
 
+  private var index = -1
   private var current: StructReader? = null
 
-  fun read(): Sequence<Struct> {
-    val seqs = files.map {
-      val reader by lazy {
-        val reader = format.reader(it, schema, fs.conf)
-        current = reader
-        reader
-      }
-      generateSequence {
-        val next = reader.read()
-        if (next == null) reader.close()
-        next
-      }
+  private fun advanceReader() {
+    current = if (index == files.size) null else {
+      index++
+      format.reader(files[index], schema, fs.conf)
     }
-    return seqs.reduce { a, b -> a + b }
+  }
+
+  fun read(): Struct? {
+
+    if (current == null) {
+      advanceReader()
+      if (current == null)
+        return null
+    }
+
+    var next = current?.read()
+    while (next == null) {
+      advanceReader()
+      if (current == null)
+        return null
+      next = current?.read()
+    }
+
+    return next
   }
 
   fun close() {
