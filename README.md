@@ -6,8 +6,47 @@ rxhive
 [<img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/com.sksamuel.rxhive/rxhive-core.svg?label=latest%20snapshot&style=plastic"/>](https://oss.sonatype.org/content/repositories/snapshots/com/sksamuel/rxhive/)
 ![License](https://img.shields.io/github/license/sksamuel/rxhive.svg?style=plastic)
 
-Coming soon
------------
+## Introduction
+
+A set of components for reading and writing to Apache Hive and Apache Parquet using popular open source streaming frameworks. Supported frameworks and libraries:
+
+* Akka-Streams
+* Kotlin Flows
+
+## Akka-Streams
+
+### Source
+
+To create a source for reading from Hive:
+
+```scala
+Hive.source("mydb", "mytab")
+ ```
+
+You must also bring into scope an implicit HiveMetaStoreClient and FileSystem instances.
+These are both created from configs backed by the hive site files.
+
+```scala
+val hiveConf: HiveConf = new HiveConf()
+implicit val client: HiveMetaStoreClient = new HiveMetaStoreClient(hiveConf)
+
+val conf: Configuration = new Configuration()
+implicit val fs: FileSystem = FileSystem.get(conf)
+```
+
+### Sink
+
+To create a sink for writing data to Hive:
+
+```scala
+Hive.sink("mydb", "mytab", HiveSinkSettings())
+```
+
+Again this requires an implicit client and filesystem.
+
+### Background
+
+To create a source for reading from Hive:
 
 
 Processing Steps for writing struct data to hive:
