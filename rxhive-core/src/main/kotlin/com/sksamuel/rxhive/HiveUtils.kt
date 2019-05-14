@@ -20,7 +20,8 @@ class HiveUtils(val client: IMetaStoreClient, val fs: FileSystem) {
   }
 
   fun truncateTable(dbName: DatabaseName, tableName: TableName) {
-    scanTable(dbName, tableName, client, fs).forEach { fs.delete(it, false) }
+    val scanner = TableScanner(client, fs)
+    scanner.scan(dbName, tableName, null)
   }
 
   fun schema(dbName: DatabaseName, tableName: TableName): StructType {
@@ -29,7 +30,8 @@ class HiveUtils(val client: IMetaStoreClient, val fs: FileSystem) {
   }
 
   fun count(dbName: DatabaseName, tableName: TableName): Long {
-    val paths = scanTable(dbName, tableName, client, fs)
+    val scanner = TableScanner(client, fs)
+    val paths = scanner.scan(dbName, tableName, null)
     return com.sksamuel.rxhive.parquet.count(paths, fs.conf)
   }
 }

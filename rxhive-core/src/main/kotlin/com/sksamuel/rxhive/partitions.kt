@@ -11,3 +11,10 @@ fun partition(struct: Struct, plan: PartitionPlan): Partition {
   }
   return Partition(parts)
 }
+
+/**
+ * Creates an rxhive partition from the hive api partition
+ */
+fun partition(partition: org.apache.hadoop.hive.metastore.api.Partition, plan: PartitionPlan): Partition {
+  return Partition(plan.keys.zip(partition.values).map { PartitionPart(it.first, it.second) })
+}
