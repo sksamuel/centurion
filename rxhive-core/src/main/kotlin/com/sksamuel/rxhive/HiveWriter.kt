@@ -32,17 +32,17 @@ enum class WriteMode {
  * 2. If the table has partitions then the struct's partition must exist.
  *
  */
-class HiveWriter(private val dbName: DatabaseName,
-                 private val tableName: TableName,
+data class HiveWriter(private val dbName: DatabaseName,
+                      private val tableName: TableName,
     // the write mode determines if the table should be created and/or overwritten, or just appended to
-                 private val mode: WriteMode,
-                 private val partitioner: Partitioner,
-                 private val fileManager: FileManager,
-                 private val evolver: SchemaEvolver,
-                 private val resolver: StructResolver,
-                 private val createConfig: CreateTableConfig?,
-                 private val client: IMetaStoreClient,
-                 private val fs: FileSystem) : Logging {
+                      private val mode: WriteMode,
+                      private val partitioner: Partitioner,
+                      private val fileManager: FileManager,
+                      private val evolver: SchemaEvolver,
+                      private val resolver: StructResolver,
+                      private val createConfig: CreateTableConfig?,
+                      private val client: IMetaStoreClient,
+                      private val fs: FileSystem) : Logging {
 
   companion object {
     fun fromKotlin(dbName: DatabaseName,
@@ -56,6 +56,11 @@ class HiveWriter(private val dbName: DatabaseName,
                    client: IMetaStoreClient,
                    fs: FileSystem): HiveWriter =
         HiveWriter(dbName, tableName, mode, partitioner, fileManager, evolver, resolver, createConfig, client, fs)
+
+    fun defaults(dbName: DatabaseName,
+                 tableName: TableName,
+                 client: IMetaStoreClient,
+                 fs: FileSystem): HiveWriter = fromKotlin(dbName, tableName, client = client, fs = fs)
   }
 
   // the delegated struct writers, one per partition
@@ -154,4 +159,9 @@ class HiveWriter(private val dbName: DatabaseName,
     }
     files.clear()
   }
+
+  fun withPartitioner(partitioner: Partitioner) = copy(partitioner = partitioner)
+  fun withStructResolver(resolver: StructResolver) = copy(resolver = resolver)
+  fun withFileManager(fileManager: FileManager) = copy(fileManager = fileManager)
+  fun withSchemaEvolver(evolver: SchemaEvolver) = copy(evolver = evolver)
 }
