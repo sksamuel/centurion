@@ -181,14 +181,14 @@ class HiveWriterTest : FunSpec() {
           client.dropTable("tests", "aligntest")
         }
 
-        val schema = StructType(
+        val s2 = StructType(
             StructField("a", StringType),
             StructField("b", BooleanType),
             StructField("c", Int32Type)
         )
 
         val createConfig = CreateTableConfig(
-            schema,
+            s2,
             null,
             tableType,
             ParquetFormat,

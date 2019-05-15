@@ -20,6 +20,7 @@ import com.sksamuel.rxhive.StructType
 import com.sksamuel.rxhive.TimeMillisType
 import com.sksamuel.rxhive.TimestampMillisType
 import com.sksamuel.rxhive.Type
+import com.sksamuel.rxhive.VarcharType
 import org.apache.parquet.schema.GroupType
 import org.apache.parquet.schema.MessageType
 import org.apache.parquet.schema.OriginalType
@@ -77,7 +78,7 @@ object FromParquetSchema {
 
     fun binary(type: PrimitiveType, original: OriginalType?, length: Int): Type = when (original) {
       OriginalType.ENUM -> EnumType(emptyList())
-      OriginalType.UTF8 -> StringType
+      OriginalType.UTF8 -> if (length > 0) VarcharType(length) else StringType
       OriginalType.DECIMAL -> {
         val meta = type.decimalMetadata
         DecimalType(Precision(meta.precision), Scale(meta.scale))
@@ -85,7 +86,7 @@ object FromParquetSchema {
       else -> BinaryType
     }
 
-    val elementType = when (type.primitiveTypeName) {
+    val elementType = when (type.primitiveTypeName!!) {
       PrimitiveType.PrimitiveTypeName.BINARY -> binary(type, type.originalType, type.typeLength)
       PrimitiveType.PrimitiveTypeName.BOOLEAN -> BooleanType
       PrimitiveType.PrimitiveTypeName.DOUBLE -> Float64Type
