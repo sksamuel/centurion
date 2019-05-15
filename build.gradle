@@ -39,9 +39,9 @@ allprojects {
     group = "com.sksamuel.rxhive"
 
     if (isTravis) {
-        version "0.10." + travisBuildNumber + "-SNAPSHOT"
+        version "0.20." + travisBuildNumber + "-SNAPSHOT"
     } else {
-        version "0.10.LOCAL"
+        version "0.20.0"
     }
 
     task javadocJar(type: Jar) {
