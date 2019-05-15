@@ -34,4 +34,9 @@ class HiveUtils(val client: IMetaStoreClient, val fs: FileSystem) {
     val paths = scanner.scan(dbName, tableName, null)
     return com.sksamuel.rxhive.parquet.count(paths, fs.conf)
   }
+
+  fun partitionFields(dbName: DatabaseName, tableName: TableName): List<StructField> {
+    val table = table(dbName, tableName)
+    return table.partitionKeys.map { StructField(it.name, FromHiveSchema.fromHiveType(it.type), false) }
+  }
 }
