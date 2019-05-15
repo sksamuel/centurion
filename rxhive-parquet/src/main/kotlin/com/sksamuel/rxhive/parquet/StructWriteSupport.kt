@@ -25,6 +25,5 @@ class StructWriteSupport(private val schema: MessageType,
     val setter = StructSetter(struct.schema, RoundingMode.UNNECESSARY, true)
     // prepare must have been called by the contract of the parquet library
     setter.set(consumer!!, struct)
-    consumer!!.flush()
   }
 }
