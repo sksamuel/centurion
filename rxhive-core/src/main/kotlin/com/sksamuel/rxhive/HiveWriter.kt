@@ -77,7 +77,7 @@ data class HiveWriter(private val dbName: DatabaseName,
     WriteMode.Overwrite -> {
       if (createConfig == null)
         throw IllegalArgumentException("CreateTableConfig cannot be null if mode is WriteMode.Overwrite")
-      dropTable(dbName, tableName, client, fs)
+      HiveUtils(client, fs).dropTable(dbName, tableName, true)
       getOrCreateTable(dbName, tableName, createConfig, client, fs)
     }
     WriteMode.Write -> loadTable()
