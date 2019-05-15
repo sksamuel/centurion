@@ -2,7 +2,6 @@ package com.sksamuel.rxhive.parquet
 
 import com.sksamuel.rxhive.Struct
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.Path
 import org.apache.parquet.hadoop.ParquetReader
 import org.apache.parquet.hadoop.api.InitContext
 import org.apache.parquet.hadoop.api.ReadSupport
@@ -20,12 +19,6 @@ object StructReadSupport : ReadSupport<Struct>() {
   }
 
   override fun init(context: InitContext): ReadContext = ReadContext(context.fileSchema)
-}
-
-fun parquetReader(path: Path, conf: Configuration): ParquetReader<Struct> {
-  return ParquetReader.builder(StructReadSupport, path)
-      .withConf(conf)
-      .build()
 }
 
 fun <T : Any> ParquetReader<T>.readAll(): Sequence<T> = generateSequence { read() }
