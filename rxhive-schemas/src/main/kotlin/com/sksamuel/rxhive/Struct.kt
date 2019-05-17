@@ -4,7 +4,9 @@ package com.sksamuel.rxhive
  * Types are inspired by Apache Spark.
  * https://github.com/apache/spark/blob/630e25e35506c02a0b1e202ef82b1b0f69e50966/sql/catalyst/src/main/scala/org/apache/spark/sql/types/DataType.scala
  */
-sealed class Type
+sealed class Type {
+  open fun canonicalName(): String = this::class.java.simpleName
+}
 
 data class StructType(val fields: List<StructField>) : Type() {
 
@@ -89,8 +91,13 @@ object BinaryType : Type()
 // text types
 object StringType : Type()
 
-data class CharType(val size: Int) : Type()
-data class VarcharType(val size: Int) : Type()
+data class CharType(val size: Int) : Type() {
+  override fun canonicalName():String = "char<$size>"
+}
+
+data class VarcharType(val size: Int) : Type() {
+  override fun canonicalName():String = "varchar<$size>"
+}
 
 // floating point types
 object Float64Type : Type()
@@ -118,8 +125,12 @@ data class EnumType(val values: List<String>) : Type() {
   constructor(vararg values: String) : this(values.asList())
 }
 
-data class ArrayType(val elementType: Type) : Type()
+data class ArrayType(val elementType: Type) : Type() {
+  override fun canonicalName():String = "array<${elementType.canonicalName()}>"
+}
 
 data class Precision(val value: Int)
 data class Scale(val value: Int)
-data class DecimalType(val precision: Precision, val scale: Scale) : Type()
+data class DecimalType(val precision: Precision, val scale: Scale) : Type() {
+  override fun canonicalName():String = "decimal<${precision.value},${scale.value}>"
+}
