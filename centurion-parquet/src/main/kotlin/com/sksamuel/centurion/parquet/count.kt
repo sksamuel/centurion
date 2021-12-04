@@ -6,9 +6,9 @@ import org.apache.parquet.hadoop.ParquetFileReader
 import org.apache.parquet.hadoop.util.HadoopInputFile
 
 fun count(paths: List<Path>, conf: Configuration): Long {
-  return paths.map { path ->
+  return paths.sumOf { path ->
     val input = HadoopInputFile.fromPath(path, conf)
     val reader = ParquetFileReader.open(input)
-    reader.footer.blocks.map { it.rowCount }.sum()
-  }.sum()
+    reader.footer.blocks.sumOf { it.rowCount }
+  }
 }
