@@ -8,16 +8,17 @@ interface Converters {
   companion object {
     fun converterFor(field: Schema.Field, builder: StructBuilder): Converter {
       return when (val schema = field.schema) {
-//        is StructType -> NestedRecordConverter(type, field, buffer)
+        is Schema.Struct -> NestedRecordConverter(schema, field, builder)
         Schema.Strings -> DictionaryStringPrimitiveConverter(field.name, builder)
-        Schema.Float64, Schema.Float32, Schema.Int32, Schema.Int64, Schema.Int16, Schema.Int8, Schema.Bytes ->
+        Schema.Float64, Schema.Float32,
+        Schema.Int32, Schema.Int64, Schema.Int16, Schema.Int8, Schema.Bytes, Schema.Booleans ->
           StructBuilderPrimitiveConverter(field.name, builder)
         Schema.TimestampMillis -> TimestampConverter(field.name, builder)
 //        DateType -> DateConverter(receiver())
 //        is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
 //        Schema.TimestampMillis -> TimeMillisConverter(field.name, builder)
 //        is EnumType -> EnumConverter(receiver())
-        else -> throw error("Unsupported schema $schema")
+        else -> throw error("Unsupported schema ${schema::class}")
       }
     }
   }

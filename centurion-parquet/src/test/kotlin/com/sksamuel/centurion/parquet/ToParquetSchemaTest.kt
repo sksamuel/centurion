@@ -54,7 +54,7 @@ class ToParquetSchemaTest : FunSpec() {
 
     test("nested structs") {
 
-      val struct = Schema.Struct(
+      val schema = Schema.Struct(
         "myrecord",
         Schema.Field("a", Schema.Booleans),
         Schema.Field(
@@ -72,22 +72,69 @@ class ToParquetSchemaTest : FunSpec() {
         .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, Type.Repetition.OPTIONAL).named("d"))
         .named("b")
 
-      ToParquetSchema.toMessageType(struct) shouldBe
+      ToParquetSchema.toMessageType(schema) shouldBe
         Types.buildMessage()
           .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("a"))
           .addField(b)
           .named("myrecord")
     }
 
+    test("arrays of primitives") {
+
+      val schema = Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Strings),
+        Schema.Field("b", Schema.Array(Schema.Int32)),
+      )
+
+      ToParquetSchema.toMessageType(schema) shouldBe Types.buildMessage()
+        .addField(
+          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+            .`as`(LogicalTypeAnnotation.stringType()).named("a")
+        )
+        .addField(
+          Types.list(Type.Repetition.OPTIONAL)
+            .element(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("element"))
+            .named("b")
+        )
+        .named("myrecord")
+    }
+
+    test("arrays of structs") {
+
+      val schema = Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Bytes),
+        Schema.Field(
+          "b",
+          Schema.Array(Schema.Struct("nested", Schema.Field("c", Schema.Booleans))),
+        )
+      )
+
+      ToParquetSchema.toMessageType(schema) shouldBe Types.buildMessage()
+        .addField(
+          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL).named("a")
+        )
+        .addField(
+          Types.list(Type.Repetition.OPTIONAL)
+            .element(
+              Types.buildGroup(Type.Repetition.REQUIRED)
+                .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("c"))
+                .named("element")
+            )
+            .named("b")
+        ).named("myrecord")
+    }
+
     test("required fields") {
 
-      val struct = Schema.Struct(
+      val schema = Schema.Struct(
         "myrecord",
         Schema.Field("a", Schema.Bytes, false),
         Schema.Field("b", Schema.Booleans, false),
       )
 
-      ToParquetSchema.toMessageType(struct) shouldBe
+      ToParquetSchema.toMessageType(schema) shouldBe
         Types.buildMessage()
           .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED).named("a"))
           .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("b"))
@@ -106,8 +153,7 @@ class ToParquetSchemaTest : FunSpec() {
           .addField(
             Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
               .`as`(LogicalTypeAnnotation.enumType()).named("a")
-          )
-          .named("myrecord")
+          ).named("myrecord")
     }
   }
 }

@@ -14,11 +14,11 @@ class StructBuilderPrimitiveConverter(
 ) : PrimitiveConverter() {
 
   override fun addBinary(x: Binary) {
-    builder.set(fieldName, x.bytes)
+    builder[fieldName] = x.bytes
   }
 
   override fun addBoolean(x: Boolean) {
-    builder.set(fieldName, x)
+    builder[fieldName] = x
   }
 
   override fun addDouble(x: Double) {

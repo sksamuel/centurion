@@ -9,6 +9,7 @@ import org.apache.parquet.hadoop.ParquetReader
 import org.apache.parquet.hadoop.ParquetWriter
 import org.apache.parquet.hadoop.util.HadoopInputFile
 import org.apache.parquet.schema.MessageType
+import java.io.File
 
 object Parquet {
 
@@ -20,8 +21,20 @@ object Parquet {
     }
   }
 
+  /**
+   * Create a [ParquetReader] for a Hadoop [Path].
+   */
   fun reader(path: Path, conf: Configuration): ParquetReader<Struct> {
     return ParquetReader.builder(StructReadSupport(), path)
+      .withConf(conf)
+      .build()
+  }
+
+  /**
+   * Create a [ParquetReader] for a local [File].
+   */
+  fun reader(file: File, conf: Configuration): ParquetReader<Struct> {
+    return ParquetReader.builder(StructReadSupport(), Path("file://" + file.path))
       .withConf(conf)
       .build()
   }

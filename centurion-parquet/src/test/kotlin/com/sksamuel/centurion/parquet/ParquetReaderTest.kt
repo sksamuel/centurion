@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
+import java.io.File
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -73,6 +74,59 @@ class ParquetReaderTest : FunSpec() {
           "Accountant IV",
           ""
         )
+    }
+
+
+    test("reading arrays") {
+      val reader = Parquet.reader(File(this.javaClass.getResource("/map_array.parquet").file), conf)
+      val struct = reader.read()
+      struct.schema shouldBe Schema.Struct(
+        name = "spark_schema",
+        fields = listOf(
+          Schema.Field(
+            name = "map_op_op",
+            schema = Schema.Map(Schema.Strings),
+            nullable = true,
+          ),
+          Schema.Field(
+            name = "map_op_req",
+            schema = Schema.Map(Schema.Strings),
+            nullable = true,
+          ),
+          Schema.Field(
+            name = "map_req_op",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+          Schema.Field(
+            name = "map_req_req",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+          Schema.Field(
+            name = "arr_op_op",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+          Schema.Field(
+            name = "arr_op_req",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+          Schema.Field(
+            name = "arr_req_op",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+          Schema.Field(
+            name = "arr_req_req",
+            schema = Schema.Map(Schema.Strings),
+            nullable = false,
+          ),
+        )
+      )
+
+      struct.values shouldBe ""
     }
   }
 }

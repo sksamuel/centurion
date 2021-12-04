@@ -25,18 +25,11 @@ interface Writer {
         Schema.Int32 -> IntegerSetter
         Schema.Int16 -> IntegerSetter
         Schema.Int8 -> IntegerSetter
+        is Schema.Array -> ArrayWriter(schema)
 //        TimestampMillisType -> TimestampMillisSetter
-//        TimestampMicrosType -> TODO()
-//        TimeMicrosType -> TODO()
 //        TimeMillisType -> TimeMillisSetter
 //        DateType -> DateSetter
-//        is MapDataType -> TODO()
-//        is DecimalType -> TODO()
 //        is EnumType -> EnumSetter
-//        is ArrayType -> TODO()
-//        is CharType -> TODO()
-//        is VarcharType -> TODO()
-//        BigIntType -> TODO()
         else -> error("Unsupported writer schema $schema")
       }
     }

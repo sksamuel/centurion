@@ -1,7 +1,7 @@
 package com.sksamuel.centurion.parquet.converters
 
-import com.sksamuel.centurion.Struct
 import com.sksamuel.centurion.Schema
+import com.sksamuel.centurion.Struct
 import com.sksamuel.centurion.StructBuilder
 import org.apache.parquet.io.api.Converter
 import org.apache.parquet.io.api.GroupConverter
@@ -37,10 +37,10 @@ open class RecordConverter(private val schema: Schema.Struct) : GroupConverter()
 class NestedRecordConverter(
   schema: Schema.Struct,
   private val field: Schema.Field,
-  private val parent: MutableMap<String, Any?>
+  private val builder: StructBuilder,
 ) : RecordConverter(schema) {
   override fun end() {
     super.end()
-    parent[field.name] = currentStruct()
+    builder[field.name] = currentStruct()
   }
 }
