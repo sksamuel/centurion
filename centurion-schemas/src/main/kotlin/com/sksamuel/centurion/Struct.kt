@@ -55,7 +55,7 @@ data class StructField(val name: String,
   constructor(name: String, type: Type) : this(name, type, true)
 
   /**
-   * Returns a new StructField with the same name as this field, but lowercased.
+   * Returns a new StructField with the same name as this field, but lowercase.
    * All other properties remain the same.
    */
   fun toLowerCase(): StructField = copy(name = name.toLowerCase())

@@ -8,13 +8,18 @@ import org.apache.parquet.io.api.RecordConsumer
 import org.apache.parquet.schema.MessageType
 import java.math.RoundingMode
 
+/**
+ * Converts incoming records from centurion structs to parquet.
+ *
+ * @param metadata arbitrary key-value pairs included in the footer of the file.
+ */
 class StructWriteSupport(private val schema: MessageType,
                          private val roundingMode: RoundingMode,
                          private val metadata: Map<String, String>) : WriteSupport<Struct>() {
 
   private var consumer: RecordConsumer? = null
 
-  override fun init(configuration: Configuration?) = WriteContext(schema, metadata)
+  override fun init(configuration: Configuration) = WriteContext(schema, metadata)
   override fun finalizeWrite(): FinalizedWriteContext = FinalizedWriteContext(metadata)
 
   override fun prepareForWrite(consumer: RecordConsumer) {

@@ -11,8 +11,8 @@ object Libs {
   }
 
   object Parquet {
-    const val common = "org.apache.parquet:parquet-common:1.12.2"
-    const val hadoop = "org.apache.parquet:parquet-hadoop:1.12.2"
+    const val common = "org.apache.parquet:parquet-common:1.11.2"
+    const val hadoop = "org.apache.parquet:parquet-hadoop:1.11.2"
   }
 
   object Hadoop {

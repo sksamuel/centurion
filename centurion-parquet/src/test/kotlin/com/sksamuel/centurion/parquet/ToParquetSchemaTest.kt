@@ -1,18 +1,9 @@
 package com.sksamuel.centurion.parquet
 
-import com.sksamuel.centurion.BinaryType
-import com.sksamuel.centurion.BooleanType
-import com.sksamuel.centurion.EnumType
-import com.sksamuel.centurion.Float64Type
-import com.sksamuel.centurion.Float32Type
-import com.sksamuel.centurion.Int64Type
-import com.sksamuel.centurion.StringType
-import com.sksamuel.centurion.StructField
-import com.sksamuel.centurion.StructType
-import com.sksamuel.centurion.TimestampMillisType
+import com.sksamuel.centurion.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import org.apache.parquet.schema.OriginalType
+import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.PrimitiveType
 import org.apache.parquet.schema.Type
 import org.apache.parquet.schema.Types
@@ -21,82 +12,101 @@ class ToParquetSchemaTest : FunSpec() {
 
   init {
 
-    test("Struct should be converted to parquet message type") {
-      val structType = StructType(
-          StructField("a", StringType),
-          StructField("b", BooleanType),
-          StructField("c", Float64Type),
-          StructField("d", Int64Type)
+    test("Records should be converted to parquet message type") {
+
+      val record = Schema.Record(
+        "myrecord",
+        Schema.Field("a", Schema.Strings),
+        Schema.Field("b", Schema.Booleans),
+        Schema.Field("c", Schema.Float64),
+        Schema.Field("d", Schema.Int64)
       )
-      ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
-          Types.buildMessage()
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
-                  .`as`(OriginalType.UTF8).named("a"))
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("b"))
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, Type.Repetition.OPTIONAL).named("c"))
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL).named("d"))
-              .named("mystruct")
+
+      ToParquetSchema.toMessageType(record) shouldBe
+        Types.buildMessage()
+          .addField(
+            Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+              .`as`(LogicalTypeAnnotation.stringType()).named("a")
+          )
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("b"))
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, Type.Repetition.OPTIONAL).named("c"))
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL).named("d"))
+          .named("myrecord")
     }
 
-    test("StringType should be converted to Binary with original type UTF8") {
-      ToParquetSchema.toParquetType(StringType, "a", true) shouldBe
-          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
-              .`as`(OriginalType.UTF8).named("a")
+    test("Schema.Strings should be converted to Binary with LogicalTypeAnnotation.string") {
+      ToParquetSchema.toParquetType(Schema.Strings, "a", true) shouldBe
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+          .`as`(LogicalTypeAnnotation.stringType()).named("a")
     }
 
-    test("TimestampMillisType should be converted to INT64 with original type TIMESTAMP_MILLIS") {
-      ToParquetSchema.toParquetType(TimestampMillisType, "a", true) shouldBe
-          Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL)
-              .`as`(OriginalType.TIMESTAMP_MILLIS).named("a")
-    }
+//    test("TimestampMillisType should be converted to INT64 with original type TIMESTAMP_MILLIS") {
+//      ToParquetSchema.toParquetType(TimestampMillisType, "a", true) shouldBe
+//          Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL)
+//              .`as`(OriginalType.TIMESTAMP_MILLIS).named("a")
+//    }
 
-    test("BinaryType should be converted to BINARY") {
-      ToParquetSchema.toParquetType(BinaryType, "a", true) shouldBe
-          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL).named("a")
+    test("Schema.Bytes should be converted to BINARY") {
+      ToParquetSchema.toParquetType(Schema.Bytes, "a", true) shouldBe
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL).named("a")
     }
 
     test("nested structs") {
-      val structType = StructType(
-          StructField("a", BooleanType),
-          StructField("b", StructType(
-              StructField("c", Float64Type),
-              StructField("d", Float32Type)
-          ))
+
+      val record = Schema.Record(
+        "myrecord",
+        Schema.Field("a", Schema.Booleans),
+        Schema.Field(
+          "b",
+          Schema.Record(
+            "myrecord2",
+            Schema.Field("c", Schema.Float64),
+            Schema.Field("d", Schema.Float32)
+          )
+        )
       )
 
       val b = Types.buildGroup(Type.Repetition.OPTIONAL)
-          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, Type.Repetition.OPTIONAL).named("c"))
-          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, Type.Repetition.OPTIONAL).named("d"))
-          .named("b")
+        .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, Type.Repetition.OPTIONAL).named("c"))
+        .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, Type.Repetition.OPTIONAL).named("d"))
+        .named("b")
 
-      ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
-          Types.buildMessage()
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("a"))
-              .addField(b)
-              .named("mystruct")
+      ToParquetSchema.toMessageType(record) shouldBe
+        Types.buildMessage()
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("a"))
+          .addField(b)
+          .named("myrecord")
     }
 
     test("required fields") {
-      val structType = StructType(
-          StructField("a", BinaryType, false),
-          StructField("b", BooleanType, false)
+
+      val record = Schema.Record(
+        "myrecord",
+        Schema.Field("a", Schema.Bytes, false),
+        Schema.Field("b", Schema.Booleans, false),
       )
-      ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
-          Types.buildMessage()
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED).named("a"))
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("b"))
-              .named("mystruct")
+
+      ToParquetSchema.toMessageType(record) shouldBe
+        Types.buildMessage()
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED).named("a"))
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("b"))
+          .named("myrecord")
     }
 
-    test("EnumType should be converted to annotated Binary") {
-      val structType = StructType(
-          StructField("a", EnumType("malbec", "shiraz"))
+    test("Schema.Enum should be converted to annotated Binary") {
+
+      val record = Schema.Record(
+        "myrecord",
+        Schema.Field("a", Schema.Enum("malbec", "pinot noir")),
       )
-      ToParquetSchema.toMessageType(structType, "mystruct") shouldBe
-          Types.buildMessage()
-              .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
-                  .`as`(OriginalType.ENUM).named("a"))
-              .named("mystruct")
+
+      ToParquetSchema.toMessageType(record) shouldBe
+        Types.buildMessage()
+          .addField(
+            Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+              .`as`(LogicalTypeAnnotation.enumType()).named("a")
+          )
+          .named("myrecord")
     }
   }
 }
