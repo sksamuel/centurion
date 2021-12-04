@@ -1,9 +1,11 @@
 package com.sksamuel.centurion.parquet.schemas
 
 import com.sksamuel.centurion.Schema
+import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.MessageType
 import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
+import org.apache.parquet.schema.Type
 import org.apache.parquet.schema.Type.Repetition
 import org.apache.parquet.schema.Types
 
@@ -19,19 +21,20 @@ object ToParquetSchema {
    * Returns a parquet [MessageType] for the given centurion [Record] schema.
    */
   fun toMessageType(schema: Schema.Struct): MessageType {
-    val types = schema.fields.map { toParquetType(it.schema, it.name, it.nullable) }
+    val types = schema.fields.map { toParquetType(it.schema, it.name) }
     val builder: Types.GroupBuilder<MessageType> = Types.buildMessage()
     return types.fold(builder) { acc, op -> acc.addField(op) }.named(schema.name)
   }
 
   // https://github.com/apache/parquet-format/blob/master/LogicalTypes.md
-  fun toParquetType(schema: Schema, name: String, nullable: Boolean): org.apache.parquet.schema.Type {
+  fun toParquetType(schema: Schema, name: String): Type {
 
-    val repetition = if (nullable) Repetition.OPTIONAL else Repetition.REQUIRED
+    val extracted = if (schema is Schema.NullableType) schema.element else schema
+    val repetition = if (schema is Schema.NullableType) Repetition.OPTIONAL else Repetition.REQUIRED
 
-    return when (schema) {
+    return when (extracted) {
       is Schema.Struct -> {
-        val fields = schema.fields.map { toParquetType(it.schema, it.name, it.nullable) }
+        val fields = extracted.fields.map { toParquetType(it.schema, it.name) }
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
       }
 
@@ -45,7 +48,7 @@ object ToParquetSchema {
        */
       Schema.Strings ->
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
-          .`as`(OriginalType.UTF8).named(name)
+          .`as`(LogicalTypeAnnotation.stringType()).named(name)
 
       Schema.Booleans -> Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, repetition).named(name)
       Schema.Bytes -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition).named(name)
@@ -92,8 +95,8 @@ object ToParquetSchema {
 
       is Schema.Map -> {
         val key = Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
-          .`as`(OriginalType.UTF8).named("key")
-        val value = toParquetType(schema.values, name, false)
+          .`as`(LogicalTypeAnnotation.stringType()).named("key")
+        val value = toParquetType(extracted.values, "value")
         Types.map(repetition).key(key).value(value).named(name)
       }
 
@@ -108,13 +111,14 @@ object ToParquetSchema {
        */
       is Schema.Enum ->
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
-          .`as`(OriginalType.ENUM).named(name)
+          .`as`(LogicalTypeAnnotation.enumType()).named(name)
       // in parquet, the elements of a list must be called "element", and they cannot be null
       // the nullability of list elements is handled in the containing type, represented here by repetition
-      is Schema.Array -> Types.list(repetition).element(toParquetType(schema.elements, "element", false)).named(name)
+      is Schema.Array -> Types.list(repetition).element(toParquetType(extracted.elements, "element")).named(name)
       is Schema.DecimalType -> TODO()
       Schema.Nulls -> TODO()
       is Schema.Varchar -> TODO()
+      is Schema.NullableType -> error("Should be extracted")
     }
   }
 }

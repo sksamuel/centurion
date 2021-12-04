@@ -6,7 +6,7 @@ import com.sksamuel.centurion.StructBuilder
 import org.apache.parquet.io.api.Converter
 import org.apache.parquet.io.api.GroupConverter
 
-open class RecordConverter(private val schema: Schema.Struct) : GroupConverter() {
+open class StructConverter(private val schema: Schema.Struct) : GroupConverter() {
 
   private val builder = StructBuilder(schema)
   private var struct: Struct? = null
@@ -34,11 +34,11 @@ open class RecordConverter(private val schema: Schema.Struct) : GroupConverter()
     Converters.converterFor(schema.fields[fieldIndex], builder)
 }
 
-class NestedRecordConverter(
+class NestedStructConverter(
   schema: Schema.Struct,
   private val field: Schema.Field,
   private val builder: StructBuilder,
-) : RecordConverter(schema) {
+) : StructConverter(schema) {
   override fun end() {
     super.end()
     builder[field.name] = currentStruct()

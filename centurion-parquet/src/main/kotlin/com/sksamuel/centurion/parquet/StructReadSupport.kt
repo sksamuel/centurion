@@ -22,7 +22,7 @@ internal class StructReadSupport : ReadSupport<Struct>() {
   ): RecordMaterializer<Struct> {
     // convert the incoming parquet schema into a centurion schema type, then
     // use that to create a materializer
-    val schema = FromParquetSchema.fromGroupType(fileSchema)
+    val schema = FromParquetSchema.fromMessageType(fileSchema)
     return StructRecordMaterializer(schema)
   }
 }

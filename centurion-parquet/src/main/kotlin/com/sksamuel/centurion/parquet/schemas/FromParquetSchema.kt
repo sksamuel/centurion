@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.parquet.schemas
 
 import com.sksamuel.centurion.Schema
+import com.sksamuel.centurion.nullable
 import org.apache.parquet.schema.GroupType
 import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.MessageType
@@ -24,12 +25,27 @@ object FromParquetSchema {
     }
   }
 
-  fun fromGroupType(groupType: GroupType): Schema.Struct {
+  fun fromMessageType(messageType: MessageType): Schema.Struct {
+    return fromStruct(messageType)
+  }
+
+  private fun fromGroupType(groupType: GroupType): Schema {
+    return if (groupType.logicalTypeAnnotation is LogicalTypeAnnotation.MapLogicalTypeAnnotation) {
+      fromMap(groupType)
+    } else fromStruct(groupType)
+  }
+
+  private fun fromStruct(groupType: GroupType): Schema.Struct {
     val fields = groupType.fields.map {
       val fieldType = fromParquet(it)
-      Schema.Field(it.name, fieldType, it.repetition.isNullable())
+      Schema.Field(it.name, if (it.repetition.isNullable()) fieldType.nullable() else fieldType)
     }
     return Schema.Struct(groupType.name, fields)
+  }
+
+  private fun fromMap(groupType: GroupType): Schema.Map {
+    val value = fromParquet(groupType.fields[0].asGroupType().fields[1])
+    return Schema.Map(value)
   }
 
   fun fromPrimitiveType(type: PrimitiveType): Schema {
@@ -81,7 +97,7 @@ object FromParquetSchema {
       // https://issues.apache.org/jira/browse/PARQUET-323
       PrimitiveType.PrimitiveTypeName.INT96 -> Schema.TimestampMillis
       PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type, type.logicalTypeAnnotation, type.typeLength)
-      null -> error("primative type name cannot be null ${type.primitiveTypeName}")
+      null -> error("primitiveTypeName cannot be null ${type.primitiveTypeName}")
     }
 
     return if (type.isRepeated()) Schema.Array(element) else element

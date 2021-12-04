@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Schema
+import com.sksamuel.centurion.nullable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
@@ -25,19 +26,19 @@ class ParquetReaderTest : FunSpec() {
 
       struct1.schema shouldBe Schema.Struct(
         "hive_schema",
-        Schema.Field("registration_dttm", Schema.TimestampMillis, true),
-        Schema.Field("id", Schema.Int32, true),
-        Schema.Field("first_name", Schema.Strings, true),
-        Schema.Field("last_name", Schema.Strings, true),
-        Schema.Field("email", Schema.Strings, true),
-        Schema.Field("gender", Schema.Strings, true),
-        Schema.Field("ip_address", Schema.Strings, true),
-        Schema.Field("cc", Schema.Strings, true),
-        Schema.Field("country", Schema.Strings, true),
-        Schema.Field("birthdate", Schema.Strings, true),
-        Schema.Field("salary", Schema.Float64, true),
-        Schema.Field("title", Schema.Strings, true),
-        Schema.Field("comments", Schema.Strings, true)
+        Schema.Field("registration_dttm", Schema.TimestampMillis.nullable()),
+        Schema.Field("id", Schema.Int32.nullable()),
+        Schema.Field("first_name", Schema.Strings.nullable()),
+        Schema.Field("last_name", Schema.Strings.nullable()),
+        Schema.Field("email", Schema.Strings.nullable()),
+        Schema.Field("gender", Schema.Strings.nullable()),
+        Schema.Field("ip_address", Schema.Strings.nullable()),
+        Schema.Field("cc", Schema.Strings.nullable()),
+        Schema.Field("country", Schema.Strings.nullable()),
+        Schema.Field("birthdate", Schema.Strings.nullable()),
+        Schema.Field("salary", Schema.Float64.nullable()),
+        Schema.Field("title", Schema.Strings.nullable()),
+        Schema.Field("comments", Schema.Strings.nullable()),
       )
 
       struct1.values shouldBe listOf(
@@ -77,7 +78,7 @@ class ParquetReaderTest : FunSpec() {
     }
 
 
-    test("reading arrays") {
+    test("reading arrays and maps") {
       val reader = Parquet.reader(File(this.javaClass.getResource("/map_array.parquet").file), conf)
       val struct = reader.read()
       struct.schema shouldBe Schema.Struct(
@@ -85,43 +86,35 @@ class ParquetReaderTest : FunSpec() {
         fields = listOf(
           Schema.Field(
             name = "map_op_op",
-            schema = Schema.Map(Schema.Strings),
-            nullable = true,
+            schema = Schema.Map(Schema.Strings.nullable()).nullable(),
           ),
           Schema.Field(
             name = "map_op_req",
-            schema = Schema.Map(Schema.Strings),
-            nullable = true,
+            schema = Schema.Map(Schema.Strings).nullable(),
           ),
           Schema.Field(
             name = "map_req_op",
-            schema = Schema.Map(Schema.Strings),
-            nullable = false,
+            schema = Schema.Map(Schema.Strings.nullable()),
           ),
           Schema.Field(
             name = "map_req_req",
             schema = Schema.Map(Schema.Strings),
-            nullable = false,
           ),
           Schema.Field(
             name = "arr_op_op",
-            schema = Schema.Map(Schema.Strings),
-            nullable = false,
+            schema = Schema.Map(Schema.Strings.nullable()).nullable(),
           ),
           Schema.Field(
             name = "arr_op_req",
-            schema = Schema.Map(Schema.Strings),
-            nullable = false,
+            schema = Schema.Map(Schema.Strings).nullable(),
           ),
           Schema.Field(
             name = "arr_req_op",
-            schema = Schema.Map(Schema.Strings),
-            nullable = false,
+            schema = Schema.Map(Schema.Strings.nullable()),
           ),
           Schema.Field(
             name = "arr_req_req",
             schema = Schema.Map(Schema.Strings),
-            nullable = false,
           ),
         )
       )

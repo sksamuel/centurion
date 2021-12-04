@@ -1,3 +1,5 @@
+@file:Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+
 package com.sksamuel.centurion.parquet
 
 import io.kotest.core.spec.style.FunSpec

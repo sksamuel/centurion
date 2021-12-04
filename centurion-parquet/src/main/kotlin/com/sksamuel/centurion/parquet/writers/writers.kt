@@ -19,12 +19,12 @@ interface Writer {
         is Schema.Struct -> StructWriter(schema, RoundingMode.UNNECESSARY, false)
         Schema.Booleans -> BooleanSetter
         Schema.Bytes -> BinaryWriter
-        Schema.Float64 -> DoubleSetter
+        Schema.Float64 -> DoubleWriter
         Schema.Float32 -> FloatWriter
-        Schema.Int64 -> LongSetter
-        Schema.Int32 -> IntegerSetter
-        Schema.Int16 -> IntegerSetter
-        Schema.Int8 -> IntegerSetter
+        Schema.Int64 -> LongWriter
+        Schema.Int32 -> IntegerWriter
+        Schema.Int16 -> IntegerWriter
+        Schema.Int8 -> IntegerWriter
         is Schema.Array -> ArrayWriter(schema)
 //        TimestampMillisType -> TimestampMillisSetter
 //        TimeMillisType -> TimeMillisSetter
@@ -45,15 +45,15 @@ internal object BinaryWriter : Writer {
   }
 }
 
-internal object IntegerSetter : Writer {
+internal object IntegerWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addInteger(value.toString().toInt())
 }
 
-internal object LongSetter : Writer {
+internal object LongWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addLong(value.toString().toLong())
 }
 
-internal object DoubleSetter : Writer {
+internal object DoubleWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addDouble(value.toString().toDouble())
 }
 

@@ -7,19 +7,22 @@ import org.apache.parquet.io.api.Converter
 interface Converters {
   companion object {
     fun converterFor(field: Schema.Field, builder: StructBuilder): Converter {
-      return when (val schema = field.schema) {
-        is Schema.Struct -> NestedRecordConverter(schema, field, builder)
+      fun forSchema(schema: Schema): Converter = when (schema) {
+        is Schema.Struct -> NestedStructConverter(schema, field, builder)
         Schema.Strings -> DictionaryStringPrimitiveConverter(field.name, builder)
         Schema.Float64, Schema.Float32,
         Schema.Int32, Schema.Int64, Schema.Int16, Schema.Int8, Schema.Bytes, Schema.Booleans ->
           StructBuilderPrimitiveConverter(field.name, builder)
         Schema.TimestampMillis -> TimestampConverter(field.name, builder)
+        is Schema.NullableType -> forSchema(schema.element)
+        is Schema.Map -> MapConverter()
 //        DateType -> DateConverter(receiver())
 //        is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
 //        Schema.TimestampMillis -> TimeMillisConverter(field.name, builder)
 //        is EnumType -> EnumConverter(receiver())
         else -> throw error("Unsupported schema ${schema::class}")
       }
+      return forSchema(field.schema)
     }
   }
 }

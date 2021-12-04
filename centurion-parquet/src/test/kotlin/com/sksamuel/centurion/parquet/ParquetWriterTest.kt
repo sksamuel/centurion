@@ -44,12 +44,12 @@ class ParquetWriterTest : FunSpec() {
       ParquetFileReader.open(input).fileMetaData.schema shouldBe
         Types.buildMessage()
           .addField(
-            Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.OPTIONAL)
+            Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
               .`as`(LogicalTypeAnnotation.stringType())
               .named("a")
           )
-          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.OPTIONAL).named("b"))
-          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("c"))
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("b"))
+          .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("c"))
           .named("myrecord")
     }
 
@@ -71,7 +71,7 @@ class ParquetWriterTest : FunSpec() {
       writer.close()
     }
 
-    test("writer should support arrays of primitives") {
+    test("!writer should support arrays of primitives") {
 
       val schema = Schema.Struct(
         "myrecord",
