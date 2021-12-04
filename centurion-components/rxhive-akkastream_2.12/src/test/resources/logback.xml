@@ -10,7 +10,7 @@
     <logger name="org.apache.parquet" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <logger name="com.sksamuel.rxhive" level="DEBUG" additivity="false">
+    <logger name="com.sksamuel.centurion" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
     <root level="INFO">
