@@ -19,7 +19,7 @@ class ParquetReaderTest : FunSpec() {
     test("reading an existing parquet file") {
 
       val path = Path("file://" + this.javaClass.getResource("/userdata.parquet").file)
-      val reader = parquetReader(path, conf)
+      val reader = Parquet.reader(path, conf)
       val struct1 = reader.read()
 
       struct1.schema shouldBe Schema.Record(
