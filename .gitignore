@@ -2,14 +2,11 @@
 *.log
 .idea
 *.iml
-.kotlintest
 
 target/
 build/
-out/
 lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
-credentials.sbt
 .gradle

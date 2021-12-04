@@ -11,6 +11,7 @@ pluginManagement {
    }
 }
 
-include("centurion-core")
-include("centurion-parquet")
 include("centurion-schemas")
+include("centurion-parquet")
+include("hoplite-core")
+include("hoplite-aws")
