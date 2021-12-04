@@ -40,11 +40,11 @@ class ToParquetSchemaTest : FunSpec() {
           .`as`(LogicalTypeAnnotation.stringType()).named("a")
     }
 
-//    test("TimestampMillisType should be converted to INT64 with original type TIMESTAMP_MILLIS") {
-//      ToParquetSchema.toParquetType(TimestampMillisType, "a", true) shouldBe
-//          Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL)
-//              .`as`(OriginalType.TIMESTAMP_MILLIS).named("a")
-//    }
+    test("Schema.TimestampMillis should be converted to INT64 with LogicalTypeAnnotation.TimeUnit.MILLIS") {
+      ToParquetSchema.toParquetType(Schema.TimestampMillis, "a", true) shouldBe
+          Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, Type.Repetition.OPTIONAL)
+              .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MILLIS)).named("a")
+    }
 
     test("Schema.Bytes should be converted to BINARY") {
       ToParquetSchema.toParquetType(Schema.Bytes, "a", true) shouldBe
