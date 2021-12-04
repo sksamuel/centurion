@@ -1,4 +1,4 @@
-rxhive
+centurion
 =======
 
 [![Build Status](https://travis-ci.org/sksamuel/rxhive.svg?branch=master)](https://travis-ci.org/sksamuel/rxhive)
@@ -8,7 +8,7 @@ rxhive
 
 ## Introduction
 
-A bigdata toolkit for Kotlin. 
+A bigdata toolkit for Kotlin.
 
 Supports reading and writing:
 
