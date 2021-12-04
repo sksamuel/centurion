@@ -4,7 +4,11 @@ sealed interface Schema {
 
   sealed interface Primitive : Schema
 
+  // // string types
+
   object Strings : Primitive
+  data class Varchar(val length: Int) : Primitive
+
   object Booleans : Primitive
   object Bytes : Primitive
 
@@ -21,6 +25,11 @@ sealed interface Schema {
 
   object Float64 : Primitive
   object Float32 : Primitive
+
+  // date types
+
+  // timestamp as milliseconds since epoch
+  object TimestampMillis : Primitive
 
   data class Precision(val value: Int)
   data class Scale(val value: Int)

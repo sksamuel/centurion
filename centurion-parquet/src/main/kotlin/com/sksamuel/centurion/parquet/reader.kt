@@ -15,7 +15,7 @@ object StructReadSupport : ReadSupport<Struct>() {
                               fileSchema: MessageType,
                               readContext: ReadContext): RecordMaterializer<Struct> {
     val schema = FromParquetSchema.fromGroupType(fileSchema)
-    return StructMaterializer(schema)
+    return TODO()// StructMaterializer(schema)
   }
 
   override fun init(context: InitContext): ReadContext = ReadContext(context.fileSchema)

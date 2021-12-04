@@ -1,30 +1,11 @@
 package com.sksamuel.centurion.parquet
 
-import com.sksamuel.centurion.ArrayType
-import com.sksamuel.centurion.BinaryType
-import com.sksamuel.centurion.BooleanType
-import com.sksamuel.centurion.DateType
-import com.sksamuel.centurion.DecimalType
-import com.sksamuel.centurion.EnumType
-import com.sksamuel.centurion.Float32Type
-import com.sksamuel.centurion.Float64Type
-import com.sksamuel.centurion.Int16Type
-import com.sksamuel.centurion.Int32Type
-import com.sksamuel.centurion.Int64Type
-import com.sksamuel.centurion.Int8Type
-import com.sksamuel.centurion.Precision
-import com.sksamuel.centurion.Scale
-import com.sksamuel.centurion.StringType
-import com.sksamuel.centurion.StructField
-import com.sksamuel.centurion.StructType
-import com.sksamuel.centurion.TimeMillisType
-import com.sksamuel.centurion.TimestampMillisType
-import com.sksamuel.centurion.Type
-import com.sksamuel.centurion.VarcharType
+import com.sksamuel.centurion.Schema
 import org.apache.parquet.schema.GroupType
+import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.MessageType
-import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
+import org.apache.parquet.schema.Type
 
 /**
  * Conversion functions from parquet types to centurion types.
@@ -34,7 +15,7 @@ import org.apache.parquet.schema.PrimitiveType
  */
 object FromParquetSchema {
 
-  fun fromParquet(type: org.apache.parquet.schema.Type): Type {
+  fun fromParquet(type: Type): Schema {
     return when (type) {
       is PrimitiveType -> fromPrimitiveType(type)
       is MessageType -> fromGroupType(type)
@@ -43,70 +24,73 @@ object FromParquetSchema {
     }
   }
 
-  fun fromGroupType(groupType: GroupType): StructType {
+  fun fromGroupType(groupType: GroupType): Schema.Record {
     val fields = groupType.fields.map {
       val fieldType = fromParquet(it)
-      StructField(
-          it.name,
-          fieldType,
-          it.repetition.isNullable()
-      )
+      Schema.Field(it.name, fieldType, it.repetition.isNullable())
     }
-    return StructType(fields)
+    return Schema.Record(groupType.name, fields)
   }
 
-  fun fromPrimitiveType(type: PrimitiveType): Type {
+  fun fromPrimitiveType(type: PrimitiveType): Schema {
 
-    fun int32(original: OriginalType?): Type = when (original) {
-      OriginalType.UINT_32 -> Int32Type
-      OriginalType.INT_32 -> Int32Type
-      OriginalType.UINT_16 -> Int16Type
-      OriginalType.INT_16 -> Int16Type
-      OriginalType.UINT_8 -> Int8Type
-      OriginalType.INT_8 -> Int8Type
-      OriginalType.DATE -> DateType
-      OriginalType.TIME_MILLIS -> TimeMillisType
-      else -> Int32Type
-    }
-
-    fun int64(original: OriginalType?): Type = when (original) {
-      OriginalType.UINT_64 -> Int64Type
-      OriginalType.INT_64 -> Int64Type
-      OriginalType.TIMESTAMP_MILLIS -> TimestampMillisType
-      else -> Int64Type
-    }
-
-    fun binary(type: PrimitiveType, original: OriginalType?, length: Int): Type = when (original) {
-      OriginalType.ENUM -> EnumType(emptyList())
-      OriginalType.UTF8 -> if (length > 0) VarcharType(length) else StringType
-      OriginalType.DECIMAL -> {
-        val meta = type.decimalMetadata
-        DecimalType(Precision(meta.precision), Scale(meta.scale))
+    fun int32(annotation: LogicalTypeAnnotation?): Schema = when (annotation) {
+      is LogicalTypeAnnotation.IntLogicalTypeAnnotation -> when (annotation.bitWidth) {
+        8 -> Schema.Int8
+        16 -> Schema.Int16
+        32 -> Schema.Int32
+        64 -> Schema.Int64
+        else -> Schema.Int32
       }
-      else -> BinaryType
+//      LogicalTypeAnnotation.DATE -> DateType
+//      LogicalTypeAnnotation.TIME_MILLIS -> TimeMillisType
+      else -> Schema.Int32
     }
 
-    val elementType = when (type.primitiveTypeName!!) {
-      PrimitiveType.PrimitiveTypeName.BINARY -> binary(type, type.originalType, type.typeLength)
-      PrimitiveType.PrimitiveTypeName.BOOLEAN -> BooleanType
-      PrimitiveType.PrimitiveTypeName.DOUBLE -> Float64Type
-      PrimitiveType.PrimitiveTypeName.FLOAT -> Float32Type
-      PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.originalType)
-      PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.originalType)
+    fun int64(annotation: LogicalTypeAnnotation?): Schema = when (annotation) {
+      is LogicalTypeAnnotation.IntLogicalTypeAnnotation -> when (annotation.bitWidth) {
+        8 -> Schema.Int8
+        16 -> Schema.Int16
+        32 -> Schema.Int32
+        64 -> Schema.Int64
+        else -> Schema.Int32
+      }
+      is LogicalTypeAnnotation.TimestampLogicalTypeAnnotation -> Schema.TimestampMillis
+      else -> Schema.Int64
+    }
+
+    fun binary(type: PrimitiveType, annotation: LogicalTypeAnnotation?, length: Int): Schema = when (annotation) {
+      is LogicalTypeAnnotation.EnumLogicalTypeAnnotation -> Schema.Enum(emptyList())
+      is LogicalTypeAnnotation.StringLogicalTypeAnnotation -> if (length > 0) Schema.Varchar(length) else Schema.Strings
+//      OriginalType.DECIMAL -> {
+//        val meta = type.decimalMetadata
+//        DecimalType(Precision(meta.precision), Scale(meta.scale))
+//      }
+      else -> Schema.Bytes
+    }
+
+    val element: Schema = when (type.primitiveTypeName) {
+      PrimitiveType.PrimitiveTypeName.BINARY -> binary(type, type.logicalTypeAnnotation, type.typeLength)
+      PrimitiveType.PrimitiveTypeName.BOOLEAN -> Schema.Booleans
+      PrimitiveType.PrimitiveTypeName.DOUBLE -> Schema.Float64
+      PrimitiveType.PrimitiveTypeName.FLOAT -> Schema.Float32
+      PrimitiveType.PrimitiveTypeName.INT32 -> int32(type.logicalTypeAnnotation)
+      PrimitiveType.PrimitiveTypeName.INT64 -> int64(type.logicalTypeAnnotation)
       // INT96 is deprecated, but it's commonly used (wrongly) for timestamp millis
       // Spark does this, so we must do too
       // https://issues.apache.org/jira/browse/PARQUET-323
-      PrimitiveType.PrimitiveTypeName.INT96 -> TimestampMillisType
-      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type, type.originalType, type.typeLength)
+      PrimitiveType.PrimitiveTypeName.INT96 -> Schema.TimestampMillis
+      PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY -> binary(type, type.logicalTypeAnnotation, type.typeLength)
+      null -> error("primative type name cannot be null ${type.primitiveTypeName}")
     }
 
-    return if (type.isRepeated()) ArrayType(elementType) else elementType
+    return if (type.isRepeated()) Schema.Array(element) else element
   }
 }
 
-private fun org.apache.parquet.schema.Type.Repetition.isNullable(): Boolean =
-    this == org.apache.parquet.schema.Type.Repetition.OPTIONAL
+private fun Type.Repetition.isNullable(): Boolean =
+    this == Type.Repetition.OPTIONAL
 
 private fun PrimitiveType.isRepeated(): Boolean {
-  return repetition == org.apache.parquet.schema.Type.Repetition.REPEATED
+  return repetition == Type.Repetition.REPEATED
 }

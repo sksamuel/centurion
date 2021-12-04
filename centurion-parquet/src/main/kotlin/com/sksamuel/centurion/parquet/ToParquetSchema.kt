@@ -57,8 +57,8 @@ object ToParquetSchema {
       Schema.Int64 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition).named(name)
       Schema.Int16 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
         .`as`(OriginalType.INT_16).named(name)
-//      Schema.TimestampMillis -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
-//          .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
+      Schema.TimestampMillis -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
+          .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
 //      Schema.TimestampMicros -> TODO()
 
       /**
@@ -114,6 +114,7 @@ object ToParquetSchema {
       is Schema.Array -> Types.list(repetition).element(toParquetType(schema.elements, "element", false)).named(name)
       is Schema.DecimalType -> TODO()
       Schema.Nulls -> TODO()
+      is Schema.Varchar -> TODO()
     }
   }
 }
