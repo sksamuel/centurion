@@ -1,16 +1,18 @@
 package com.sksamuel.centurion.parquet.setters
 
+import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.Struct
-import com.sksamuel.centurion.StructType
 import org.apache.parquet.io.api.RecordConsumer
 import java.math.RoundingMode
 
-class StructSetter(private val type: StructType,
-                   roundingMode: RoundingMode,
-    // set to true when the initial root message, otherwise false for GroupType
-                   private val root: Boolean) : Setter {
+class StructWriter(
+  private val schema: Schema.Struct,
+  roundingMode: RoundingMode,
+  // set to true when the initial root message, otherwise false for GroupType
+  private val root: Boolean
+) : Writer {
 
-  override fun set(consumer: RecordConsumer, value: Any) {
+  override fun write(consumer: RecordConsumer, value: Any) {
 
     // in parquet, nested types must be wrapped in "groups"
     fun writeGroup(fn: () -> Unit) {
@@ -39,13 +41,13 @@ class StructSetter(private val type: StructType,
         else -> throw UnsupportedOperationException("$value is not recognized as a struct type")
       }
 
-      type.fields.forEachIndexed { k, field ->
+      schema.fields.forEachIndexed { k, field ->
         val fieldValue = values[k]
         // null values are handled in parquet by skipping them completely in the file
         if (fieldValue != null) {
           writeField(field.name, k) {
-            val setter = Setter.writerFor(field.type)
-            setter.set(consumer, fieldValue)
+            val writer = Writer.writerFor(field.schema)
+            writer.write(consumer, fieldValue)
           }
         }
       }

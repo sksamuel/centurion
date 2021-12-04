@@ -1,13 +1,14 @@
 package com.sksamuel.centurion.parquet
 
-import com.sksamuel.centurion.Record
+import com.sksamuel.centurion.Struct
+import com.sksamuel.centurion.parquet.schemas.FromParquetSchema
 import org.apache.hadoop.conf.Configuration
 import org.apache.parquet.hadoop.api.InitContext
 import org.apache.parquet.hadoop.api.ReadSupport
 import org.apache.parquet.io.api.RecordMaterializer
 import org.apache.parquet.schema.MessageType
 
-class RecordReadSupport : ReadSupport<Record>() {
+class StructReadSupport : ReadSupport<Struct>() {
 
   override fun init(context: InitContext): ReadContext {
     return ReadContext(context.fileSchema)
@@ -18,7 +19,7 @@ class RecordReadSupport : ReadSupport<Record>() {
     keyValueMetaData: MutableMap<String, String>?,
     fileSchema: MessageType,
     readContext: ReadContext,
-  ): RecordMaterializer<Record> {
+  ): RecordMaterializer<Struct> {
     // convert the incoming parquet schema into a centurion schema type, then
     // use that to create a materializer
     val schema = FromParquetSchema.fromGroupType(fileSchema)

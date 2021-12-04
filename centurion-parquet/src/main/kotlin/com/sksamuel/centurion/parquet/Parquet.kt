@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.parquet
 
-import com.sksamuel.centurion.Record
 import com.sksamuel.centurion.Struct
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -11,8 +10,8 @@ import org.apache.parquet.schema.MessageType
 
 object Parquet {
 
-  fun reader(path: Path, conf: Configuration): ParquetReader<Record> {
-    return ParquetReader.builder(RecordReadSupport(), path)
+  fun reader(path: Path, conf: Configuration): ParquetReader<Struct> {
+    return ParquetReader.builder(StructReadSupport(), path)
       .withConf(conf)
       .build()
   }

@@ -40,7 +40,7 @@ sealed interface Schema {
     constructor(vararg values: String) : this(values.asList())
   }
 
-  data class Record(val name: String, val fields: List<Field>) : Schema {
+  data class Struct(val name: String, val fields: List<Field>) : Schema {
     constructor(name: String, vararg fields: Field) : this(name, fields.toList())
     init {
       require(fields.map { it.name }.distinct().size == fields.size) { "Record cannot contain duplicated field names" }

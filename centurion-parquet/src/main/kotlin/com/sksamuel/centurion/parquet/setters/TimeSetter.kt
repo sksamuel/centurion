@@ -7,13 +7,13 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.sql.Timestamp
 
-object TimeSetter : Setter {
+object TimeSetter : Writer {
 
   private const val nanosInDay = 24L * 60L * 60 * 1000 * 1000 * 1000
 
   // first 8 bytes are the nanoseconds
   // second 4 bytes are the days
-  override fun set(consumer: RecordConsumer, value: Any) {
+  override fun write(consumer: RecordConsumer, value: Any) {
     val ts = value as Timestamp
     val julian = JulianDate.of(ts.toLocalDateTime())
     val bytes = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)

@@ -22,7 +22,7 @@ class ParquetReaderTest : FunSpec() {
       val reader = Parquet.reader(path, conf)
       val struct1 = reader.read()
 
-      struct1.schema shouldBe Schema.Record(
+      struct1.schema shouldBe Schema.Struct(
         "hive_schema",
         Schema.Field("registration_dttm", Schema.TimestampMillis, true),
         Schema.Field("id", Schema.Int32, true),

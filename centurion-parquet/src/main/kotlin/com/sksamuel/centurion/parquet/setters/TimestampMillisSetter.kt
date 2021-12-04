@@ -10,13 +10,13 @@ import java.sql.Timestamp
  *
  * The sort order used for TIMESTAMP\_MILLIS is signed.
  */
-object TimestampMillisSetter : Setter {
+object TimestampMillisSetter : Writer {
 
   private const val nanosInDay = 24L * 60L * 60 * 1000 * 1000 * 1000
 
   // first 8 bytes are the nanoseconds
   // second 4 bytes are the days
-  override fun set(consumer: RecordConsumer, value: Any) {
+  override fun write(consumer: RecordConsumer, value: Any) {
     val ts = value as Timestamp
     consumer.addLong(ts.toInstant().toEpochMilli())
   }

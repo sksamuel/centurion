@@ -1,16 +1,16 @@
 package com.sksamuel.centurion.parquet
 
-import com.sksamuel.centurion.Record
+import com.sksamuel.centurion.Struct
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.parquet.converters.RecordConverter
 import org.apache.parquet.io.api.GroupConverter
 import org.apache.parquet.io.api.RecordMaterializer
 
-class RecordRecordMaterializer(schema: Schema.Record) : RecordMaterializer<Record>() {
+class RecordRecordMaterializer(schema: Schema.Struct) : RecordMaterializer<Struct>() {
 
   private val rootConverter = RecordConverter(schema)
 
-  override fun getCurrentRecord(): Record {
+  override fun getCurrentRecord(): Struct {
     return rootConverter.currentStruct()
   }
 

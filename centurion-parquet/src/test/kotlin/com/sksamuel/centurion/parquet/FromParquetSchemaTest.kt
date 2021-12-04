@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Schema
+import com.sksamuel.centurion.parquet.schemas.FromParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.parquet.schema.LogicalTypeAnnotation
@@ -15,7 +16,7 @@ class FromParquetSchemaTest : FunSpec() {
       val message = Types.buildMessage().addField(
         Types.primitive(PrimitiveType.PrimitiveTypeName.INT96, Type.Repetition.OPTIONAL).named("a")
       ).named("root")
-      FromParquetSchema.fromParquet(message) shouldBe Schema.Record("root", Schema.Field("a", Schema.TimestampMillis))
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct("root", Schema.Field("a", Schema.TimestampMillis))
     }
 
     test("required fields") {
@@ -25,7 +26,7 @@ class FromParquetSchemaTest : FunSpec() {
         .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("b"))
         .named("myrecord")
 
-      FromParquetSchema.fromParquet(message) shouldBe Schema.Record(
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
         Schema.Field("a", Schema.Bytes, false),
         Schema.Field("b", Schema.Booleans, false),

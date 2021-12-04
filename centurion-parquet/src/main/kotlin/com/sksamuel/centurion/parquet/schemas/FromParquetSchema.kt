@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.parquet
+package com.sksamuel.centurion.parquet.schemas
 
 import com.sksamuel.centurion.Schema
 import org.apache.parquet.schema.GroupType
@@ -24,12 +24,12 @@ object FromParquetSchema {
     }
   }
 
-  fun fromGroupType(groupType: GroupType): Schema.Record {
+  fun fromGroupType(groupType: GroupType): Schema.Struct {
     val fields = groupType.fields.map {
       val fieldType = fromParquet(it)
       Schema.Field(it.name, fieldType, it.repetition.isNullable())
     }
-    return Schema.Record(groupType.name, fields)
+    return Schema.Struct(groupType.name, fields)
   }
 
   fun fromPrimitiveType(type: PrimitiveType): Schema {

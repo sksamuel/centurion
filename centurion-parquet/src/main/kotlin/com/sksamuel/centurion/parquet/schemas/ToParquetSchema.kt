@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.parquet
+package com.sksamuel.centurion.parquet.schemas
 
 import com.sksamuel.centurion.Schema
 import org.apache.parquet.schema.MessageType
@@ -18,7 +18,7 @@ object ToParquetSchema {
   /**
    * Returns a parquet [MessageType] for the given centurion [Record] schema.
    */
-  fun toMessageType(schema: Schema.Record): MessageType {
+  fun toMessageType(schema: Schema.Struct): MessageType {
     val types = schema.fields.map { toParquetType(it.schema, it.name, it.nullable) }
     val builder: Types.GroupBuilder<MessageType> = Types.buildMessage()
     return types.fold(builder) { acc, op -> acc.addField(op) }.named(schema.name)
@@ -30,7 +30,7 @@ object ToParquetSchema {
     val repetition = if (nullable) Repetition.OPTIONAL else Repetition.REQUIRED
 
     return when (schema) {
-      is Schema.Record -> {
+      is Schema.Struct -> {
         val fields = schema.fields.map { toParquetType(it.schema, it.name, it.nullable) }
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
       }

@@ -1,7 +1,7 @@
 package com.sksamuel.centurion
 
 data class DRecord(
-  val schema: Schema.Record,
+  val schema: Schema.Struct,
   // must be list to ensure ordering is kept to match up with schema
   val values: List<Any>,
 ) {

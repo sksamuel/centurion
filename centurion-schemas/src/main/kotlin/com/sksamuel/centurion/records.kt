@@ -1,7 +1,7 @@
 package com.sksamuel.centurion
 
-data class Record(val schema: Schema.Record, val values: List<Any?>) {
-  constructor(schema: Schema.Record, vararg values: Any?) : this(schema, values.asList())
+data class Struct(val schema: Schema.Struct, val values: List<Any?>) {
+  constructor(schema: Schema.Struct, vararg values: Any?) : this(schema, values.asList())
 
   init {
     require(schema.fields.size == values.size)
@@ -18,16 +18,9 @@ data class Record(val schema: Schema.Record, val values: List<Any?>) {
     if (index < 0) error("Field $fieldName does not exist in schema $schema")
     return values[index]
   }
-
-  companion object {
-    fun fromMap(schema: Schema.Record, map: Map<String, Any?>): Record {
-      val values = schema.fields.map { map[it.name] }
-      return Record(schema, values)
-    }
-  }
 }
 
-class StructBuilder(val schema: Schema.Record) {
+class StructBuilder(val schema: Schema.Struct) {
 
   private val values = Array<Any?>(schema.fields.size) { null }
 
@@ -39,5 +32,5 @@ class StructBuilder(val schema: Schema.Record) {
     values.fill(null)
   }
 
-  fun toStruct(): Record = Record(schema, values.toList())
+  fun toStruct(): Struct = Struct(schema, values.toList())
 }
