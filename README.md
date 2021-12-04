@@ -8,10 +8,12 @@ rxhive
 
 ## Introduction
 
-A set of components for reading and writing to Apache Hive and Apache Parquet using popular open source streaming frameworks. Supported frameworks and libraries:
+A bigdata toolkit for Kotlin. 
 
-* Akka-Streams
-* Kotlin Flows
+Supports reading and writing:
+
+* Apache Orc
+* Apache Parquet
 
 ## Akka-Streams
 
