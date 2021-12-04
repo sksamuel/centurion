@@ -42,10 +42,10 @@ sealed interface Schema {
 
   data class Record(val name: String, val fields: List<Field>) : Schema {
     constructor(name: String, vararg fields: Field) : this(name, fields.toList())
-
     init {
       require(fields.map { it.name }.distinct().size == fields.size) { "Record cannot contain duplicated field names" }
     }
+    fun indexOf(name: String): Int = fields.indexOfFirst { it.name == name }
   }
 
   data class Array(val elements: Schema) : Schema

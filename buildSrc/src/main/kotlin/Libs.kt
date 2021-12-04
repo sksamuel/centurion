@@ -17,6 +17,7 @@ object Libs {
 
   object Hadoop {
     const val common = "org.apache.hadoop:hadoop-common:2.10.1"
+    const val client = "org.apache.hadoop:hadoop-client:2.10.1"
   }
 
   object Jackson {

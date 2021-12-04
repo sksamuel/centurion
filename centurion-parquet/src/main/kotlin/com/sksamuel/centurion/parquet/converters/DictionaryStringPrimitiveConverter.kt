@@ -1,10 +1,14 @@
 package com.sksamuel.centurion.parquet.converters
 
+import com.sksamuel.centurion.StructBuilder
 import org.apache.parquet.column.Dictionary
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.PrimitiveConverter
 
-class DictionaryStringPrimitiveConverter(private val receiver: Receiver<Any>) : PrimitiveConverter() {
+class DictionaryStringPrimitiveConverter(
+  private val fieldName: String,
+  private val builder: StructBuilder
+) : PrimitiveConverter() {
 
   private var dictionary: Dictionary? = null
 
@@ -19,6 +23,6 @@ class DictionaryStringPrimitiveConverter(private val receiver: Receiver<Any>) : 
   }
 
   override fun addBinary(x: Binary) {
-    receiver.add(x.toStringUsingUTF8())
+    builder[fieldName] = x.toStringUsingUTF8()
   }
 }
