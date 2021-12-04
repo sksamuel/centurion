@@ -62,7 +62,7 @@ class ParquetReaderTest : FunSpec() {
           Timestamp.from(Instant.ofEpochMilli(1454562243000)),
           2,
           "Albert",
-          "Freman",
+          "Freeman",
           "afreeman1@is.gd",
           "Male",
           "218.111.175.34",
