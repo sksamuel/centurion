@@ -22,7 +22,7 @@ jobs:
           java-version: '8'
 
       - name: run tests
-        run: ./gradlew kotest
+        run: ./gradlew check
 
       - name: deploy snapshot
         run: ./gradlew publish
