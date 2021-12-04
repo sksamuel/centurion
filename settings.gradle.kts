@@ -13,5 +13,3 @@ pluginManagement {
 
 include("centurion-schemas")
 include("centurion-parquet")
-include("hoplite-core")
-include("hoplite-aws")
