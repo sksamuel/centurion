@@ -5,7 +5,7 @@ import com.sksamuel.centurion.Struct
 import org.apache.parquet.io.api.RecordConsumer
 import java.math.RoundingMode
 
-class StructWriter(
+internal class StructWriter(
   private val schema: Schema.Struct,
   roundingMode: RoundingMode,
   // set to true when the initial root message, otherwise false for GroupType

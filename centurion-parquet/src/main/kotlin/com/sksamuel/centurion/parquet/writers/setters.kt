@@ -18,7 +18,7 @@ interface Writer {
         Schema.Strings -> StringWriter
         is Schema.Struct -> StructWriter(schema, RoundingMode.UNNECESSARY, false)
         Schema.Booleans -> BooleanSetter
-        Schema.Bytes -> BinarySetter
+        Schema.Bytes -> BinaryWriter
         Schema.Float64 -> DoubleSetter
         Schema.Float32 -> FloatWriter
         Schema.Int64 -> LongSetter
@@ -43,7 +43,7 @@ interface Writer {
   }
 }
 
-object BinarySetter : Writer {
+internal object BinaryWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) {
     when (value) {
       is ByteArray -> consumer.addBinary(Binary.fromReusedByteArray(value))
@@ -52,28 +52,28 @@ object BinarySetter : Writer {
   }
 }
 
-object IntegerSetter : Writer {
+internal object IntegerSetter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addInteger(value.toString().toInt())
 }
 
-object LongSetter : Writer {
+internal object LongSetter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addLong(value.toString().toLong())
 }
 
-object DoubleSetter : Writer {
+internal object DoubleSetter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addDouble(value.toString().toDouble())
 }
 
-object StringWriter : Writer {
+internal object StringWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) =
     consumer.addBinary(Binary.fromReusedByteArray(value.toString().toByteArray()))
 }
 
-object FloatWriter : Writer {
+internal object FloatWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addFloat(value.toString().toFloat())
 }
 
-object BooleanSetter : Writer {
+internal object BooleanSetter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) = consumer.addBoolean(value == true)
 }
 
