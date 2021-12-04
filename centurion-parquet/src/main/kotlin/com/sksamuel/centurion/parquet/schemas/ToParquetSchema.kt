@@ -94,7 +94,7 @@ object ToParquetSchema {
 //            .`as`(OriginalType.DATE).named(name)
 
       is Schema.Map -> {
-        val key = Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+        val key = Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Repetition.REQUIRED)
           .`as`(LogicalTypeAnnotation.stringType()).named("key")
         val value = toParquetType(extracted.values, "value")
         Types.map(repetition).key(key).value(value).named(name)
