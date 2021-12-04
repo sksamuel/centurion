@@ -1,5 +1,4 @@
-centurion
-=======
+# Centurion <img src="logo.png" height="50">
 
 ![master](https://github.com/sksamuel/centurion/workflows/master/badge.svg)
 [<img src="https://img.shields.io/maven-central/v/com.sksamuel.centurion/centurion-schemas.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Ccenturion)
