@@ -16,10 +16,10 @@ import com.sksamuel.centurion.StructType
 import com.sksamuel.centurion.TimeMillis
 import com.sksamuel.centurion.TimeMillisType
 import com.sksamuel.centurion.TimestampMillisType
-import io.kotlintest.TestCase
-import io.kotlintest.TestResult
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FunSpec
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.test.TestCase
+import io.kotest.core.test.TestResult
+import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path

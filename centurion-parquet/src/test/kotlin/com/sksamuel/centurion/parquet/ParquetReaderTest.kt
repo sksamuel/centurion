@@ -6,8 +6,8 @@ import com.sksamuel.centurion.StringType
 import com.sksamuel.centurion.StructField
 import com.sksamuel.centurion.StructType
 import com.sksamuel.centurion.TimestampMillisType
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FunSpec
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path

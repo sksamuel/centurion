@@ -10,8 +10,8 @@ import com.sksamuel.centurion.StringType
 import com.sksamuel.centurion.StructField
 import com.sksamuel.centurion.StructType
 import com.sksamuel.centurion.TimestampMillisType
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.FunSpec
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
 import org.apache.parquet.schema.Type
