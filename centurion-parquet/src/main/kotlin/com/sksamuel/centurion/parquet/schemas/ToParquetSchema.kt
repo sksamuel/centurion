@@ -29,8 +29,8 @@ object ToParquetSchema {
   // https://github.com/apache/parquet-format/blob/master/LogicalTypes.md
   fun toParquetType(schema: Schema, name: String): Type {
 
-    val extracted = if (schema is Schema.NullableType) schema.element else schema
-    val repetition = if (schema is Schema.NullableType) Repetition.OPTIONAL else Repetition.REQUIRED
+    val extracted = if (schema is Schema.Nullable) schema.element else schema
+    val repetition = if (schema is Schema.Nullable) Repetition.OPTIONAL else Repetition.REQUIRED
 
     return when (extracted) {
       is Schema.Struct -> {
@@ -118,7 +118,7 @@ object ToParquetSchema {
       is Schema.DecimalType -> TODO()
       Schema.Nulls -> TODO()
       is Schema.Varchar -> TODO()
-      is Schema.NullableType -> error("Should be extracted")
+      is Schema.Nullable -> error("Should be extracted")
     }
   }
 }

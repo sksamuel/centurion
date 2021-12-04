@@ -4,7 +4,7 @@ data class Struct(val schema: Schema.Struct, val values: List<Any?>) {
   constructor(schema: Schema.Struct, vararg values: Any?) : this(schema, values.asList())
 
   init {
-    require(schema.fields.size == values.size)
+    require(schema.fields.size == values.size) { "Schema size ${schema.fields.size} != values size ${values.size}" }
   }
 
   private val names by lazy { schema.fields.map { it.name } }

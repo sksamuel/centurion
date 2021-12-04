@@ -40,7 +40,7 @@ sealed interface Schema {
 
   // a nullable type wraps any other type, denoting that it is permitted to be null
   // this is analogous to Avro's union type, with two elements - null and another
-  data class NullableType(val element: Schema) : Schema
+  data class Nullable(val element: Schema) : Schema
 
   data class Enum(val symbols: List<String>) : Schema {
     constructor(vararg values: String) : this(values.asList())
@@ -63,4 +63,4 @@ sealed interface Schema {
   data class Field(val name: String, val schema: Schema)
 }
 
-fun Schema.nullable(): Schema = if (this is Schema.NullableType) this else Schema.NullableType(this)
+fun Schema.nullable(): Schema = if (this is Schema.Nullable) this else Schema.Nullable(this)

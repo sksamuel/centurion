@@ -19,7 +19,7 @@ object FromParquetSchema {
   fun fromParquet(type: Type): Schema {
     return when (type) {
       is PrimitiveType -> fromPrimitiveType(type)
-      is MessageType -> fromGroupType(type)
+      is MessageType -> fromMessageType(type)
       is GroupType -> fromGroupType(type)
       else -> throw UnsupportedOperationException()
     }
@@ -30,9 +30,11 @@ object FromParquetSchema {
   }
 
   private fun fromGroupType(groupType: GroupType): Schema {
-    return if (groupType.logicalTypeAnnotation is LogicalTypeAnnotation.MapLogicalTypeAnnotation) {
-      fromMap(groupType)
-    } else fromStruct(groupType)
+    return when (groupType.logicalTypeAnnotation) {
+      is LogicalTypeAnnotation.MapLogicalTypeAnnotation -> fromMap(groupType)
+      is LogicalTypeAnnotation.ListLogicalTypeAnnotation -> fromList(groupType)
+      else -> fromStruct(groupType)
+    }
   }
 
   private fun fromStruct(groupType: GroupType): Schema.Struct {
@@ -43,9 +45,16 @@ object FromParquetSchema {
     return Schema.Struct(groupType.name, fields)
   }
 
-  private fun fromMap(groupType: GroupType): Schema.Map {
+  private fun fromMap(groupType: GroupType): Schema {
     val value = fromParquet(groupType.fields[0].asGroupType().fields[1])
-    return Schema.Map(value)
+    val map = Schema.Map(value)
+    return if (groupType.isRepetition(Type.Repetition.OPTIONAL)) map.nullable() else map
+  }
+
+  private fun fromList(groupType: GroupType): Schema {
+    val element = fromParquet(groupType.fields[0].asGroupType().fields[0])
+    val arr = Schema.Array(element)
+    return if (groupType.isRepetition(Type.Repetition.OPTIONAL)) arr.nullable() else arr
   }
 
   fun fromPrimitiveType(type: PrimitiveType): Schema {
@@ -100,7 +109,11 @@ object FromParquetSchema {
       null -> error("primitiveTypeName cannot be null ${type.primitiveTypeName}")
     }
 
-    return if (type.isRepeated()) Schema.Array(element) else element
+    return when (type.repetition!!) {
+      Type.Repetition.REQUIRED -> element
+      Type.Repetition.OPTIONAL -> Schema.Nullable(element)
+      Type.Repetition.REPEATED -> Schema.Array(element)
+    }
   }
 }
 

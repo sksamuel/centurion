@@ -3,7 +3,6 @@ package com.sksamuel.centurion.parquet
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.nullable
 import com.sksamuel.centurion.parquet.schemas.FromParquetSchema
-import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.parquet.schema.LogicalTypeAnnotation
@@ -51,14 +50,14 @@ class FromParquetSchemaTest : FunSpec() {
           PrimitiveType.PrimitiveTypeName.BINARY,
           Type.Repetition.OPTIONAL
         ).named("a")
-      ) shouldBe Schema.Bytes
+      ) shouldBe Schema.Bytes.nullable()
     }
 
     test("Logical type String should be converted to Schema.Strings") {
       FromParquetSchema.fromPrimitiveType(
         Types.primitive(
           PrimitiveType.PrimitiveTypeName.BINARY,
-          Type.Repetition.OPTIONAL
+          Type.Repetition.REQUIRED
         ).`as`(LogicalTypeAnnotation.stringType()).named("a")
       ) shouldBe Schema.Strings
     }
@@ -69,7 +68,7 @@ class FromParquetSchemaTest : FunSpec() {
           PrimitiveType.PrimitiveTypeName.BINARY,
           Type.Repetition.OPTIONAL
         ).length(215).`as`(LogicalTypeAnnotation.stringType()).named("a")
-      ) shouldBe Schema.Varchar(215)
+      ) shouldBe Schema.Varchar(215).nullable()
     }
 
     test("maps of booleans") {
@@ -88,6 +87,69 @@ class FromParquetSchemaTest : FunSpec() {
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
         Schema.Field("a", Schema.Map(Schema.Booleans)),
+      )
+    }
+
+    test("optional maps") {
+
+      val message = Types.buildMessage()
+        .addField(
+          Types.map(Type.Repetition.OPTIONAL)
+            .key(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("key"))
+            .value(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("value"))
+            .named("a")
+        ).named("myrecord")
+
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Map(Schema.Booleans).nullable()),
+      )
+    }
+
+    test("optional map values") {
+
+      val message = Types.buildMessage()
+        .addField(
+          Types.map(Type.Repetition.REPEATED)
+            .key(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("key"))
+            .value(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("value"))
+            .named("a")
+        ).named("myrecord")
+
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Map(Schema.Booleans.nullable())),
+      )
+    }
+
+    test("arrays of booleans") {
+
+      val message = Types.buildMessage()
+        .addField(
+          Types.list(Type.Repetition.REQUIRED)
+            .element(
+              Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("element")
+            ).named("a")
+        ).named("myrecord")
+
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Array(Schema.Booleans)),
+      )
+    }
+
+    test("optional arrays") {
+
+      val message = Types.buildMessage()
+        .addField(
+          Types.list(Type.Repetition.OPTIONAL)
+            .element(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("element"))
+            .named("a")
+        ).named("myrecord")
+
+      FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Array(Schema.Int32).nullable()),
       )
     }
   }

@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.parquet.converters
 
-import com.sksamuel.centurion.StructBuilder
 import jodd.time.JulianDate
 import org.apache.parquet.example.data.simple.NanoTime
 import org.apache.parquet.io.api.Binary
@@ -12,8 +11,8 @@ import java.time.ZoneOffset
 // see https://issues.apache.org/jira/browse/HIVE-6394 and
 // https://issues.apache.org/jira/browse/SPARK-10177
 class TimestampConverter(
-  private val fieldName: String,
-  private val builder: StructBuilder
+  private val index: Int,
+  private val collector: ValuesCollector,
 ) : PrimitiveConverter() {
 
   // The Julian Date (JD) is the number of days (with decimal fraction of the day) that
@@ -21,7 +20,7 @@ class TimestampConverter(
   private val nanosInDay = 24L * 60L * 60 * 1000 * 1000 * 1000
 
   override fun addLong(value: Long) {
-    builder[fieldName] = Timestamp.from(Instant.ofEpochMilli(value))
+    collector[index] = Timestamp.from(Instant.ofEpochMilli(value))
   }
 
   /**
@@ -50,7 +49,7 @@ class TimestampConverter(
     //   val nanos = (nano.julianDay.toLong() - 2440588L) * (86400L * 1000 * 1000 * 1000) + nano.timeOfDayNanos
 //    val millis = nanos / 1000 / 1000
 //    val ts = Timestamp.from(Instant.ofEpochMilli(millis))
-    builder[fieldName] = ts
+    collector[index] = ts
   }
 
 //  override fun addBinary(x: Binary) {

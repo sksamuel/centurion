@@ -9,31 +9,31 @@ import org.apache.parquet.io.api.PrimitiveConverter
  * that sets values on a [StructBuilder] for a particular field.
  */
 class StructBuilderPrimitiveConverter(
-  private val fieldName: String,
-  private val builder: StructBuilder,
+  private val index: Int,
+  private val collector: ValuesCollector,
 ) : PrimitiveConverter() {
 
   override fun addBinary(x: Binary) {
-    builder[fieldName] = x.bytes
+    collector[index] = x
   }
 
   override fun addBoolean(x: Boolean) {
-    builder[fieldName] = x
+     collector[index] = x
   }
 
   override fun addDouble(x: Double) {
-    builder.set(fieldName, x)
+     collector[index] = x
   }
 
   override fun addFloat(x: Float) {
-    builder.set(fieldName, x)
+     collector[index] = x
   }
 
   override fun addInt(x: Int) {
-    builder.set(fieldName, x)
+     collector[index] = x
   }
 
   override fun addLong(x: Long) {
-    builder.set(fieldName, x)
+     collector[index] = x
   }
 }
