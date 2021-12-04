@@ -3,12 +3,22 @@ package com.sksamuel.centurion.parquet
 import com.sksamuel.centurion.Struct
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
+import org.apache.parquet.hadoop.ParquetFileReader
 import org.apache.parquet.hadoop.ParquetFileWriter
 import org.apache.parquet.hadoop.ParquetReader
 import org.apache.parquet.hadoop.ParquetWriter
+import org.apache.parquet.hadoop.util.HadoopInputFile
 import org.apache.parquet.schema.MessageType
 
 object Parquet {
+
+  fun count(paths: List<Path>, conf: Configuration): Long {
+    return paths.sumOf { path ->
+      val input = HadoopInputFile.fromPath(path, conf)
+      val reader = ParquetFileReader.open(input)
+      reader.footer.blocks.sumOf { it.rowCount }
+    }
+  }
 
   fun reader(path: Path, conf: Configuration): ParquetReader<Struct> {
     return ParquetReader.builder(StructReadSupport(), path)
@@ -40,3 +50,5 @@ object Parquet {
       .build()
   }
 }
+
+fun <T : Any> ParquetReader<T>.sequence(): Sequence<T> = generateSequence { read() }

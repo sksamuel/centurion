@@ -1,7 +1,7 @@
 package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Struct
-import com.sksamuel.centurion.parquet.setters.StructWriter
+import com.sksamuel.centurion.parquet.writers.StructWriter
 import org.apache.hadoop.conf.Configuration
 import org.apache.parquet.hadoop.api.WriteSupport
 import org.apache.parquet.io.api.RecordConsumer
@@ -13,7 +13,7 @@ import java.math.RoundingMode
  *
  * @param metadata arbitrary key-value pairs included in the footer of the file.
  */
-class StructWriteSupport(
+internal class StructWriteSupport(
   private val schema: MessageType,
   private val roundingMode: RoundingMode,
   private val metadata: Map<String, String>

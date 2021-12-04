@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.parquet.setters
+package com.sksamuel.centurion.parquet.writers
 
 import jodd.time.JulianDate
 import org.apache.parquet.io.api.Binary

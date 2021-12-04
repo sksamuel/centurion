@@ -6,7 +6,7 @@ import com.sksamuel.centurion.parquet.converters.RecordConverter
 import org.apache.parquet.io.api.GroupConverter
 import org.apache.parquet.io.api.RecordMaterializer
 
-class RecordRecordMaterializer(schema: Schema.Struct) : RecordMaterializer<Struct>() {
+internal class StructRecordMaterializer(schema: Schema.Struct) : RecordMaterializer<Struct>() {
 
   private val rootConverter = RecordConverter(schema)
 

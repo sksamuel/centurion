@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.parquet.setters
+package com.sksamuel.centurion.parquet.writers
 
 import com.sksamuel.centurion.Schema
 import org.apache.parquet.io.api.Binary

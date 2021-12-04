@@ -8,7 +8,7 @@ import org.apache.parquet.hadoop.api.ReadSupport
 import org.apache.parquet.io.api.RecordMaterializer
 import org.apache.parquet.schema.MessageType
 
-class StructReadSupport : ReadSupport<Struct>() {
+internal class StructReadSupport : ReadSupport<Struct>() {
 
   override fun init(context: InitContext): ReadContext {
     return ReadContext(context.fileSchema)
@@ -23,6 +23,6 @@ class StructReadSupport : ReadSupport<Struct>() {
     // convert the incoming parquet schema into a centurion schema type, then
     // use that to create a materializer
     val schema = FromParquetSchema.fromGroupType(fileSchema)
-    return RecordRecordMaterializer(schema)
+    return StructRecordMaterializer(schema)
   }
 }

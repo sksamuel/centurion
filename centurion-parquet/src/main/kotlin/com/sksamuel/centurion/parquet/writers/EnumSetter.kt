@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.parquet.setters
+package com.sksamuel.centurion.parquet.writers
 
 import org.apache.parquet.io.api.Binary
 import org.apache.parquet.io.api.RecordConsumer

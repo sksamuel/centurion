@@ -8,7 +8,7 @@ import org.apache.parquet.hadoop.api.WriteSupport
 import org.apache.parquet.schema.MessageType
 import java.math.RoundingMode
 
-class StructParquetWriterBuilder(
+internal class StructParquetWriterBuilder(
   path: Path,
   private val schema: MessageType,
   private val roundingMode: RoundingMode,
