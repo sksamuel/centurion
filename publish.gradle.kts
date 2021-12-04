@@ -56,14 +56,14 @@ publishing {
     register("mavenJava", MavenPublication::class) {
       from(components["java"])
       pom {
-        name.set("hoplite")
-        description.set("Configuration for Kotlin")
-        url.set("http://www.github.com/sksamuel/hoplite")
+        name.set("centurion")
+        description.set("Kotlin Bigdata Toolkit")
+        url.set("http://www.github.com/sksamuel/centurion")
 
         scm {
-          connection.set("scm:git:http://www.github.com/sksamuel/hoplite/")
-          developerConnection.set("scm:git:http://github.com/sksamuel/")
-          url.set("http://www.github.com/sksamuel/hoplite/")
+          connection.set("scm:git:http://www.github.com/sksamuel/centurion")
+          developerConnection.set("scm:git:http://github.com/sksamuel")
+          url.set("http://www.github.com/sksamuel/centurion")
         }
 
         licenses {
