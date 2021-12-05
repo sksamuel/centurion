@@ -10,3 +10,8 @@ src_managed/
 project/boot/
 project/plugins/project/
 .gradle
+
+_SUCCESS
+._SUCCESS.crc
+part*.parquet
+.part*.parquet.crc

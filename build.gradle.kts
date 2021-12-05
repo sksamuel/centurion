@@ -24,6 +24,11 @@ allprojects {
    group = Libs.org
    version = Ci.version
 
+   java {
+      this.sourceCompatibility = JavaVersion.VERSION_1_8
+      this.targetCompatibility = JavaVersion.VERSION_1_8
+   }
+
    repositories {
       mavenLocal()
       mavenCentral()
