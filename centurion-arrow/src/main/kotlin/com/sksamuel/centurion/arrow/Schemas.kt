@@ -53,8 +53,5 @@ object Schemas {
       Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
       else -> error("Unsupported schema $schema")
     }
-//    val strField = Field("col1", FieldType.nullable(ArrowType.Utf8()), null)
-//    val intField = Field("col2", FieldType.nullable(ArrowType.Int(32, true)), null)
-//    return Schema(listOf(strField, intField))
   }
 }

@@ -78,4 +78,12 @@ class SchemasTest : FunSpec({
   test("enums") {
     Schemas.toOrc(Schema.Enum("enum", "malbec", "shiraz")) shouldBe TypeDescription.createString()
   }
+
+  test("decimals") {
+    Schemas.toOrc(Schema.Decimal(Schema.Precision(5), Schema.Scale(2))) shouldBe
+      TypeDescription.createDecimal().withScale(2).withPrecision(5)
+
+    Schemas.fromOrc(TypeDescription.createDecimal().withScale(2).withPrecision(5)) shouldBe
+      Schema.Decimal(Schema.Precision(5), Schema.Scale(2))
+  }
 })

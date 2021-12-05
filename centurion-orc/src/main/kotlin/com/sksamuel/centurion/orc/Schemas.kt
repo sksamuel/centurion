@@ -20,6 +20,10 @@ object Schemas {
       Schema.Int64 -> TypeDescription.createLong()
       Schema.Float64 -> TypeDescription.createDouble()
       Schema.Float32 -> TypeDescription.createFloat()
+      is Schema.Decimal -> TypeDescription
+        .createDecimal()
+        .withScale(schema.scale.value)
+        .withPrecision(schema.precision.value)
       Schema.Strings -> TypeDescription.createString()
       is Schema.Enum -> TypeDescription.createString()
       Schema.TimestampMillis -> TypeDescription.createTimestamp()
@@ -49,6 +53,7 @@ object Schemas {
       TypeDescription.Category.BYTE -> Schema.Int8
       TypeDescription.Category.SHORT -> Schema.Int16
       TypeDescription.Category.TIMESTAMP -> Schema.TimestampMillis
+      TypeDescription.Category.DECIMAL -> Schema.Decimal(Schema.Precision(type.precision), Schema.Scale(type.scale))
       else -> error("Unsupported type $type")
     }
   }
