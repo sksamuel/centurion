@@ -70,4 +70,34 @@ class SchemasTest : FunSpec({
     Schemas.toAvro(struct) shouldBe avro
     Schemas.fromAvro(avro) shouldBe struct
   }
+
+  test("nested structs") {
+
+    val struct = Schema.Struct(
+      "mystruct",
+      Schema.Field("a", Schema.Booleans),
+      Schema.Field(
+        "b", Schema.Struct(
+          "nestedstruct",
+          Schema.Field("x", Schema.Booleans),
+          Schema.Field("y", Schema.Float32)
+        )
+      ),
+      Schema.Field("c", Schema.Int64)
+    )
+
+    val avro = SchemaBuilder.record("mystruct").fields()
+      .name("a").type(SchemaBuilder.builder().booleanType()).noDefault()
+      .name("b").type(
+        SchemaBuilder.builder().record("nestedstruct").fields()
+          .name("x").type(SchemaBuilder.builder().booleanType()).noDefault()
+          .name("y").type(SchemaBuilder.builder().floatType()).noDefault()
+          .endRecord()
+      ).noDefault()
+      .name("c").type(SchemaBuilder.builder().longType()).noDefault()
+      .endRecord()
+
+    Schemas.toAvro(struct) shouldBe avro
+    Schemas.fromAvro(avro) shouldBe struct
+  }
 })
