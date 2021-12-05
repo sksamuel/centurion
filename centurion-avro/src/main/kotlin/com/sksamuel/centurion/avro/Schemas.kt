@@ -13,6 +13,7 @@ object Schemas {
       is Schema.Strings -> SchemaBuilder.builder().stringType()
       is Schema.Booleans -> SchemaBuilder.builder().booleanType()
       is Schema.Bytes -> SchemaBuilder.builder().bytesType()
+      is Schema.Array -> SchemaBuilder.builder().array().items(toAvro(schema.elements))
       else -> error("Unsupported schema $schema")
     }
   }
@@ -21,7 +22,7 @@ object Schemas {
     return when (schema.type) {
       org.apache.avro.Schema.Type.RECORD -> TODO()
       org.apache.avro.Schema.Type.ENUM -> TODO()
-      org.apache.avro.Schema.Type.ARRAY -> TODO()
+      org.apache.avro.Schema.Type.ARRAY -> Schema.Array(fromAvro(schema.elementType))
       org.apache.avro.Schema.Type.MAP -> TODO()
       org.apache.avro.Schema.Type.UNION -> TODO()
       org.apache.avro.Schema.Type.FIXED -> TODO()

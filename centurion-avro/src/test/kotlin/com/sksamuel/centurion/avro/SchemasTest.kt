@@ -21,4 +21,12 @@ class SchemasTest : FunSpec({
     Schemas.toAvro(Schema.Bytes) shouldBe SchemaBuilder.builder().bytesType()
     Schemas.fromAvro(SchemaBuilder.builder().bytesType()) shouldBe Schema.Bytes
   }
+
+  test("arrays") {
+    Schemas.toAvro(Schema.Array(Schema.Booleans)) shouldBe SchemaBuilder.builder().array()
+      .items(SchemaBuilder.builder().booleanType())
+
+    Schemas.fromAvro(SchemaBuilder.builder().array().items(SchemaBuilder.builder().booleanType())) shouldBe
+      Schema.Array(Schema.Booleans)
+  }
 })
