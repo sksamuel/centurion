@@ -21,9 +21,12 @@ class FromParquetSchemaTest : FunSpec() {
     }
 
     test("handle Type.Repetition.OPTIONAL") {
-      val message = Types.buildMessage().addField(
-        Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("a")
-      ).named("root")
+
+      val message = Types
+        .buildMessage()
+        .addField(Types.optional(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("a"))
+        .named("root")
+
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "root",
         Schema.Field("a", Schema.Booleans.nullable())
@@ -77,11 +80,10 @@ class FromParquetSchemaTest : FunSpec() {
         .addField(
           Types.map(Type.Repetition.REQUIRED)
             .key(
-              Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
-                .`as`(LogicalTypeAnnotation.stringType()).named("key")
-            ).value(
-              Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("value")
-            ).named("a")
+              Types.required(PrimitiveType.PrimitiveTypeName.BINARY).`as`(LogicalTypeAnnotation.stringType())
+                .named("key")
+            ).value(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("value"))
+            .named("a")
         ).named("myrecord")
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
@@ -95,8 +97,8 @@ class FromParquetSchemaTest : FunSpec() {
       val message = Types.buildMessage()
         .addField(
           Types.map(Type.Repetition.OPTIONAL)
-            .key(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("key"))
-            .value(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("value"))
+            .key(Types.required(PrimitiveType.PrimitiveTypeName.INT32).named("key"))
+            .value(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("value"))
             .named("a")
         ).named("myrecord")
 
@@ -111,8 +113,8 @@ class FromParquetSchemaTest : FunSpec() {
       val message = Types.buildMessage()
         .addField(
           Types.map(Type.Repetition.REPEATED)
-            .key(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("key"))
-            .value(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.OPTIONAL).named("value"))
+            .key(Types.required(PrimitiveType.PrimitiveTypeName.INT32).named("key"))
+            .value(Types.optional(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("value"))
             .named("a")
         ).named("myrecord")
 
@@ -124,28 +126,52 @@ class FromParquetSchemaTest : FunSpec() {
 
     test("arrays of booleans") {
 
-      val message = Types.buildMessage()
-        .addField(
-          Types.list(Type.Repetition.REQUIRED)
-            .element(
-              Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("element")
-            ).named("a")
-        ).named("myrecord")
+      val message = Types.buildMessage().addField(
+        Types.list(Type.Repetition.REQUIRED).element(
+          Types.required(PrimitiveType.PrimitiveTypeName.INT32).named("b")
+        ).named("a")
+      ).named("myrecord")
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Array(Schema.Booleans)),
+        Schema.Field("a", Schema.Array(Schema.Int32)),
       )
     }
 
-    test("optional arrays") {
+    test("arrays of structs") {
 
-      val message = Types.buildMessage()
-        .addField(
-          Types.list(Type.Repetition.OPTIONAL)
-            .element(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("element"))
-            .named("a")
-        ).named("myrecord")
+      val x = Types.buildGroup(Type.Repetition.REQUIRED)
+        .addField(Types.optional(PrimitiveType.PrimitiveTypeName.INT32).named("c"))
+        .addField(Types.required(PrimitiveType.PrimitiveTypeName.FLOAT).named("d"))
+        .named("x")
+
+      val y = Types.buildMessage()
+        .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("a"))
+        .addField(Types.list(Type.Repetition.REQUIRED).element(x).named("b"))
+        .named("y")
+
+      FromParquetSchema.fromParquet(y) shouldBe Schema.Struct(
+        "y",
+        Schema.Field("a", Schema.Booleans),
+        Schema.Field(
+          "b", Schema.Array(
+            Schema.Struct(
+              "x",
+              Schema.Field("c", Schema.Int32.nullable()),
+              Schema.Field("d", Schema.Float32),
+            )
+          )
+        ),
+      )
+    }
+
+    test("optional arrays of primitives") {
+
+      val message = Types.buildMessage().addField(
+        Types.list(Type.Repetition.OPTIONAL).element(
+          Types.required(PrimitiveType.PrimitiveTypeName.INT32).named("b")
+        ).named("a")
+      ).named("myrecord")
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",

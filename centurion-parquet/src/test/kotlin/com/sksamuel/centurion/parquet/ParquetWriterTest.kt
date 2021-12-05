@@ -2,6 +2,7 @@ package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.Struct
+import com.sksamuel.centurion.nullable
 import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -82,20 +83,62 @@ class ParquetWriterTest : FunSpec() {
         Schema.Field("c", Schema.Booleans)
       )
 
-      val messageType = ToParquetSchema.toMessageType(schema)
-
       val path = Path("test_array.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, messageType, true)
+      val writer = Parquet.writer(path, conf, ToParquetSchema.toMessageType(schema), true)
       writer.write(Struct(schema, "a", listOf(1, 2, 3), true))
       writer.close()
 
       Parquet.reader(path, conf).read() shouldBe Struct(schema, "a", listOf(1, 2, 3), true)
     }
 
-    test("writer should support arrays of objects") {
+    test("writer should support arrays of structs") {
 
+      val nested = Schema.Struct(
+        "x",
+        Schema.Field("c", Schema.Int32.nullable()),
+        Schema.Field("d", Schema.Float32),
+      )
+
+      val schema = Schema.Struct("y", Schema.Field("b", Schema.Array(nested)))
+
+      val path = Path("test_array.pq")
+      fs.deleteOnExit(path)
+
+      val writer = Parquet.writer(path, conf, ToParquetSchema.toMessageType(schema), true)
+      writer.write(
+        Struct(
+          schema,
+          listOf(
+            listOf(
+              Struct(nested, listOf(123, 1.2)),
+              Struct(nested, listOf(345, 1.3))
+            )
+          )
+        )
+      )
+      writer.close()
+
+      val struct = Parquet.reader(path, conf).read()
+
+      struct.schema shouldBe Schema.Struct(
+        "y",
+        Schema.Field(
+          "b",
+          Schema.Array(
+            Schema.Struct(
+              "element",
+              Schema.Field("c", Schema.Int32.nullable()),
+              Schema.Field("d", Schema.Float32),
+            )
+          )
+        ),
+      )
+
+      val items = struct.values[0] as List<Struct>
+      items[0].values shouldBe listOf(123, 1.2F)
+      items[1].values shouldBe listOf(345, 1.3F)
     }
   }
 }

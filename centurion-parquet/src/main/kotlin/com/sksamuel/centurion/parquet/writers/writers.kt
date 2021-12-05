@@ -26,6 +26,7 @@ interface Writer {
         Schema.Int16 -> IntegerWriter
         Schema.Int8 -> IntegerWriter
         is Schema.Array -> ArrayWriter(schema)
+        is Schema.Nullable -> writerFor(schema.element)
 //        TimestampMillisType -> TimestampMillisSetter
 //        TimeMillisType -> TimeMillisSetter
 //        DateType -> DateSetter
@@ -40,13 +41,16 @@ internal object BinaryWriter : Writer {
   override fun write(consumer: RecordConsumer, value: Any) {
     when (value) {
       is ByteArray -> consumer.addBinary(Binary.fromReusedByteArray(value))
-      is List<*> -> write(consumer, value.toTypedArray())
+      is List<*> -> write(consumer, Binary.fromReusedByteArray(value.map { it as Byte }.toByteArray()))
     }
   }
 }
 
 internal object IntegerWriter : Writer {
-  override fun write(consumer: RecordConsumer, value: Any) = consumer.addInteger(value.toString().toInt())
+  override fun write(consumer: RecordConsumer, value: Any) = when (value) {
+    is Int -> consumer.addInteger(value)
+    else -> consumer.addInteger(value.toString().toInt())
+  }
 }
 
 internal object LongWriter : Writer {

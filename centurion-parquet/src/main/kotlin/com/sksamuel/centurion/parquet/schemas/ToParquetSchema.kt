@@ -33,9 +33,26 @@ object ToParquetSchema {
     val repetition = if (schema is Schema.Nullable) Repetition.OPTIONAL else Repetition.REQUIRED
 
     return when (extracted) {
+
       is Schema.Struct -> {
         val fields = extracted.fields.map { toParquetType(it.schema, it.name) }
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
+      }
+
+      // for parquet arrays we should have a container group, which is a logical type list
+      // and has the repetition of the list field itself.
+      // this group then has a repeated field of type group called 'list'.
+      // this repeated group has a single field called 'element' which is the type of the input data elements
+      //
+      //   <field-repetition> group <field-name> (LIST) {
+      //     repeated group list {
+      //       <list-element-repetition> <list-element-type> element;
+      //     }
+      //   }
+      //
+      // note that the names 'list' and 'element' are hardcoded values.
+      is Schema.Array -> {
+        Types.list(repetition).element(toParquetType(extracted.elements, "element")).named(name)
       }
 
       /**
@@ -61,7 +78,7 @@ object ToParquetSchema {
       Schema.Int16 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
         .`as`(OriginalType.INT_16).named(name)
       Schema.TimestampMillis -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
-          .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
+        .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
 //      Schema.TimestampMicros -> TODO()
 
       /**
@@ -94,8 +111,10 @@ object ToParquetSchema {
 //            .`as`(OriginalType.DATE).named(name)
 
       is Schema.Map -> {
-        val key = Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Repetition.REQUIRED)
-          .`as`(LogicalTypeAnnotation.stringType()).named("key")
+        val key = Types
+          .required(PrimitiveType.PrimitiveTypeName.BINARY)
+          .`as`(LogicalTypeAnnotation.stringType())
+          .named("key")
         val value = toParquetType(extracted.values, "value")
         Types.map(repetition).key(key).value(value).named(name)
       }
@@ -112,9 +131,6 @@ object ToParquetSchema {
       is Schema.Enum ->
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(LogicalTypeAnnotation.enumType()).named(name)
-      // in parquet, the elements of a list must be called "element", and they cannot be null
-      // the nullability of list elements is handled in the containing type, represented here by repetition
-      is Schema.Array -> Types.list(repetition).element(toParquetType(extracted.elements, "element")).named(name)
       is Schema.DecimalType -> TODO()
       Schema.Nulls -> TODO()
       is Schema.Varchar -> TODO()

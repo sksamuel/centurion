@@ -125,27 +125,21 @@ class ToParquetSchemaTest : FunSpec() {
     test("arrays of structs") {
 
       val schema = Schema.Struct(
-        "myrecord",
+        "x",
         Schema.Field("a", Schema.Bytes),
-        Schema.Field(
-          "b",
-          Schema.Array(Schema.Struct("nested", Schema.Field("c", Schema.Booleans))),
-        )
+        Schema.Field("b", Schema.Array(Schema.Struct("y", Schema.Field("c", Schema.Booleans))))
       )
 
       ToParquetSchema.toMessageType(schema) shouldBe Types.buildMessage()
+        .addField(Types.required(PrimitiveType.PrimitiveTypeName.BINARY).named("a"))
         .addField(
-          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED).named("a")
-        )
-        .addField(
-          Types.list(Type.Repetition.REQUIRED)
-            .element(
-              Types.buildGroup(Type.Repetition.REQUIRED)
-                .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("c"))
-                .named("element")
-            )
-            .named("b")
-        ).named("myrecord")
+          Types.list(Type.Repetition.REQUIRED).element(
+            Types
+              .buildGroup(Type.Repetition.REQUIRED)
+              .addField(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("c"))
+              .named("element")
+          ).named("b")
+        ).named("x")
     }
 
     test("required fields") {

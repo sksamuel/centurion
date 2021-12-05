@@ -79,7 +79,6 @@ class ParquetReaderTest : FunSpec() {
         )
     }
 
-
     test("reading arrays and maps") {
       val reader = Parquet.reader(File(this.javaClass.getResource("/map_array.parquet").file), conf)
       val struct = reader.read()
