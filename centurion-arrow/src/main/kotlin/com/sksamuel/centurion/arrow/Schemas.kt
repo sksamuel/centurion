@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.arrow
 
 import com.sksamuel.centurion.Schema
+import org.apache.arrow.vector.types.TimeUnit
 import org.apache.arrow.vector.types.pojo.ArrowType
 import org.apache.arrow.vector.types.pojo.Field
 import org.apache.arrow.vector.types.pojo.FieldType
@@ -24,6 +25,10 @@ object Schemas {
         8 -> Schema.Int8
         else -> error("Unsupported arrow bit width $arrow.bitWidth")
       }
+      is ArrowType.Timestamp -> when (arrow.unit) {
+        TimeUnit.MILLISECOND -> Schema.TimestampMillis
+        else -> error("Unsupported arrow time unit ${arrow.unit}")
+      }
       else -> error("Unsupported arrow type $arrow")
     }
   }
@@ -42,6 +47,7 @@ object Schemas {
       Schema.Int32 -> ArrowType.Int(32, true)
       Schema.Int16 -> ArrowType.Int(16, true)
       Schema.Int8 -> ArrowType.Int(8, true)
+      Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
       else -> error("Unsupported schema $schema")
     }
 //    val strField = Field("col1", FieldType.nullable(ArrowType.Utf8()), null)

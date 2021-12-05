@@ -3,6 +3,7 @@ package com.sksamuel.centurion.arrow
 import com.sksamuel.centurion.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.apache.arrow.vector.types.TimeUnit
 import org.apache.arrow.vector.types.pojo.ArrowType
 import org.apache.arrow.vector.types.pojo.Field
 import org.apache.arrow.vector.types.pojo.FieldType
@@ -34,6 +35,11 @@ class SchemasTest : FunSpec({
   test("centurion <--> arrow Binary") {
     Schemas.fromArrow(ArrowType.Binary()) shouldBe Schema.Bytes
     Schemas.toArrow(Schema.Bytes) shouldBe ArrowType.Binary()
+  }
+
+  test("centurion <--> arrow timestamp millis") {
+    Schemas.fromArrow(ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")) shouldBe Schema.TimestampMillis
+    Schemas.toArrow(Schema.TimestampMillis) shouldBe ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
   }
 
   test("centurion <--> arrow struct") {
