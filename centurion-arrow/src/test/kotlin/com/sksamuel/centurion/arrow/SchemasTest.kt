@@ -47,6 +47,10 @@ class SchemasTest : FunSpec({
     Schemas.toArrow(Schema.Decimal(Schema.Precision(5), Schema.Scale(2))) shouldBe ArrowType.Decimal(5, 2, 128)
   }
 
+  test("enums") {
+    Schemas.toArrow(Schema.Enum("enum", "malbec", "shiraz")) shouldBe ArrowType.Utf8()
+  }
+
   test("centurion <--> arrow struct") {
 
     val strField = Field("col1", FieldType.nullable(ArrowType.Utf8()), null)

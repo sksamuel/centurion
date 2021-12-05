@@ -74,4 +74,8 @@ class SchemasTest : FunSpec({
     Schemas.fromOrc(type) shouldBe schema
     Schemas.toOrc(schema) shouldBe type
   }
+
+  test("enums") {
+    Schemas.toOrc(Schema.Enum("enum", "malbec", "shiraz")) shouldBe TypeDescription.createString()
+  }
 })

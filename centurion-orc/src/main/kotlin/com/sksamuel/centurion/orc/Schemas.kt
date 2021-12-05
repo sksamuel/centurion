@@ -21,6 +21,7 @@ object Schemas {
       Schema.Float64 -> TypeDescription.createDouble()
       Schema.Float32 -> TypeDescription.createFloat()
       Schema.Strings -> TypeDescription.createString()
+      is Schema.Enum -> TypeDescription.createString()
       Schema.TimestampMillis -> TypeDescription.createTimestamp()
       is Schema.Varchar -> TypeDescription.createVarchar().withMaxLength(schema.length)
       else -> error("Unsupported schema $schema")

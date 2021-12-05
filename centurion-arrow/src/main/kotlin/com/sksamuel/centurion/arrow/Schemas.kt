@@ -48,6 +48,7 @@ object Schemas {
       Schema.Int32 -> ArrowType.Int(32, true)
       Schema.Int16 -> ArrowType.Int(16, true)
       Schema.Int8 -> ArrowType.Int(8, true)
+      is Schema.Enum -> ArrowType.Utf8()
       is Schema.Decimal -> ArrowType.Decimal(schema.precision.value, schema.scale.value)
       Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
       else -> error("Unsupported schema $schema")
