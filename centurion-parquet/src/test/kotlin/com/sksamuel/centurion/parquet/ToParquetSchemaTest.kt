@@ -101,6 +101,27 @@ class ToParquetSchemaTest : FunSpec() {
         .named("myrecord")
     }
 
+    test("optional arrays of primitives") {
+
+      val schema = Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.Strings),
+        Schema.Field("b", Schema.Array(Schema.Int32).nullable()),
+      )
+
+      ToParquetSchema.toMessageType(schema) shouldBe Types.buildMessage()
+        .addField(
+          Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
+            .`as`(LogicalTypeAnnotation.stringType()).named("a")
+        )
+        .addField(
+          Types.list(Type.Repetition.OPTIONAL)
+            .element(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("element"))
+            .named("b")
+        )
+        .named("myrecord")
+    }
+
     test("arrays of structs") {
 
       val schema = Schema.Struct(
