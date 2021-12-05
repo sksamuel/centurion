@@ -36,7 +36,7 @@ sealed interface Schema {
   data class Precision(val value: Int)
   data class Scale(val value: Int)
 
-  data class DecimalType(val precision: Precision, val scale: Scale) : Primitive
+  data class Decimal(val precision: Precision, val scale: Scale) : Primitive
 
   // a nullable type wraps any other type, denoting that it is permitted to be null
   // this is analogous to Avro's union type, with two elements - null and another

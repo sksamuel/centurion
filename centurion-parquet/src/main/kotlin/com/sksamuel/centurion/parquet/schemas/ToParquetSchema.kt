@@ -131,7 +131,7 @@ object ToParquetSchema {
       is Schema.Enum ->
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(LogicalTypeAnnotation.enumType()).named(name)
-      is Schema.DecimalType -> TODO()
+      is Schema.Decimal -> TODO()
       Schema.Nulls -> TODO()
       is Schema.Varchar -> TODO()
       is Schema.Nullable -> error("Should be extracted")

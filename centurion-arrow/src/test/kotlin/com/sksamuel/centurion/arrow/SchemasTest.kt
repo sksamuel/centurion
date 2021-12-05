@@ -42,6 +42,11 @@ class SchemasTest : FunSpec({
     Schemas.toArrow(Schema.TimestampMillis) shouldBe ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
   }
 
+  test("centurion <--> arrow decimal") {
+    Schemas.fromArrow(ArrowType.Decimal(5, 2, 128)) shouldBe Schema.Decimal(Schema.Precision(5), Schema.Scale(2))
+    Schemas.toArrow(Schema.Decimal(Schema.Precision(5), Schema.Scale(2))) shouldBe ArrowType.Decimal(5, 2, 128)
+  }
+
   test("centurion <--> arrow struct") {
 
     val strField = Field("col1", FieldType.nullable(ArrowType.Utf8()), null)
