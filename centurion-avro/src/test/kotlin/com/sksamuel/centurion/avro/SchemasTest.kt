@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro
 import com.sksamuel.centurion.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.apache.avro.LogicalTypes
 import org.apache.avro.SchemaBuilder
 
 class SchemasTest : FunSpec({
@@ -108,6 +109,13 @@ class SchemasTest : FunSpec({
 
     Schemas.toAvro(schema) shouldBe avro
     Schemas.fromAvro(avro) shouldBe schema
+  }
 
+  test("decimals") {
+    Schemas.toAvro(Schema.Decimal(Schema.Precision(5), Schema.Scale(2))) shouldBe
+      LogicalTypes.decimal(5, 2).addToSchema(SchemaBuilder.builder().bytesType())
+
+    Schemas.fromAvro(LogicalTypes.decimal(5, 2).addToSchema(SchemaBuilder.builder().bytesType())) shouldBe
+      Schema.Decimal(Schema.Precision(5), Schema.Scale(2))
   }
 })

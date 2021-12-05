@@ -3,6 +3,7 @@
 package com.sksamuel.centurion.avro
 
 import com.sksamuel.centurion.Schema
+import org.apache.avro.LogicalTypes
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.Schema as AvroSchema
 
@@ -17,6 +18,8 @@ object Schemas {
       is Schema.Int32 -> SchemaBuilder.builder().intType()
       is Schema.Float64 -> SchemaBuilder.builder().doubleType()
       is Schema.Float32 -> SchemaBuilder.builder().floatType()
+      is Schema.Decimal -> LogicalTypes.decimal(schema.precision.value, schema.scale.value)
+        .addToSchema(SchemaBuilder.builder().bytesType())
       is Schema.Array -> SchemaBuilder.builder().array().items(toAvro(schema.elements))
       is Schema.Enum -> SchemaBuilder.enumeration("enum").symbols(*schema.symbols.toTypedArray())
       is Schema.Struct -> {
@@ -39,7 +42,10 @@ object Schemas {
       org.apache.avro.Schema.Type.UNION -> TODO()
       org.apache.avro.Schema.Type.FIXED -> TODO()
       org.apache.avro.Schema.Type.STRING -> Schema.Strings
-      org.apache.avro.Schema.Type.BYTES -> Schema.Bytes
+      org.apache.avro.Schema.Type.BYTES -> when (val lt = schema.logicalType) {
+        is LogicalTypes.Decimal -> Schema.Decimal(Schema.Precision(lt.precision), Schema.Scale(lt.scale))
+        else -> Schema.Bytes
+      }
       org.apache.avro.Schema.Type.INT -> Schema.Int32
       org.apache.avro.Schema.Type.LONG -> Schema.Int64
       org.apache.avro.Schema.Type.FLOAT -> Schema.Float32
