@@ -118,4 +118,13 @@ class SchemasTest : FunSpec({
     Schemas.fromAvro(LogicalTypes.decimal(5, 2).addToSchema(SchemaBuilder.builder().bytesType())) shouldBe
       Schema.Decimal(Schema.Precision(5), Schema.Scale(2))
   }
+
+  test("timestamp millis") {
+
+    Schemas.toAvro(Schema.TimestampMillis) shouldBe LogicalTypes.timestampMillis()
+      .addToSchema(SchemaBuilder.builder().longType())
+
+    Schemas.fromAvro(LogicalTypes.timestampMillis()
+      .addToSchema(SchemaBuilder.builder().longType())) shouldBe Schema.TimestampMillis
+  }
 })

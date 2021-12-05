@@ -45,7 +45,6 @@ class SchemasTest : FunSpec({
       .addField("binary", TypeDescription.createBinary())
       .addField("boolean", TypeDescription.createBoolean())
       .addField("string", TypeDescription.createString())
-      .addField("timestamp", TypeDescription.createTimestamp())
       .addField(
         "struct",
         TypeDescription.createStruct()
@@ -60,7 +59,6 @@ class SchemasTest : FunSpec({
       Schema.Field("binary", Schema.Bytes),
       Schema.Field("boolean", Schema.Booleans),
       Schema.Field("string", Schema.Strings),
-      Schema.Field("timestamp", Schema.TimestampMillis),
       Schema.Field(
         "struct",
         Schema.Struct(
@@ -85,5 +83,10 @@ class SchemasTest : FunSpec({
 
     Schemas.fromOrc(TypeDescription.createDecimal().withScale(2).withPrecision(5)) shouldBe
       Schema.Decimal(Schema.Precision(5), Schema.Scale(2))
+  }
+
+  test("timestamp millis") {
+    Schemas.toOrc(Schema.TimestampMillis) shouldBe TypeDescription.createTimestamp()
+    Schemas.fromOrc(TypeDescription.createTimestamp()) shouldBe Schema.TimestampMillis
   }
 })

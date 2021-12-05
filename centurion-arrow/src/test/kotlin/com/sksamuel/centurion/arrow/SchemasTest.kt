@@ -71,4 +71,9 @@ class SchemasTest : FunSpec({
     Schemas.fromArrow(schema) shouldBe struct
     Schemas.toArrowSchema(struct) shouldBe schema
   }
+
+  test("timestamp millis") {
+    Schemas.toArrow(Schema.TimestampMillis) shouldBe ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
+    Schemas.fromArrow(ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")) shouldBe Schema.TimestampMillis
+  }
 })
