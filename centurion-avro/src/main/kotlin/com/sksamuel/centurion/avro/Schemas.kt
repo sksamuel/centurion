@@ -18,6 +18,7 @@ object Schemas {
       is Schema.Float64 -> SchemaBuilder.builder().doubleType()
       is Schema.Float32 -> SchemaBuilder.builder().floatType()
       is Schema.Array -> SchemaBuilder.builder().array().items(toAvro(schema.elements))
+      is Schema.Enum -> SchemaBuilder.enumeration("enum").symbols(*schema.symbols.toTypedArray())
       is Schema.Struct -> {
         val builder = SchemaBuilder.record(schema.name).fields()
         schema.fields.fold(builder) { acc, op -> acc.name(op.name).type(toAvro(op.schema)).noDefault() }.endRecord()
@@ -32,7 +33,7 @@ object Schemas {
         val fields = schema.fields.map { Schema.Field(it.name(), fromAvro(it.schema())) }
         Schema.Struct(schema.name, fields)
       }
-      org.apache.avro.Schema.Type.ENUM -> TODO()
+      org.apache.avro.Schema.Type.ENUM -> Schema.Enum(schema.enumSymbols)
       org.apache.avro.Schema.Type.ARRAY -> Schema.Array(fromAvro(schema.elementType))
       org.apache.avro.Schema.Type.MAP -> TODO()
       org.apache.avro.Schema.Type.UNION -> TODO()

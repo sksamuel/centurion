@@ -100,4 +100,14 @@ class SchemasTest : FunSpec({
     Schemas.toAvro(struct) shouldBe avro
     Schemas.fromAvro(avro) shouldBe struct
   }
+
+  test("enums") {
+
+    val schema = Schema.Enum("malbec", "pinot", "shiraz")
+    val avro = SchemaBuilder.enumeration("enum").symbols("malbec", "pinot", "shiraz")
+
+    Schemas.toAvro(schema) shouldBe avro
+    Schemas.fromAvro(avro) shouldBe schema
+
+  }
 })
