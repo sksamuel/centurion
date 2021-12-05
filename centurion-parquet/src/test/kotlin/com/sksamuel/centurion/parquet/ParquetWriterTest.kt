@@ -14,6 +14,8 @@ import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.PrimitiveType
 import org.apache.parquet.schema.Type
 import org.apache.parquet.schema.Types
+import java.sql.Timestamp
+import java.time.Instant
 
 class ParquetWriterTest : FunSpec() {
 
@@ -51,6 +53,33 @@ class ParquetWriterTest : FunSpec() {
           .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED).named("b"))
           .addField(Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("c"))
           .named("myrecord")
+    }
+
+    test("Parquet writer should write TimestampMillis") {
+
+      val path = Path("test.pq")
+      if (fs.exists(path))
+        fs.delete(path, false)
+      fs.deleteOnExit(path)
+
+      val schema = Schema.Struct(
+        "myrecord",
+        Schema.Field("a", Schema.TimestampMillis),
+        Schema.Field("b", Schema.TimestampMillis),
+      )
+
+      // we write out timestamp but it will be read back in as an instant
+      val struct = Struct(schema, Timestamp.from(Instant.ofEpochSecond(123)), Instant.ofEpochSecond(456))
+
+      val writer = Parquet.writer(path, conf, schema)
+      writer.write(struct)
+      writer.close()
+
+      Parquet.reader(path, conf).read() shouldBe Struct(
+        schema,
+        Instant.ofEpochSecond(123),
+        Instant.ofEpochSecond(456)
+      )
     }
 
     test("should support overwrite") {

@@ -28,10 +28,7 @@ interface Writer {
         is Schema.Array -> ArrayWriter(schema)
         is Schema.Nullable -> writerFor(schema.element)
         is Schema.Map -> MapWriter(schema)
-//        TimestampMillisType -> TimestampMillisSetter
-//        TimeMillisType -> TimeMillisSetter
-//        DateType -> DateSetter
-//        is EnumType -> EnumSetter
+        Schema.TimestampMillis -> TimestampMillisWriter
         else -> error("Unsupported writer schema $schema")
       }
     }

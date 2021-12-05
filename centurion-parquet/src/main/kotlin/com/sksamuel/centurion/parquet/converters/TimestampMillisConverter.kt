@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.parquet.converters
 
-import com.sksamuel.centurion.Schema
 import jodd.time.JulianDate
 import org.apache.parquet.example.data.simple.NanoTime
 import org.apache.parquet.io.api.Binary
@@ -9,33 +8,20 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.time.ZoneOffset
 
-class TimestampConverter(
-   schema: Schema,
-   private val index: Int,
-   private val collector: ValuesCollector,
+// see https://issues.apache.org/jira/browse/HIVE-6394 and
+// https://issues.apache.org/jira/browse/SPARK-10177
+class TimestampMillisConverter(
+  private val index: Int,
+  private val collector: ValuesCollector,
 ) : PrimitiveConverter() {
 
   // The Julian Date (JD) is the number of days (with decimal fraction of the day) that
   // have elapsed since 12 noon UTC on the Julian epoch
   private val nanosInDay = 24L * 60L * 60 * 1000 * 1000 * 1000
 
-   // In data annotated with the TIMESTAMP logical type, each value is a single int64 number
-   // that can be decoded into year, month, day, hour, minute, second and subsecond fields
-   // using calculations detailed below.
-   //
-   // Please note that a value defined this way does not necessarily correspond to a single
-   // instant on the time-line and such interpertations are allowed on purpose.
-   //
-   //The TIMESTAMP type has two type parameters:
-   //
-   // isAdjustedToUTC must be either true or false.
-   // unit must be one of MILLIS, MICROS or NANOS. This list is subject to potential expansion in the future.
-   // Upon reading, unknown unit-s must be handled as unsupported features (rather than as errors in the data files).
-   //
-
-   override fun addLong(value: Long) {
-      collector[index] = Instant.ofEpochMilli(value)
-   }
+  override fun addLong(value: Long) {
+    collector[index] = Timestamp.from(Instant.ofEpochMilli(value))
+  }
 
   /**
    * Since INT96 is sometimes used as timestamps too
@@ -65,4 +51,11 @@ class TimestampConverter(
 //    val ts = Timestamp.from(Instant.ofEpochMilli(millis))
     collector[index] = ts
   }
+
+//  override fun addBinary(x: Binary) {
+//
+//
+//    val julianDate = JulianDate(nano.julianDay, nano.timeOfDayNanos.toDouble() / nanosInDay)
+//    builder[field.name] = Timestamp.from(julianDate.toLocalDateTime().toInstant(ZoneOffset.UTC))
+//  }
 }

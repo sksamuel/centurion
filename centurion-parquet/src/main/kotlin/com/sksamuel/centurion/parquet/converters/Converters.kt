@@ -13,7 +13,7 @@ interface Converters {
         Schema.Float64, Schema.Float32,
         Schema.Int32, Schema.Int64, Schema.Int16, Schema.Int8, Schema.Bytes, Schema.Booleans ->
           StructBuilderPrimitiveConverter(index, collector)
-        Schema.TimestampMillis -> TimestampConverter(index, collector)
+        Schema.TimestampMillis -> TimestampConverter(schema, index, collector)
         is Schema.Nullable -> converterFor(schema.element, index, collector)
         is Schema.Map -> MapConverter(schema, index, collector)
         is Schema.Array -> ArrayConverter(schema, index, collector)
