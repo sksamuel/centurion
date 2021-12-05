@@ -3,7 +3,6 @@ package com.sksamuel.centurion.parquet
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.Struct
 import com.sksamuel.centurion.nullable
-import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
@@ -36,9 +35,8 @@ class ParquetWriterTest : FunSpec() {
         Schema.Field("b", Schema.Int32),
         Schema.Field("c", Schema.Booleans)
       )
-      val messageType = ToParquetSchema.toMessageType(schema)
 
-      val writer = Parquet.writer(path, conf, messageType)
+      val writer = Parquet.writer(path, conf, schema)
       writer.write(Struct(schema, "a", 1, true))
       writer.close()
 
@@ -63,13 +61,11 @@ class ParquetWriterTest : FunSpec() {
         Schema.Field("b", Schema.Int32),
         Schema.Field("c", Schema.Booleans)
       )
-      val messageType = ToParquetSchema.toMessageType(schema)
-
       val path = Path("test.pq")
       fs.exists(path) shouldBe true
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, messageType, true)
+      val writer = Parquet.writer(path, conf, schema, true)
       writer.write(Struct(schema, "a", 1, true))
       writer.close()
     }
@@ -86,7 +82,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test_array.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, ToParquetSchema.toMessageType(schema), true)
+      val writer = Parquet.writer(path, conf, schema, true)
       writer.write(Struct(schema, "a", listOf(1, 2, 3), true))
       writer.close()
 
@@ -106,7 +102,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test_array.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, ToParquetSchema.toMessageType(schema), true)
+      val writer = Parquet.writer(path, conf, schema, true)
       writer.write(
         Struct(
           schema,

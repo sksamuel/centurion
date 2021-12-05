@@ -1,6 +1,8 @@
 package com.sksamuel.centurion.parquet
 
+import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.Struct
+import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.parquet.hadoop.ParquetFileReader
@@ -8,7 +10,6 @@ import org.apache.parquet.hadoop.ParquetFileWriter
 import org.apache.parquet.hadoop.ParquetReader
 import org.apache.parquet.hadoop.ParquetWriter
 import org.apache.parquet.hadoop.util.HadoopInputFile
-import org.apache.parquet.schema.MessageType
 import java.io.File
 
 object Parquet {
@@ -40,17 +41,35 @@ object Parquet {
   }
 
   fun writer(
-    path: Path,
+    path: java.nio.file.Path,
     conf: Configuration,
-    schema: MessageType,
+    schema: Schema.Struct,
     overwrite: Boolean = false,
     metadata: Map<String, String> = emptyMap(),
-    settings: ParquetWriterSettings = ParquetWriterSettings()
+    settings: ParquetWriterSettings = ParquetWriterSettings(),
+  ): ParquetWriter<Struct> {
+    return writer(
+      Path("file://$path"),
+      conf,
+      schema,
+      overwrite = overwrite,
+      metadata = metadata,
+      settings = settings,
+    )
+  }
+
+  fun writer(
+    path: Path,
+    conf: Configuration,
+    schema: Schema.Struct,
+    overwrite: Boolean = false,
+    metadata: Map<String, String> = emptyMap(),
+    settings: ParquetWriterSettings = ParquetWriterSettings(),
   ): ParquetWriter<Struct> {
 
     val writeMode = if (overwrite) ParquetFileWriter.Mode.OVERWRITE else ParquetFileWriter.Mode.CREATE
 
-    return StructParquetWriterBuilder(path, schema, settings.roundingMode, metadata)
+    return StructParquetWriterBuilder(path, ToParquetSchema.toMessageType(schema), settings.roundingMode, metadata)
       .withCompressionCodec(settings.compressionCodec)
       .withConf(conf)
       //.withDictionaryPageSize()
@@ -65,3 +84,5 @@ object Parquet {
 }
 
 fun <T : Any> ParquetReader<T>.sequence(): Sequence<T> = generateSequence { read() }
+
+fun <T> ParquetWriter<T>.write(ts: List<T>) = ts.forEach { write(it) }
