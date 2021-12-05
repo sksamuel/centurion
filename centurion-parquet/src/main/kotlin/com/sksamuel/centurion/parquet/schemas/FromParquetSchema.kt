@@ -60,6 +60,8 @@ object FromParquetSchema {
   fun fromPrimitiveType(type: PrimitiveType): Schema {
 
     fun int32(annotation: LogicalTypeAnnotation?): Schema = when (annotation) {
+      is LogicalTypeAnnotation.DecimalLogicalTypeAnnotation ->
+        Schema.Decimal(Schema.Precision(annotation.precision), Schema.Scale(annotation.scale))
       is LogicalTypeAnnotation.IntLogicalTypeAnnotation -> when (annotation.bitWidth) {
         8 -> Schema.Int8
         16 -> Schema.Int16
@@ -73,6 +75,8 @@ object FromParquetSchema {
     }
 
     fun int64(annotation: LogicalTypeAnnotation?): Schema = when (annotation) {
+      is LogicalTypeAnnotation.DecimalLogicalTypeAnnotation ->
+        Schema.Decimal(Schema.Precision(annotation.precision), Schema.Scale(annotation.scale))
       is LogicalTypeAnnotation.IntLogicalTypeAnnotation -> when (annotation.bitWidth) {
         8 -> Schema.Int8
         16 -> Schema.Int16

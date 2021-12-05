@@ -131,7 +131,25 @@ object ToParquetSchema {
       is Schema.Enum ->
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
           .`as`(LogicalTypeAnnotation.enumType()).named(name)
-      is Schema.Decimal -> TODO()
+
+      // DECIMAL can be used to annotate the following types:
+      // int32: for 1 <= precision <= 9
+      // int64: for 1 <= precision <= 18; precision < 10 will produce a warning
+      // fixed_len_byte_array: precision is limited by the array size. Length n can store <= floor(log_10(2^(8*n - 1) - 1)) base-10 digits
+      // binary: precision is not limited, but is required. The minimum number of bytes to store the unscaled value should be used.
+      // https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#decimal
+      is Schema.Decimal -> when {
+        extracted.precision.value <= 9 ->
+          Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
+            .`as`(LogicalTypeAnnotation.decimalType(extracted.scale.value, extracted.precision.value))
+            .named(name)
+        extracted.precision.value <= 18 ->
+          Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
+            .`as`(LogicalTypeAnnotation.decimalType(extracted.scale.value, extracted.precision.value))
+            .named(name)
+        else -> error("Unsupported precision ${extracted.precision}")
+      }
+
       Schema.Nulls -> TODO()
       is Schema.Varchar -> TODO()
       is Schema.Nullable -> error("Should be extracted")

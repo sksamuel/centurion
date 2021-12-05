@@ -211,5 +211,13 @@ class ToParquetSchemaTest : FunSpec() {
               ).named("a")
           ).named("myrecord")
     }
+
+    test("decimals") {
+      ToParquetSchema.toParquetType(Schema.Decimal(Schema.Precision(5), Schema.Scale(2)), "a") shouldBe
+        Types.required(PrimitiveType.PrimitiveTypeName.INT32).`as`(LogicalTypeAnnotation.decimalType(2, 5)).named("a")
+
+      ToParquetSchema.toParquetType(Schema.Decimal(Schema.Precision(14), Schema.Scale(2)), "a") shouldBe
+        Types.required(PrimitiveType.PrimitiveTypeName.INT64).`as`(LogicalTypeAnnotation.decimalType(2, 14)).named("a")
+    }
   }
 }

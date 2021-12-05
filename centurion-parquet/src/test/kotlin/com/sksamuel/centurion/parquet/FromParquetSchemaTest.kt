@@ -178,5 +178,15 @@ class FromParquetSchemaTest : FunSpec() {
         Schema.Field("a", Schema.Array(Schema.Int32).nullable()),
       )
     }
+
+    test("decimals") {
+      FromParquetSchema.fromParquet(
+        Types.required(PrimitiveType.PrimitiveTypeName.INT32).`as`(LogicalTypeAnnotation.decimalType(2, 8)).named("a")
+      ) shouldBe Schema.Decimal(Schema.Precision(8), Schema.Scale(2))
+
+      FromParquetSchema.fromParquet(
+        Types.required(PrimitiveType.PrimitiveTypeName.INT64).`as`(LogicalTypeAnnotation.decimalType(2, 14)).named("a")
+      ) shouldBe Schema.Decimal(Schema.Precision(14), Schema.Scale(2))
+    }
   }
 }
