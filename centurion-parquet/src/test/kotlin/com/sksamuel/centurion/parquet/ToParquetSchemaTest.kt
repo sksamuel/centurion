@@ -219,5 +219,13 @@ class ToParquetSchemaTest : FunSpec() {
       ToParquetSchema.toParquetType(Schema.Decimal(Schema.Precision(14), Schema.Scale(2)), "a") shouldBe
         Types.required(PrimitiveType.PrimitiveTypeName.INT64).`as`(LogicalTypeAnnotation.decimalType(2, 14)).named("a")
     }
+
+    test("enums") {
+      val schema = Schema.Enum("malbec", "pinot", "shiraz")
+      ToParquetSchema.toParquetType(schema, "enum") shouldBe
+        Types.required(PrimitiveType.PrimitiveTypeName.BINARY)
+          .`as`(LogicalTypeAnnotation.enumType())
+          .named("enum")
+    }
   }
 }

@@ -119,8 +119,6 @@ object ToParquetSchema {
         Types.map(repetition).key(key).value(value).named(name)
       }
 
-//      is DecimalType -> TODO()
-
       /**
        * ENUM annotates the binary primitive type and indicates that the value
        * was converted from an enumerated type in another data model (e.g. Thrift, Avro, Protobuf).

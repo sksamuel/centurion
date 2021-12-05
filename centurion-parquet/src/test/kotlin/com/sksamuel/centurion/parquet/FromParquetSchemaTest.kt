@@ -188,5 +188,12 @@ class FromParquetSchemaTest : FunSpec() {
         Types.required(PrimitiveType.PrimitiveTypeName.INT64).`as`(LogicalTypeAnnotation.decimalType(2, 14)).named("a")
       ) shouldBe Schema.Decimal(Schema.Precision(14), Schema.Scale(2))
     }
+
+    test("enums") {
+      FromParquetSchema.fromParquet(
+        Types.required(PrimitiveType.PrimitiveTypeName.BINARY).`as`(LogicalTypeAnnotation.enumType()).named("enum")
+      ) shouldBe Schema.Enum(emptyList())
+
+    }
   }
 }
