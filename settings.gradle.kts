@@ -12,6 +12,7 @@ pluginManagement {
 }
 
 include("centurion-arrow")
+include("centurion-avro")
 include("centurion-schemas")
 include("centurion-orc")
 include("centurion-parquet")
