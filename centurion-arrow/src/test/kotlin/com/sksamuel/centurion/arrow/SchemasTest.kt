@@ -3,6 +3,7 @@ package com.sksamuel.centurion.arrow
 import com.sksamuel.centurion.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.apache.arrow.vector.types.FloatingPointPrecision
 import org.apache.arrow.vector.types.TimeUnit
 import org.apache.arrow.vector.types.pojo.ArrowType
 import org.apache.arrow.vector.types.pojo.Field
@@ -25,6 +26,14 @@ class SchemasTest : FunSpec({
     Schemas.toArrow(Schema.Int32) shouldBe ArrowType.Int(32, true)
     Schemas.toArrow(Schema.Int16) shouldBe ArrowType.Int(16, true)
     Schemas.toArrow(Schema.Int8) shouldBe ArrowType.Int(8, true)
+  }
+
+  test("floats") {
+    Schemas.fromArrow(ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)) shouldBe Schema.Float64
+    Schemas.fromArrow(ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)) shouldBe Schema.Float32
+
+    Schemas.toArrow(Schema.Float64) shouldBe ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)
+    Schemas.toArrow(Schema.Float32) shouldBe ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)
   }
 
   test("centurion <--> arrow Booleans") {

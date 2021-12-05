@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.arrow
 
 import com.sksamuel.centurion.Schema
+import org.apache.arrow.vector.types.FloatingPointPrecision
 import org.apache.arrow.vector.types.TimeUnit
 import org.apache.arrow.vector.types.pojo.ArrowType
 import org.apache.arrow.vector.types.pojo.Field
@@ -26,6 +27,11 @@ object Schemas {
         8 -> Schema.Int8
         else -> error("Unsupported arrow bit width $arrow.bitWidth")
       }
+      is ArrowType.FloatingPoint -> when (arrow.precision) {
+        FloatingPointPrecision.HALF -> error("Unsupported floating point precision ${arrow.precision}")
+        FloatingPointPrecision.SINGLE -> Schema.Float32
+        FloatingPointPrecision.DOUBLE -> Schema.Float64
+      }
       is ArrowType.Timestamp -> when (arrow.unit) {
         TimeUnit.MILLISECOND -> Schema.TimestampMillis
         else -> error("Unsupported arrow time unit ${arrow.unit}")
@@ -48,6 +54,8 @@ object Schemas {
       Schema.Int32 -> ArrowType.Int(32, true)
       Schema.Int16 -> ArrowType.Int(16, true)
       Schema.Int8 -> ArrowType.Int(8, true)
+      Schema.Float64 -> ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)
+      Schema.Float32 -> ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)
       is Schema.Enum -> ArrowType.Utf8()
       is Schema.Decimal -> ArrowType.Decimal(schema.precision.value, schema.scale.value)
       Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
