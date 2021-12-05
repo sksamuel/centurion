@@ -18,13 +18,20 @@ object Schemas {
       is Schema.Float64 -> SchemaBuilder.builder().doubleType()
       is Schema.Float32 -> SchemaBuilder.builder().floatType()
       is Schema.Array -> SchemaBuilder.builder().array().items(toAvro(schema.elements))
+      is Schema.Struct -> {
+        val builder = SchemaBuilder.record(schema.name).fields()
+        schema.fields.fold(builder) { acc, op -> acc.name(op.name).type(toAvro(op.schema)).noDefault() }.endRecord()
+      }
       else -> error("Unsupported schema $schema")
     }
   }
 
   fun fromAvro(schema: AvroSchema): Schema {
     return when (schema.type) {
-      org.apache.avro.Schema.Type.RECORD -> TODO()
+      org.apache.avro.Schema.Type.RECORD -> {
+        val fields = schema.fields.map { Schema.Field(it.name(), fromAvro(it.schema())) }
+        Schema.Struct(schema.name, fields)
+      }
       org.apache.avro.Schema.Type.ENUM -> TODO()
       org.apache.avro.Schema.Type.ARRAY -> Schema.Array(fromAvro(schema.elementType))
       org.apache.avro.Schema.Type.MAP -> TODO()

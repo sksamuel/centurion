@@ -14,7 +14,7 @@ class ToParquetSchemaTest : FunSpec() {
 
   init {
 
-    test("Records should be converted to parquet message type") {
+    test("structs should be converted to parquet message type") {
 
       val struct = Schema.Struct(
         "myrecord",

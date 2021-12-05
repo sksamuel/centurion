@@ -49,4 +49,25 @@ class SchemasTest : FunSpec({
     Schemas.fromAvro(SchemaBuilder.builder().array().items(SchemaBuilder.builder().booleanType())) shouldBe
       Schema.Array(Schema.Booleans)
   }
+
+  test("structs") {
+
+    val struct = Schema.Struct(
+      "mystruct",
+      Schema.Field("a", Schema.Strings),
+      Schema.Field("b", Schema.Booleans),
+      Schema.Field("c", Schema.Float64),
+      Schema.Field("d", Schema.Int64)
+    )
+
+    val avro = SchemaBuilder.record("mystruct").fields()
+      .name("a").type(SchemaBuilder.builder().stringType()).noDefault()
+      .name("b").type(SchemaBuilder.builder().booleanType()).noDefault()
+      .name("c").type(SchemaBuilder.builder().doubleType()).noDefault()
+      .name("d").type(SchemaBuilder.builder().longType()).noDefault()
+      .endRecord()
+
+    Schemas.toAvro(struct) shouldBe avro
+    Schemas.fromAvro(avro) shouldBe struct
+  }
 })
