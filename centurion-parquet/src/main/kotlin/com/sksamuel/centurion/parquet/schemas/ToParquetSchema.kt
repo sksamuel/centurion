@@ -149,7 +149,8 @@ object ToParquetSchema {
       }
 
       Schema.Nulls -> TODO()
-      is Schema.Varchar -> TODO()
+      is Schema.Varchar -> Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+        .`as`(LogicalTypeAnnotation.stringType()).named(name)
       is Schema.Nullable -> error("Should be extracted")
     }
   }

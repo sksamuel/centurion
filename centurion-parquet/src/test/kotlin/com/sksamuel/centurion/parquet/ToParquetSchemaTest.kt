@@ -227,5 +227,12 @@ class ToParquetSchemaTest : FunSpec() {
           .`as`(LogicalTypeAnnotation.enumType())
           .named("enum")
     }
+
+    test("varchars") {
+      ToParquetSchema.toParquetType(Schema.Varchar(123), "a") shouldBe
+        Types.required(PrimitiveType.PrimitiveTypeName.BINARY)
+          .`as`(LogicalTypeAnnotation.stringType())
+          .named("a")
+    }
   }
 }

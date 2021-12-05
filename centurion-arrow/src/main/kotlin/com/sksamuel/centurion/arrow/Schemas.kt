@@ -59,6 +59,7 @@ object Schemas {
       is Schema.Enum -> ArrowType.Utf8()
       is Schema.Decimal -> ArrowType.Decimal(schema.precision.value, schema.scale.value)
       Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
+      is Schema.Varchar -> ArrowType.Utf8()
       else -> error("Unsupported schema $schema")
     }
   }

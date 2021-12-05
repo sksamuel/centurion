@@ -28,11 +28,14 @@ format only to allow for conversions.
 
 The following table shows how types map between each of the formats.
 
-| Centurion Type | Avro    | Parquet                      | Orc     | Arrow               |
-|----------------|---------|------------------------------|---------|---------------------|
-| Strings        | String  | Binary annotated with String | String  | Utf8                |
-| Booleans       | Boolean | Boolean                      | Boolean | Boolean             |
-| Int64          | Long    | Int64                        | Long    | Int64 Signed        |
-| Int32          | Int     | Int32                        | Int     | Int32 Signed        |
-| Float64        | Double  | Double                       | Double  | FloatingPointDouble |
-| Float32        | Float   | Float                        | Float   | FloatingPointSingle |
+| Centurion Type            | Avro                      | Parquet                      | Orc                       | Arrow                     |
+|---------------------------|---------------------------|------------------------------|---------------------------|---------------------------|
+| Strings                   | String                    | Binary annotated with String | String                    | Utf8                      |
+| Booleans                  | Boolean                   | Boolean                      | Boolean                   | Boolean                   |
+| Int64                     | Long                      | Int64                        | Long                      | Int64 Signed              |
+| Int32                     | Int                       | Int32                        | Int                       | Int32 Signed              |
+| Float64                   | Double                    | Double                       | Double                    | FloatingPointDouble       |
+| Float32                   | Float                     | Float                        | Float                     | FloatingPointSingle       |
+| Enum                      | Enum                      | Enum                         | N/A (Mapped to String)    | N/A (Mapped to String)    |
+| Decimal(precision, scale) | Decimal(precision, scale) | Decimal(precision, scale)    | Decimal(precision, scale) | Decimal(precision, scale) |
+| Varchar(size)             | Fixed(size)               | N/A (Mapped to String)       | Varchar(size)             | N/A (Mapped to String)    |
