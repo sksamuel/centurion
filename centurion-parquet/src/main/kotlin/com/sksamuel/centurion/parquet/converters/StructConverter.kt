@@ -10,6 +10,10 @@ open class StructConverter(private val schema: Schema.Struct) : GroupConverter()
   private val collector = StructValuesCollector(schema.fields.size)
   private var struct: Struct? = null
 
+  private val converters = schema.fields.withIndex().map {
+    Converters.converterFor(schema.fields[it.index].schema, it.index, collector)
+  }
+
   // called to start a new group, so we simply clear the map of values
   override fun start() {
     collector.reset()
@@ -29,8 +33,7 @@ open class StructConverter(private val schema: Schema.Struct) : GroupConverter()
    * Called at initialization time based on schema.
    * Must consistently return the same object.
    */
-  override fun getConverter(fieldIndex: Int): Converter =
-    Converters.converterFor(schema.fields[fieldIndex].schema, fieldIndex, collector)
+  override fun getConverter(fieldIndex: Int): Converter = converters[fieldIndex]
 }
 
 class NestedStructConverter(

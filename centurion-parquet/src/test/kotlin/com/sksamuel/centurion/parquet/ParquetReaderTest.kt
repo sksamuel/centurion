@@ -121,7 +121,18 @@ class ParquetReaderTest : FunSpec() {
         )
       )
 
-      //struct.values shouldBe ""
+      val expected = listOf(
+        mapOf("wilma" to "benji", "fred" to "benji"),
+        mapOf("wilma" to "mighty", "fred" to "mighty"),
+        emptyMap<String, Any?>(),
+        mapOf("wilma" to "mighty", "barney" to "benji"),
+        listOf("mighty"),
+        listOf("benji", "franky"),
+        emptyList<Any?>(),
+        listOf("mighty"),
+      )
+
+      struct.values shouldBe expected
     }
   }
 }

@@ -27,6 +27,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test.pq")
       if (fs.exists(path))
         fs.delete(path, false)
+      fs.deleteOnExit(path)
 
       val schema = Schema.Struct(
         "myrecord",
@@ -65,13 +66,14 @@ class ParquetWriterTest : FunSpec() {
 
       val path = Path("test.pq")
       fs.exists(path) shouldBe true
+      fs.deleteOnExit(path)
 
       val writer = Parquet.writer(path, conf, messageType, true)
       writer.write(Struct(schema, "a", 1, true))
       writer.close()
     }
 
-    test("!writer should support arrays of primitives") {
+    test("writer should support arrays of primitives") {
 
       val schema = Schema.Struct(
         "myrecord",
