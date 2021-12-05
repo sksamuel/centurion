@@ -1,9 +1,6 @@
 dependencies {
    api(project(Projects.schemas))
-   implementation(Libs.Parquet.common)
-   implementation(Libs.Parquet.hadoop)
-   implementation(Libs.Hadoop.common)
-   implementation(Libs.Hadoop.client)
+   implementation(Libs.Orc.core)
 }
 
 apply("../publish.gradle.kts")
