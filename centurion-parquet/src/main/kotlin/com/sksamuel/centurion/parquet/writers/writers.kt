@@ -27,6 +27,7 @@ interface Writer {
         Schema.Int8 -> IntegerWriter
         is Schema.Array -> ArrayWriter(schema)
         is Schema.Nullable -> writerFor(schema.element)
+        is Schema.Map -> MapWriter(schema)
 //        TimestampMillisType -> TimestampMillisSetter
 //        TimeMillisType -> TimeMillisSetter
 //        DateType -> DateSetter

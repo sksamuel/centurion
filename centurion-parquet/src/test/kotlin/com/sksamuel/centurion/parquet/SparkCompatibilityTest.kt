@@ -120,6 +120,35 @@ class SparkCompatibilityTest : FunSpec() {
         "Leonard Nimoy"
       )
     }
+
+    test("spark should be able to read centurion parquet maps") {
+
+      val schema = Schema.Struct(
+        "spark_schema",
+        Schema.Field("civilization", Schema.Strings),
+        Schema.Field("people", Schema.Map(Schema.Strings)),
+      )
+
+      val structs = listOf(
+        Struct(schema, listOf("Rome", mapOf("Dictator" to "Caesar", "Emperor" to "Augustus", "Founder" to "Romulus"))),
+        Struct(schema, listOf("Britain", mapOf("Prime Minster" to "Churchill", "Monarch" to "Queen Elizabeth I"))),
+      )
+
+      val writer = Parquet.writer(Paths.get("/tmp/centurion.parquet"), Configuration(), schema, true)
+      writer.write(structs)
+      writer.close()
+
+      val df = spark.read().parquet("file:////tmp/centurion.parquet")
+      df.count() shouldBe 2
+
+      val civilizations = df.select("civilization").collectAsList()
+      civilizations[0].get(0) shouldBe "Rome"
+      civilizations[1].get(0) shouldBe "Britain"
+
+      val people = df.select("people").collectAsList()
+      (people[0].get(0) as scala.collection.Map<*, *>).mkString() shouldBe "Dictator -> CaesarEmperor -> AugustusFounder -> Romulus"
+      (people[1].get(0) as scala.collection.Map<*, *>).mkString() shouldBe "Prime Minster -> ChurchillMonarch -> Queen Elizabeth I"
+    }
   }
 }
 
