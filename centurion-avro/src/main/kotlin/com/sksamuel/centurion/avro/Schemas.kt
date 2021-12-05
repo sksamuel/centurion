@@ -13,8 +13,10 @@ object Schemas {
       is Schema.Strings -> SchemaBuilder.builder().stringType()
       is Schema.Booleans -> SchemaBuilder.builder().booleanType()
       is Schema.Bytes -> SchemaBuilder.builder().bytesType()
-      is Schema.Int32 -> SchemaBuilder.builder().intType()
       is Schema.Int64 -> SchemaBuilder.builder().longType()
+      is Schema.Int32 -> SchemaBuilder.builder().intType()
+      is Schema.Float64 -> SchemaBuilder.builder().doubleType()
+      is Schema.Float32 -> SchemaBuilder.builder().floatType()
       is Schema.Array -> SchemaBuilder.builder().array().items(toAvro(schema.elements))
       else -> error("Unsupported schema $schema")
     }
@@ -32,8 +34,8 @@ object Schemas {
       org.apache.avro.Schema.Type.BYTES -> Schema.Bytes
       org.apache.avro.Schema.Type.INT -> Schema.Int32
       org.apache.avro.Schema.Type.LONG -> Schema.Int64
-      org.apache.avro.Schema.Type.FLOAT -> TODO()
-      org.apache.avro.Schema.Type.DOUBLE -> TODO()
+      org.apache.avro.Schema.Type.FLOAT -> Schema.Float32
+      org.apache.avro.Schema.Type.DOUBLE -> Schema.Float64
       org.apache.avro.Schema.Type.BOOLEAN -> Schema.Booleans
       org.apache.avro.Schema.Type.NULL -> TODO()
     }
