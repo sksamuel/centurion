@@ -44,7 +44,7 @@ object Parquet {
     path: java.nio.file.Path,
     conf: Configuration,
     schema: Schema.Struct,
-    overwrite: Boolean = false,
+    mode: ParquetFileWriter.Mode = ParquetFileWriter.Mode.CREATE,
     metadata: Map<String, String> = emptyMap(),
     settings: ParquetWriterSettings = ParquetWriterSettings(),
   ): ParquetWriter<Struct> {
@@ -52,7 +52,7 @@ object Parquet {
       Path("file://$path"),
       conf,
       schema,
-      overwrite = overwrite,
+      mode = mode,
       metadata = metadata,
       settings = settings,
     )
@@ -62,12 +62,10 @@ object Parquet {
     path: Path,
     conf: Configuration,
     schema: Schema.Struct,
-    overwrite: Boolean = false,
+    mode: ParquetFileWriter.Mode = ParquetFileWriter.Mode.CREATE,
     metadata: Map<String, String> = emptyMap(),
     settings: ParquetWriterSettings = ParquetWriterSettings(),
   ): ParquetWriter<Struct> {
-
-    val writeMode = if (overwrite) ParquetFileWriter.Mode.OVERWRITE else ParquetFileWriter.Mode.CREATE
 
     return StructParquetWriterBuilder(path, ToParquetSchema.toMessageType(schema), settings.roundingMode, metadata)
       .withCompressionCodec(settings.compressionCodec)
@@ -77,7 +75,7 @@ object Parquet {
       .withPageSize(settings.pageSize)
       .withRowGroupSize(settings.rowGroupSize)
       .withValidation(settings.validation)
-      .withWriteMode(writeMode)
+      .withWriteMode(mode)
       .withWriterVersion(settings.writerVersion)
       .build()
   }

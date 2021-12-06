@@ -6,6 +6,7 @@ import com.sksamuel.centurion.nullable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.hadoop.conf.Configuration
+import org.apache.parquet.hadoop.ParquetFileWriter
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SaveMode
@@ -96,7 +97,7 @@ class SparkCompatibilityTest : FunSpec() {
         Struct(schema, listOf("Wrath of Khan", 1982, listOf("William Shatner", "Ricardo Montalbán", "Leonard Nimoy"))),
       )
 
-      val writer = Parquet.writer(Paths.get("/tmp/centurion.parquet"), Configuration(), schema, true)
+      val writer = Parquet.writer(Paths.get("/tmp/centurion.parquet"), Configuration(), schema, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(structs)
       writer.close()
 
@@ -134,7 +135,7 @@ class SparkCompatibilityTest : FunSpec() {
         Struct(schema, listOf("Britain", mapOf("Prime Minster" to "Churchill", "Monarch" to "Queen Elizabeth I"))),
       )
 
-      val writer = Parquet.writer(Paths.get("/tmp/centurion.parquet"), Configuration(), schema, true)
+      val writer = Parquet.writer(Paths.get("/tmp/centurion.parquet"), Configuration(), schema, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(structs)
       writer.close()
 

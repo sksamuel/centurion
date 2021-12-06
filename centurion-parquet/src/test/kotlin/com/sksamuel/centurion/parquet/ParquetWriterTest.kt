@@ -9,6 +9,7 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.parquet.hadoop.ParquetFileReader
+import org.apache.parquet.hadoop.ParquetFileWriter
 import org.apache.parquet.hadoop.util.HadoopInputFile
 import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.PrimitiveType
@@ -94,7 +95,7 @@ class ParquetWriterTest : FunSpec() {
       fs.exists(path) shouldBe true
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, schema, true)
+      val writer = Parquet.writer(path, conf, schema, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(Struct(schema, "a", 1, true))
       writer.close()
     }
@@ -111,7 +112,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test_array.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, schema, true)
+      val writer = Parquet.writer(path, conf, schema, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(Struct(schema, "a", listOf(1, 2, 3), true))
       writer.close()
 
@@ -131,7 +132,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test_array.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, schema, true)
+      val writer = Parquet.writer(path, conf, schema, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(
         Struct(
           schema,
@@ -179,7 +180,7 @@ class ParquetWriterTest : FunSpec() {
       val path = Path("test_nested.pq")
       fs.deleteOnExit(path)
 
-      val writer = Parquet.writer(path, conf, outer, true)
+      val writer = Parquet.writer(path, conf, outer, ParquetFileWriter.Mode.OVERWRITE)
       writer.write(
         Struct(
           outer,
