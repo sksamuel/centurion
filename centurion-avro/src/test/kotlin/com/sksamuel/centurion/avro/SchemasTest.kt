@@ -127,4 +127,13 @@ class SchemasTest : FunSpec({
     Schemas.fromAvro(LogicalTypes.timestampMillis()
       .addToSchema(SchemaBuilder.builder().longType())) shouldBe Schema.TimestampMillis
   }
+
+  test("timestamp micros") {
+
+    Schemas.toAvro(Schema.TimestampMicros) shouldBe LogicalTypes.timestampMicros()
+      .addToSchema(SchemaBuilder.builder().longType())
+
+    Schemas.fromAvro(LogicalTypes.timestampMicros()
+      .addToSchema(SchemaBuilder.builder().longType())) shouldBe Schema.TimestampMicros
+  }
 })

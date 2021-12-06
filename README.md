@@ -28,15 +28,16 @@ format only to allow for conversions.
 
 The following table shows how types map between each of the formats.
 
-| Centurion Type            | Avro                                     | Parquet                           | Orc                       | Arrow                     |
-|---------------------------|------------------------------------------|-----------------------------------|---------------------------|---------------------------|
-| Strings                   | String                                   | Binary with annotation String     | String                    | Utf8                      |
-| Booleans                  | Boolean                                  | Boolean                           | Boolean                   | Bool                      |
-| Int64                     | Long                                     | Int64                             | Long                      | Int64 Signed              |
-| Int32                     | Int                                      | Int32                             | Int                       | Int32 Signed              |
-| Float64                   | Double                                   | Double                            | Double                    | FloatingPointDouble       |
-| Float32                   | Float                                    | Float                             | Float                     | FloatingPointSingle       |
-| Enum                      | Enum                                     | Enum                              | N/A (Mapped to String)    | N/A (Mapped to String)    |
-| Decimal(precision, scale) | Binary / Fixed with annotation _Decimal_ | Decimal(precision, scale)         | Decimal(precision, scale) | Decimal(precision, scale) |
-| Varchar(size)             | Fixed(size)                              | N/A (Mapped to String)            | Varchar(size)             | N/A (Mapped to String)    |
-| Timestamp(unit)           | Long with annotation _TimestampMillis_   | Int64 with annotation _Timestamp_ | Timestamp                 | Timestamp(unit)           |
+| Centurion Type            | Avro                                         | Parquet                           | Orc                       | Arrow                     |
+|---------------------------|----------------------------------------------|-----------------------------------|---------------------------|---------------------------|
+| Strings                   | String                                       | Binary with annotation String     | String                    | Utf8                      |
+| Booleans                  | Boolean                                      | Boolean                           | Boolean                   | Bool                      |
+| Int64                     | Long                                         | Int64                             | Long                      | Int64 Signed              |
+| Int32                     | Int                                          | Int32                             | Int                       | Int32 Signed              |
+| Float64                   | Double                                       | Double                            | Double                    | FloatingPointDouble       |
+| Float32                   | Float                                        | Float                             | Float                     | FloatingPointSingle       |
+| Enum                      | Enum                                         | Enum                              | N/A (Mapped to String)    | N/A (Mapped to String)    |
+| Decimal(precision, scale) | Binary / Fixed with annotation _Decimal_     | Decimal(precision, scale)         | Decimal(precision, scale) | Decimal(precision, scale) |
+| Varchar(size)             | Fixed(size)                                  | N/A (Mapped to String)            | Varchar(size)             | N/A (Mapped to String)    |
+| TimestampMillis           | Long with annotation _TimestampMillis_       | Int64 with annotation _Timestamp_ | Timestamp                 | Timestamp(Millis)         |
+| TimestampMicros           | Long with annotation _TimestampMicros_ | Int64 with annotation _Timestamp_ | Unsupported               | Timestamp(Micros)         |
