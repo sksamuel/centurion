@@ -195,5 +195,18 @@ class FromParquetSchemaTest : FunSpec() {
       ) shouldBe Schema.Enum(emptyList())
 
     }
+
+    test("timestamps") {
+
+      FromParquetSchema.fromParquet(
+        Types.required(PrimitiveType.PrimitiveTypeName.INT64)
+          .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MICROS)).named("x")
+      ) shouldBe Schema.TimestampMicros
+
+      FromParquetSchema.fromParquet(
+        Types.required(PrimitiveType.PrimitiveTypeName.INT64)
+          .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MILLIS)).named("x")
+      ) shouldBe Schema.TimestampMillis
+    }
   }
 }

@@ -84,7 +84,11 @@ object FromParquetSchema {
         64 -> Schema.Int64
         else -> Schema.Int32
       }
-      is LogicalTypeAnnotation.TimestampLogicalTypeAnnotation -> Schema.TimestampMillis
+      is LogicalTypeAnnotation.TimestampLogicalTypeAnnotation -> when (annotation.unit) {
+        LogicalTypeAnnotation.TimeUnit.MILLIS -> Schema.TimestampMillis
+        LogicalTypeAnnotation.TimeUnit.MICROS -> Schema.TimestampMicros
+        LogicalTypeAnnotation.TimeUnit.NANOS -> error("Unsupported time unit NANOS")
+      }
       else -> Schema.Int64
     }
 

@@ -77,9 +77,12 @@ object ToParquetSchema {
       Schema.Int64 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition).named(name)
       Schema.Int16 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
         .`as`(OriginalType.INT_16).named(name)
+
       Schema.TimestampMillis -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
-        .`as`(OriginalType.TIMESTAMP_MILLIS).named(name)
-//      Schema.TimestampMicros -> TODO()
+        .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MILLIS)).named(name)
+
+      Schema.TimestampMicros -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
+        .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MICROS)).named(name)
 
       /**
        * TIME is used for a logical time type without a date with millisecond or microsecond precision.

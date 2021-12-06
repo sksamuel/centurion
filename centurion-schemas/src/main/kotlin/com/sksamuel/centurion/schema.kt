@@ -30,6 +30,7 @@ sealed interface Schema {
 
   // timestamp as milliseconds since epoch
   object TimestampMillis : Primitive
+  object TimestampMicros : Primitive
 
   //// decimal types
 
