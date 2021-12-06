@@ -68,7 +68,7 @@ class ParquetWriterTest : FunSpec() {
         Schema.Field("b", Schema.TimestampMillis),
       )
 
-      // we write out timestamp but it will be read back in as an instant
+      // we write out a timestamp, but it will be read back in as an instant
       val struct = Struct(schema, Timestamp.from(Instant.ofEpochSecond(123)), Instant.ofEpochSecond(456))
 
       val writer = Parquet.writer(path, conf, schema)
@@ -164,6 +164,48 @@ class ParquetWriterTest : FunSpec() {
       val items = struct.values[0] as List<Struct>
       items[0].values shouldBe listOf(123, 1.2F)
       items[1].values shouldBe listOf(345, 1.3F)
+    }
+
+    test("writer should support nested structs") {
+
+      val inner = Schema.Struct(
+        "inner",
+        Schema.Field("b", Schema.Int32.nullable()),
+        Schema.Field("c", Schema.Booleans),
+      )
+
+      val outer = Schema.Struct("outer", Schema.Field("a", inner))
+
+      val path = Path("test_nested.pq")
+      fs.deleteOnExit(path)
+
+      val writer = Parquet.writer(path, conf, outer, true)
+      writer.write(
+        Struct(
+          outer,
+          listOf(
+            Struct(inner, listOf(345, true))
+          )
+        )
+      )
+      writer.close()
+
+      val struct = Parquet.reader(path, conf).read()
+
+      struct.schema shouldBe Schema.Struct(
+        "outer",
+        Schema.Field(
+          "a",
+          Schema.Struct(
+            "a",
+            Schema.Field("b", Schema.Int32.nullable()),
+            Schema.Field("c", Schema.Booleans),
+          )
+        ),
+      )
+
+      val items = struct.values[0] as Struct
+      items.values shouldBe listOf(345, true)
     }
   }
 }
