@@ -76,4 +76,9 @@ class SchemasTest : FunSpec({
     Schemas.toArrow(Schema.TimestampMillis) shouldBe ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
     Schemas.fromArrow(ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")) shouldBe Schema.TimestampMillis
   }
+
+  test("timestamp micros") {
+    Schemas.toArrow(Schema.TimestampMicros) shouldBe ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC")
+    Schemas.fromArrow(ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC")) shouldBe Schema.TimestampMicros
+  }
 })

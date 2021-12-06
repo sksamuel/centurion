@@ -34,6 +34,7 @@ object Schemas {
       }
       is ArrowType.Timestamp -> when (arrow.unit) {
         TimeUnit.MILLISECOND -> Schema.TimestampMillis
+        TimeUnit.MICROSECOND -> Schema.TimestampMicros
         else -> error("Unsupported arrow time unit ${arrow.unit}")
       }
       else -> error("Unsupported arrow type $arrow")
@@ -59,6 +60,7 @@ object Schemas {
       is Schema.Enum -> ArrowType.Utf8()
       is Schema.Decimal -> ArrowType.Decimal(schema.precision.value, schema.scale.value)
       Schema.TimestampMillis -> ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")
+      Schema.TimestampMicros -> ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC")
       is Schema.Varchar -> ArrowType.Utf8()
       else -> error("Unsupported schema $schema")
     }

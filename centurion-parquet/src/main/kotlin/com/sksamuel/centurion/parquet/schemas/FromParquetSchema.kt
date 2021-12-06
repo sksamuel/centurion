@@ -1,3 +1,5 @@
+@file:Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+
 package com.sksamuel.centurion.parquet.schemas
 
 import com.sksamuel.centurion.Schema
