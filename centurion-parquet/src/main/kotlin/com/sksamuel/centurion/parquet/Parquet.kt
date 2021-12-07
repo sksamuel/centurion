@@ -82,5 +82,6 @@ object Parquet {
 }
 
 fun <T : Any> ParquetReader<T>.sequence(): Sequence<T> = generateSequence { read() }
+fun <T : Any> ParquetReader<T>.readAll(): List<T> = sequence().toList()
 
 fun <T> ParquetWriter<T>.write(ts: List<T>) = ts.forEach { write(it) }

@@ -208,5 +208,26 @@ class ParquetWriterTest : FunSpec() {
       val items = struct.values[0] as Struct
       items.values shouldBe listOf(345, true)
     }
+
+    test("enums") {
+
+      val x = Schema.Struct(
+        "x",
+        Schema.Field("b", Schema.Int32.nullable()),
+        Schema.Field("c", Schema.Enum("malbec", "pinot")),
+      )
+
+      val path = Path("test_enums.pq")
+      fs.deleteOnExit(path)
+
+      val writer = Parquet.writer(path, conf, x, ParquetFileWriter.Mode.OVERWRITE)
+      writer.write(Struct(x, listOf(123, "pinot")))
+      writer.write(Struct(x, listOf(435, "malbec")))
+      writer.close()
+
+      val structs = Parquet.reader(path, conf).readAll()
+      structs[0].values shouldBe listOf(123, "pinot")
+      structs[1].values shouldBe listOf(435, "malbec")
+    }
   }
 }

@@ -17,10 +17,9 @@ interface Converters {
         is Schema.Nullable -> converterFor(schema.element, index, collector)
         is Schema.Map -> MapConverter(schema, index, collector)
         is Schema.Array -> ArrayConverter(schema, index, collector)
+        is Schema.Enum -> EnumConverter(index, collector)
 //        DateType -> DateConverter(receiver())
 //        is DecimalType -> DecimalConverter(field, type.precision, type.scale, buffer)
-//        Schema.TimestampMillis -> TimeMillisConverter(field.name, builder)
-//        is EnumType -> EnumConverter(receiver())
         else -> throw error("Unsupported schema ${schema::class}")
       }
     }
