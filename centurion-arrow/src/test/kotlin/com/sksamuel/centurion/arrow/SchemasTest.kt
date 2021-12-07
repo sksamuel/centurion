@@ -81,4 +81,11 @@ class SchemasTest : FunSpec({
     Schemas.toArrow(Schema.TimestampMicros) shouldBe ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC")
     Schemas.fromArrow(ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC")) shouldBe Schema.TimestampMicros
   }
+
+  test("maps") {
+    val type = ArrowType.Map(false)
+    val schema = Schema.Map(Schema.Strings, Schema.Strings)
+    Schemas.toArrow(schema) shouldBe type
+    Schemas.fromArrow(type) shouldBe schema
+  }
 })

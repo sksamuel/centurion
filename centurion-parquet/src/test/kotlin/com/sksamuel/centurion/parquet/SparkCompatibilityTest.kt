@@ -127,7 +127,7 @@ class SparkCompatibilityTest : FunSpec() {
       val schema = Schema.Struct(
         "spark_schema",
         Schema.Field("civilization", Schema.Strings),
-        Schema.Field("people", Schema.Map(Schema.Strings)),
+        Schema.Field("people", Schema.Map(Schema.Strings, Schema.Strings)),
       )
 
       val structs = listOf(

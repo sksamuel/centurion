@@ -7,14 +7,14 @@ import org.apache.orc.TypeDescription
 
 class SchemasTest : FunSpec({
 
-  test("orc varchars") {
+  test("varchars") {
     val type = TypeDescription.createVarchar().withMaxLength(33)
     val schema = Schema.Varchar(33)
     Schemas.fromOrc(type) shouldBe schema
     Schemas.toOrc(schema) shouldBe type
   }
 
-  test("orc numbers") {
+  test("numbers") {
     val type = TypeDescription.createStruct()
       .addField("byte", TypeDescription.createByte())
       .addField("short", TypeDescription.createShort())
@@ -37,11 +37,10 @@ class SchemasTest : FunSpec({
     Schemas.toOrc(schema) shouldBe type
   }
 
-  test("orc TypeDescriptions should map to Centurion schemas") {
+  test("structs") {
 
     val type = TypeDescription.createStruct()
       .addField("array", TypeDescription.createList(TypeDescription.createBoolean()))
-      .addField("map", TypeDescription.createMap(TypeDescription.createString(), TypeDescription.createInt()))
       .addField("binary", TypeDescription.createBinary())
       .addField("boolean", TypeDescription.createBoolean())
       .addField("string", TypeDescription.createString())
@@ -55,7 +54,6 @@ class SchemasTest : FunSpec({
     val schema = Schema.Struct(
       "struct",
       Schema.Field("array", Schema.Array(Schema.Booleans)),
-      Schema.Field("map", Schema.Map(Schema.Int32)),
       Schema.Field("binary", Schema.Bytes),
       Schema.Field("boolean", Schema.Booleans),
       Schema.Field("string", Schema.Strings),
@@ -88,5 +86,12 @@ class SchemasTest : FunSpec({
   test("timestamp millis") {
     Schemas.toOrc(Schema.TimestampMillis) shouldBe TypeDescription.createTimestamp()
     Schemas.fromOrc(TypeDescription.createTimestamp()) shouldBe Schema.TimestampMillis
+  }
+
+  test("maps") {
+    val type = TypeDescription.createMap(TypeDescription.createBoolean(), TypeDescription.createLong())
+    val schema = Schema.Map(Schema.Booleans, Schema.Int64)
+    Schemas.fromOrc(type) shouldBe schema
+    Schemas.toOrc(schema) shouldBe type
   }
 })

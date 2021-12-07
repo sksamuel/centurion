@@ -8,7 +8,7 @@ object Schemas {
   fun toOrc(schema: Schema): TypeDescription {
     return when (schema) {
       is Schema.Array -> TypeDescription.createList(toOrc(schema.elements))
-      is Schema.Map -> TypeDescription.createMap(TypeDescription.createString(), toOrc(schema.values))
+      is Schema.Map -> TypeDescription.createMap(toOrc(schema.keys), toOrc(schema.values))
       is Schema.Struct -> schema.fields.fold(TypeDescription.createStruct()) { acc, field ->
         acc.addField(field.name, toOrc(field.schema))
       }
@@ -41,7 +41,7 @@ object Schemas {
       TypeDescription.Category.INT -> Schema.Int32
       TypeDescription.Category.LIST -> Schema.Array(fromOrc(type.children[0]))
       TypeDescription.Category.LONG -> Schema.Int64
-      TypeDescription.Category.MAP -> Schema.Map(fromOrc(type.children[1]))
+      TypeDescription.Category.MAP -> Schema.Map(fromOrc(type.children[0]), fromOrc(type.children[1]))
       TypeDescription.Category.STRING -> Schema.Strings
       TypeDescription.Category.STRUCT -> {
         val fields = type.fieldNames.zip(type.children).map { (name, child) ->

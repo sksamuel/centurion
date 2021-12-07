@@ -82,21 +82,18 @@ class FromParquetSchemaTest : FunSpec() {
       ) shouldBe Schema.Varchar(215).nullable()
     }
 
-    test("maps of booleans") {
+    test("maps") {
 
       val message = Types.buildMessage()
         .addField(
           Types.map(Type.Repetition.REQUIRED)
-            .key(
-              Types.required(PrimitiveType.PrimitiveTypeName.BINARY).`as`(LogicalTypeAnnotation.stringType())
-                .named("key")
-            ).value(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("value"))
-            .named("a")
+            .key(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("key"))
+            .value(Types.required(PrimitiveType.PrimitiveTypeName.DOUBLE).named("value")).named("a")
         ).named("myrecord")
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Map(Schema.Booleans)),
+        Schema.Field("a", Schema.Map(Schema.Booleans, Schema.Float64)),
       )
     }
 
@@ -112,7 +109,7 @@ class FromParquetSchemaTest : FunSpec() {
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Map(Schema.Booleans).nullable()),
+        Schema.Field("a", Schema.Map(Schema.Int32, Schema.Booleans).nullable()),
       )
     }
 
@@ -128,7 +125,7 @@ class FromParquetSchemaTest : FunSpec() {
 
       FromParquetSchema.fromParquet(message) shouldBe Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Map(Schema.Booleans.nullable())),
+        Schema.Field("a", Schema.Map(Schema.Int32, Schema.Booleans.nullable())),
       )
     }
 

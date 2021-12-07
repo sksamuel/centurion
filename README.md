@@ -44,3 +44,4 @@ The following table shows how types map between each of the formats.
 | Varchar         | Fixed)                                   | N/A (String)              | Varchar      | N/A (String)        |
 | TimestampMillis | Long (TimestampMillis)                   | Int64 (Timestamp)         | Timestamp    | Timestamp (Millis)  |
 | TimestampMicros | Long (TimestampMicros)                   | Int64 (Timestamp)         | Unsupported  | Timestamp (Micros)  |
+| Map             | Map                                      | Map                       | Map          | Map                 |

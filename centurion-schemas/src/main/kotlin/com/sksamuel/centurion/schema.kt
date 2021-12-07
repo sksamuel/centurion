@@ -48,6 +48,11 @@ sealed interface Schema {
     constructor(vararg values: String) : this(values.asList())
   }
 
+  //// complex types
+
+  data class Array(val elements: Schema) : Schema
+  data class Map(val keys: Schema, val values: Schema) : Schema
+
   data class Struct(val name: String, val fields: List<Field>) : Schema {
     constructor(name: String, vararg fields: Field) : this(name, fields.toList())
 
@@ -56,11 +61,6 @@ sealed interface Schema {
     }
     fun indexOf(name: String): Int = fields.indexOfFirst { it.name == name }
   }
-
-  data class Array(val elements: Schema) : Schema
-
-  // always String keys
-  data class Map(val values: Schema) : Schema
 
   data class Field(val name: String, val schema: Schema)
 }

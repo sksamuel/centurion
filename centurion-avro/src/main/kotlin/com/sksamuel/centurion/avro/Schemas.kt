@@ -44,7 +44,7 @@ object Schemas {
       }
       org.apache.avro.Schema.Type.ENUM -> Schema.Enum(schema.enumSymbols)
       org.apache.avro.Schema.Type.ARRAY -> Schema.Array(fromAvro(schema.elementType))
-      org.apache.avro.Schema.Type.MAP -> Schema.Map(fromAvro(schema.valueType))
+      org.apache.avro.Schema.Type.MAP -> Schema.Map(Schema.Strings, fromAvro(schema.valueType))
       org.apache.avro.Schema.Type.UNION -> TODO()
       org.apache.avro.Schema.Type.FIXED -> TODO()
       org.apache.avro.Schema.Type.STRING -> when (schema.logicalType?.name) {

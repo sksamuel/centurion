@@ -194,23 +194,20 @@ class ToParquetSchemaTest : FunSpec() {
           ).named("myrecord")
     }
 
-    test("maps of booleans") {
+    test("maps") {
 
       val struct = Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Map(Schema.Booleans)),
+        Schema.Field("a", Schema.Map(Schema.Int64, Schema.Booleans)),
       )
 
       ToParquetSchema.toMessageType(struct) shouldBe
         Types.buildMessage()
           .addField(
-            Types.map(Type.Repetition.REQUIRED)
-              .key(
-                Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
-                  .`as`(LogicalTypeAnnotation.stringType()).named("key")
-              ).value(
-                Types.primitive(PrimitiveType.PrimitiveTypeName.BOOLEAN, Type.Repetition.REQUIRED).named("value")
-              ).named("a")
+            Types
+              .map(Type.Repetition.REQUIRED)
+              .key(Types.required(PrimitiveType.PrimitiveTypeName.INT64).named("key"))
+              .value(Types.required(PrimitiveType.PrimitiveTypeName.BOOLEAN).named("value")).named("a")
           ).named("myrecord")
     }
 
@@ -218,7 +215,7 @@ class ToParquetSchemaTest : FunSpec() {
 
       val struct = Schema.Struct(
         "myrecord",
-        Schema.Field("a", Schema.Map(Schema.Booleans).nullable()),
+        Schema.Field("a", Schema.Map(Schema.Strings, Schema.Booleans).nullable()),
       )
 
       ToParquetSchema.toMessageType(struct) shouldBe

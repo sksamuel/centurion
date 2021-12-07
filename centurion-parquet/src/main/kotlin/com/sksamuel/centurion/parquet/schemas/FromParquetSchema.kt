@@ -48,8 +48,9 @@ object FromParquetSchema {
   }
 
   private fun fromMap(groupType: GroupType): Schema {
-    val value = fromParquet(groupType.fields[0].asGroupType().fields[1])
-    val map = Schema.Map(value)
+    val keys = fromParquet(groupType.fields[0].asGroupType().fields[0])
+    val values = fromParquet(groupType.fields[0].asGroupType().fields[1])
+    val map = Schema.Map(keys, values)
     return if (groupType.isRepetition(Type.Repetition.OPTIONAL)) map.nullable() else map
   }
 

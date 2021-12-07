@@ -87,19 +87,19 @@ class ParquetReaderTest : FunSpec() {
         fields = listOf(
           Schema.Field(
             name = "map_op_op",
-            schema = Schema.Map(Schema.Strings.nullable()).nullable(),
+            schema = Schema.Map(Schema.Strings, Schema.Strings.nullable()).nullable(),
           ),
           Schema.Field(
             name = "map_op_req",
-            schema = Schema.Map(Schema.Strings).nullable(),
+            schema = Schema.Map(Schema.Strings, Schema.Strings).nullable(),
           ),
           Schema.Field(
             name = "map_req_op",
-            schema = Schema.Map(Schema.Strings.nullable()),
+            schema = Schema.Map(Schema.Strings, Schema.Strings.nullable()),
           ),
           Schema.Field(
             name = "map_req_req",
-            schema = Schema.Map(Schema.Strings),
+            schema = Schema.Map(Schema.Strings, Schema.Strings),
           ),
           Schema.Field(
             name = "arr_op_op",
