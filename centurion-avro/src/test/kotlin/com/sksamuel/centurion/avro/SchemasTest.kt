@@ -45,6 +45,14 @@ class SchemasTest : FunSpec({
     Schemas.fromAvro(SchemaBuilder.builder().floatType()) shouldBe Schema.Float32
   }
 
+  test("maps") {
+    Schemas.toAvro(Schema.Map(Schema.Booleans)) shouldBe
+      SchemaBuilder.builder().map().values(SchemaBuilder.builder().booleanType())
+
+    Schemas.fromAvro(SchemaBuilder.builder().map().values(SchemaBuilder.builder().booleanType())) shouldBe
+      Schema.Map(Schema.Booleans)
+  }
+
   test("arrays") {
     Schemas.toAvro(Schema.Array(Schema.Booleans)) shouldBe SchemaBuilder.builder().array()
       .items(SchemaBuilder.builder().booleanType())
