@@ -13,6 +13,11 @@ class SchemasTest : FunSpec({
     Schemas.fromAvro(SchemaBuilder.builder().stringType()) shouldBe Schema.Strings
   }
 
+  test("uuids") {
+    Schemas.toAvro(Schema.UUID) shouldBe LogicalTypes.uuid().addToSchema(SchemaBuilder.builder().stringType())
+    Schemas.fromAvro(LogicalTypes.uuid().addToSchema(SchemaBuilder.builder().stringType())) shouldBe Schema.UUID
+  }
+
   test("booleans") {
     Schemas.toAvro(Schema.Booleans) shouldBe SchemaBuilder.builder().booleanType()
     Schemas.fromAvro(SchemaBuilder.builder().booleanType()) shouldBe Schema.Booleans

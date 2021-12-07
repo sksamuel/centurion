@@ -12,6 +12,7 @@ object Schemas {
   fun toAvro(schema: Schema): AvroSchema {
     return when (schema) {
       is Schema.Strings -> SchemaBuilder.builder().stringType()
+      is Schema.UUID -> LogicalTypes.uuid().addToSchema(SchemaBuilder.builder().stringType())
       is Schema.Booleans -> SchemaBuilder.builder().booleanType()
       is Schema.Bytes -> SchemaBuilder.builder().bytesType()
       is Schema.Int64 -> SchemaBuilder.builder().longType()
@@ -46,7 +47,10 @@ object Schemas {
       org.apache.avro.Schema.Type.MAP -> Schema.Map(fromAvro(schema.valueType))
       org.apache.avro.Schema.Type.UNION -> TODO()
       org.apache.avro.Schema.Type.FIXED -> TODO()
-      org.apache.avro.Schema.Type.STRING -> Schema.Strings
+      org.apache.avro.Schema.Type.STRING -> when (schema.logicalType?.name) {
+        "uuid" -> Schema.UUID
+        else -> Schema.Strings
+      }
       org.apache.avro.Schema.Type.BYTES -> when (val lt = schema.logicalType) {
         is LogicalTypes.Decimal -> Schema.Decimal(Schema.Precision(lt.precision), Schema.Scale(lt.scale))
         else -> Schema.Bytes

@@ -30,7 +30,8 @@ The following table shows how types map between each of the formats.
 
 | Centurion Type  | Avro                                     | Parquet                   | Orc          | Arrow               |
 |-----------------|------------------------------------------|---------------------------|--------------|---------------------|
-| Strings         | String                                   | Binary String)            | String       | Utf8                |
+| Strings         | String                                   | Binary (String)           | String       | Utf8                |
+| UUID            | String (UUID)                            | Binary (String)           | String       | Utf8                |
 | Booleans        | Boolean                                  | Boolean                   | Boolean      | Bool                |
 | Int64           | Long                                     | Int64                     | Long         | Int64 Signed        |
 | Int32           | Int                                      | Int32                     | Int          | Int32 Signed        |

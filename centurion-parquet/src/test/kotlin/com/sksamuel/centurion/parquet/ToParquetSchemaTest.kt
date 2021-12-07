@@ -2,7 +2,6 @@ package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.nullable
-import com.sksamuel.centurion.parquet.schemas.FromParquetSchema
 import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -49,6 +48,12 @@ class ToParquetSchemaTest : FunSpec() {
 
     test("Schema.Strings should be converted to Binary with LogicalTypeAnnotation.string") {
       ToParquetSchema.toParquetType(Schema.Strings, "a") shouldBe
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
+          .`as`(LogicalTypeAnnotation.stringType()).named("a")
+    }
+
+    test("Schema.uuids should be converted to Binary with LogicalTypeAnnotation.string") {
+      ToParquetSchema.toParquetType(Schema.UUID, "a") shouldBe
         Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, Type.Repetition.REQUIRED)
           .`as`(LogicalTypeAnnotation.stringType()).named("a")
     }

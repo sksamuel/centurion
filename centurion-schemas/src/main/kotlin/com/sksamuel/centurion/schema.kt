@@ -7,6 +7,7 @@ sealed interface Schema {
   // // string types
 
   object Strings : Primitive
+  object UUID : Primitive
   data class Varchar(val length: Int) : Primitive
 
   object Booleans : Primitive

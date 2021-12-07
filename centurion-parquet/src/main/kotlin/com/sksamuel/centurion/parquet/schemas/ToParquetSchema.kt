@@ -38,6 +38,11 @@ object ToParquetSchema {
         Types.buildGroup(repetition).addFields(*fields.toTypedArray()).named(name)
       }
 
+      is Schema.UUID -> {
+        Types.primitive(PrimitiveType.PrimitiveTypeName.BINARY, repetition)
+          .`as`(LogicalTypeAnnotation.stringType()).named(name)
+      }
+
       // for parquet arrays we should have a container group, which is a logical type list
       // and has the repetition of the list field itself.
       // this group then has a repeated field of type group called 'list'.
