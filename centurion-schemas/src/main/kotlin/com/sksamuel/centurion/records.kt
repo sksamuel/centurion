@@ -18,6 +18,8 @@ data class Struct(val schema: Schema.Struct, val values: List<Any?>) {
     if (index < 0) error("Field $fieldName does not exist in schema $schema")
     return values[index]
   }
+
+  fun iterator(): Iterator<Pair<Schema.Field, Any?>> = schema.fields.zip(values).iterator()
 }
 
 class StructBuilder(val schema: Schema.Struct) {

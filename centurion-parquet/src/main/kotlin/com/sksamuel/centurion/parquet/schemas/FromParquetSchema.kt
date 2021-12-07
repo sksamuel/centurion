@@ -55,8 +55,10 @@ object FromParquetSchema {
   }
 
   private fun fromList(groupType: GroupType): Schema {
-    val element = fromParquet(groupType.fields[0].asGroupType().fields[0])
-    val arr = Schema.Array(element)
+    // https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#lists
+    val listGroup = groupType.fields[0].asGroupType()
+    val elementType = listGroup.fields[0]
+    val arr = Schema.Array(fromParquet(elementType))
     return if (groupType.isRepetition(Type.Repetition.OPTIONAL)) arr.nullable() else arr
   }
 
@@ -130,7 +132,3 @@ object FromParquetSchema {
 
 private fun Type.Repetition.isNullable(): Boolean =
     this == Type.Repetition.OPTIONAL
-
-private fun PrimitiveType.isRepeated(): Boolean {
-  return repetition == Type.Repetition.REPEATED
-}
