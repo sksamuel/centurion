@@ -14,26 +14,6 @@ internal class StructWriter(
 
   override fun write(consumer: RecordConsumer, value: Any) {
 
-    // in parquet, nested types must be wrapped in "groups"
-    fun writeGroup(fn: () -> Unit) {
-      consumer.startGroup()
-      fn()
-      consumer.endGroup()
-    }
-
-    // top level types must be wrapped in messages
-    fun writeMessage(fn: () -> Unit) {
-      consumer.startMessage()
-      fn()
-      consumer.endMessage()
-    }
-
-    fun writeField(name: String, index: Int, fn: () -> Unit) {
-      consumer.startField(name, index)
-      fn()
-      consumer.endField(name, index)
-    }
-
     fun write() {
 
       val values = when (value) {
@@ -45,7 +25,7 @@ internal class StructWriter(
         val fieldValue = values[k]
         // null values are handled in parquet by skipping them completely in the file
         if (fieldValue != null) {
-          writeField(field.name, k) {
+          consumer.writeField(field.name, k) {
             val writer = Writer.writerFor(field.schema)
             writer.write(consumer, fieldValue)
           }
@@ -54,9 +34,9 @@ internal class StructWriter(
     }
 
     if (root) {
-      writeMessage { write() }
+      consumer.writeMessage { write() }
     } else {
-      writeGroup { write() }
+      consumer.writeGroup { write() }
     }
   }
 }

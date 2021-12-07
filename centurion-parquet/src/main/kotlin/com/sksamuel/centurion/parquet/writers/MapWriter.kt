@@ -22,24 +22,23 @@ class MapWriter(schema: Schema.Map) : Writer {
     //       <value-repetition> <value-type> value;
     //     }
     //   }
-    consumer.startGroup()
-    if (map.isNotEmpty()) {
-      consumer.startField("key_value", 0)
-      map.forEach { (key, value) ->
-        consumer.startGroup()
-        consumer.startField("key", 0)
-        keyWriter.write(consumer, key)
-        consumer.endField("key", 0)
-        if (value != null) {
-          consumer.startField("value", 1)
-          valueWriter.write(consumer, value)
-          consumer.endField("value", 1)
+    consumer.writeGroup {
+      if (map.isNotEmpty()) {
+        consumer.writeField("key_value", 0) {
+          map.forEach { (key, value) ->
+            consumer.writeGroup {
+              consumer.writeField("key", 0) {
+                keyWriter.write(consumer, key)
+              }
+              if (value != null) {
+                consumer.writeField("value", 1) {
+                  valueWriter.write(consumer, value)
+                }
+              }
+            }
+          }
         }
-        consumer.endGroup()
       }
-      consumer.endField("key_value", 0)
     }
-    consumer.endGroup()
   }
-
 }
