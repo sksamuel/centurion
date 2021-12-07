@@ -3,7 +3,6 @@ package com.sksamuel.centurion.parquet.schemas
 import com.sksamuel.centurion.Schema
 import org.apache.parquet.schema.LogicalTypeAnnotation
 import org.apache.parquet.schema.MessageType
-import org.apache.parquet.schema.OriginalType
 import org.apache.parquet.schema.PrimitiveType
 import org.apache.parquet.schema.Type
 import org.apache.parquet.schema.Type.Repetition
@@ -18,7 +17,7 @@ import org.apache.parquet.schema.Types
 object ToParquetSchema {
 
   /**
-   * Returns a parquet [MessageType] for the given centurion [Record] schema.
+   * Returns a parquet [MessageType] for the given centurion [Schema.Struct] schema.
    */
   fun toMessageType(schema: Schema.Struct): MessageType {
     val types = schema.fields.map { toParquetType(it.schema, it.name) }
@@ -72,11 +71,11 @@ object ToParquetSchema {
       Schema.Float64 -> Types.primitive(PrimitiveType.PrimitiveTypeName.DOUBLE, repetition).named(name)
       Schema.Float32 -> Types.primitive(PrimitiveType.PrimitiveTypeName.FLOAT, repetition).named(name)
       Schema.Int8 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
-        .`as`(OriginalType.INT_8).named(name)
+        .`as`(LogicalTypeAnnotation.intType(8, true)).named(name)
       Schema.Int32 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition).named(name)
       Schema.Int64 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition).named(name)
       Schema.Int16 -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, repetition)
-        .`as`(OriginalType.INT_16).named(name)
+        .`as`(LogicalTypeAnnotation.intType(16, true)).named(name)
 
       Schema.TimestampMillis -> Types.primitive(PrimitiveType.PrimitiveTypeName.INT64, repetition)
         .`as`(LogicalTypeAnnotation.timestampType(true, LogicalTypeAnnotation.TimeUnit.MILLIS)).named(name)

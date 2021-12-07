@@ -25,6 +25,8 @@ class SchemasTest : FunSpec({
 
   test("ints") {
     Schemas.toAvro(Schema.Int32) shouldBe SchemaBuilder.builder().intType()
+    Schemas.toAvro(Schema.Int16) shouldBe SchemaBuilder.builder().intType()
+    Schemas.toAvro(Schema.Int8) shouldBe SchemaBuilder.builder().intType()
     Schemas.fromAvro(SchemaBuilder.builder().intType()) shouldBe Schema.Int32
   }
 

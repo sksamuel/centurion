@@ -2,6 +2,7 @@ package com.sksamuel.centurion.parquet
 
 import com.sksamuel.centurion.Schema
 import com.sksamuel.centurion.nullable
+import com.sksamuel.centurion.parquet.schemas.FromParquetSchema
 import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -13,6 +14,16 @@ import org.apache.parquet.schema.Types
 class ToParquetSchemaTest : FunSpec() {
 
   init {
+
+    test("integrals") {
+      ToParquetSchema.toParquetType(Schema.Int8, "a") shouldBe
+        Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED)
+          .`as`(LogicalTypeAnnotation.intType(8, true)).named("a")
+
+      ToParquetSchema.toParquetType(Schema.Int16, "b") shouldBe
+        Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED)
+          .`as`(LogicalTypeAnnotation.intType(16, true)).named("b")
+    }
 
     test("structs should be converted to parquet message type") {
 

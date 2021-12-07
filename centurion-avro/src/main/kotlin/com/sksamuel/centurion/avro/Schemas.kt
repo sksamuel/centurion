@@ -16,6 +16,8 @@ object Schemas {
       is Schema.Bytes -> SchemaBuilder.builder().bytesType()
       is Schema.Int64 -> SchemaBuilder.builder().longType()
       is Schema.Int32 -> SchemaBuilder.builder().intType()
+      is Schema.Int16 -> SchemaBuilder.builder().intType()
+      is Schema.Int8 -> SchemaBuilder.builder().intType()
       is Schema.Float64 -> SchemaBuilder.builder().doubleType()
       is Schema.Float32 -> SchemaBuilder.builder().floatType()
       is Schema.Decimal -> LogicalTypes.decimal(schema.precision.value, schema.scale.value)

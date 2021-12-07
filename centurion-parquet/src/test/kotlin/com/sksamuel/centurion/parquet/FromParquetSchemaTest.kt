@@ -13,6 +13,14 @@ import org.apache.parquet.schema.Types
 class FromParquetSchemaTest : FunSpec() {
   init {
 
+    test("integrals") {
+      FromParquetSchema.fromParquet(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED)
+        .`as`(LogicalTypeAnnotation.intType(8, true)).named("a")) shouldBe Schema.Int8
+
+      FromParquetSchema.fromParquet(Types.primitive(PrimitiveType.PrimitiveTypeName.INT32, Type.Repetition.REQUIRED)
+        .`as`(LogicalTypeAnnotation.intType(16, true)).named("b")) shouldBe Schema.Int16
+    }
+
     test("should handle deprecated int 96") {
       val message = Types.buildMessage().addField(
         Types.primitive(PrimitiveType.PrimitiveTypeName.INT96, Type.Repetition.REQUIRED).named("a")
