@@ -9,7 +9,7 @@ import org.apache.avro.util.Utf8
 class RecordsTest : FunSpec() {
   init {
     test("converting struct to generic record") {
-      val record = Records.toGenericRecord(
+      val record = Records.toRecord(
         Struct(
           Schema.Struct(
             "mystruct",
