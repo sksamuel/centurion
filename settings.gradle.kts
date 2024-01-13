@@ -1,3 +1,5 @@
+rootProject.name = "centurion"
+
 pluginManagement {
    repositories {
       mavenLocal()
@@ -11,8 +13,12 @@ pluginManagement {
    }
 }
 
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include("centurion-arrow")
 include("centurion-avro")
 include("centurion-schemas")
 include("centurion-orc")
 include("centurion-parquet")
+include("centurion-openapi")
