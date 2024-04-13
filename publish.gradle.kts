@@ -57,7 +57,7 @@ publishing {
       from(components["java"])
       pom {
         name.set("centurion")
-        description.set("Kotlin Bigdata Toolkit")
+        description.set("Kotlin Avro/Parquet Toolkit")
         url.set("http://www.github.com/sksamuel/centurion")
 
         scm {
