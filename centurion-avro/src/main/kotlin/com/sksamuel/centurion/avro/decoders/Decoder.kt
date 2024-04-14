@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
@@ -23,13 +24,14 @@ fun interface Decoder<T> {
 
    companion object {
       fun decoderFor(type: KType): Decoder<*> {
-         val decoder: Decoder<*> = when (type.classifier) {
+         val decoder: Decoder<*> = when (val classifier = type.classifier) {
             String::class -> StringDecoder
             Boolean::class -> BooleanDecoder
             Float::class -> FloatDecoder
             Double::class -> DoubleDecoder
             Int::class -> IntDecoder
             Long::class -> LongDecoder
+            is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
          return decoder
