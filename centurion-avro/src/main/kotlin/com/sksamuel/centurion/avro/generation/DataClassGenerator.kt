@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.generation
 import org.apache.avro.Schema
 
 /**
- * Generates a data class for a given schema.
+ * Generates a data class model for a given schema.
  */
 class DataClassGenerator {
 
@@ -13,7 +13,7 @@ class DataClassGenerator {
       return DataClass(schema.namespace, schema.name, members)
    }
 
-   fun member(field: Schema.Field): Member {
+   private fun member(field: Schema.Field): Member {
       val type = when (field.schema().type) {
          Schema.Type.RECORD -> Type.RecordType(field.schema().namespace, field.schema().name)
          Schema.Type.STRING -> Type.StringType
@@ -37,7 +37,22 @@ object DataClassWriter {
          appendLine("package ${ds.packageName}")
          appendLine()
          appendLine("data class ${ds.className}(")
+         ds.members.forEach {
+            appendLine("  val ${it.name}: ${typeToString(it.type)},")
+         }
          appendLine(")")
+      }
+   }
+
+   private fun typeToString(type: Type): String {
+      return when (type) {
+         Type.BooleanType -> "Boolean"
+         Type.DoubleType -> "Double"
+         Type.FloatType -> "Float"
+         Type.IntType -> "Int"
+         Type.LongType -> "Long"
+         is Type.RecordType -> type.packageName + "." + type.className
+         Type.StringType -> "String"
       }
    }
 }
