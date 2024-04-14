@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro.generation
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
 
 class ReflectionSchemaBuilder {
@@ -13,26 +14,29 @@ class ReflectionSchemaBuilder {
 
       val builder = SchemaBuilder.record(kclass.java.name).namespace(kclass.java.packageName)
       return kclass.memberProperties.fold(builder.fields()) { acc, op ->
-
-         val typeBuilder = if (op.returnType.isMarkedNullable)
-            SchemaBuilder.nullable()
-         else
-            SchemaBuilder.builder()
-
-         val type = when (val classifier = op.returnType.classifier) {
-            String::class -> typeBuilder.stringType()
-            Boolean::class -> typeBuilder.booleanType()
-            Int::class -> typeBuilder.intType()
-            Long::class -> typeBuilder.longType()
-            Short::class -> typeBuilder.intType()
-            Byte::class -> typeBuilder.intType()
-            Double::class -> typeBuilder.doubleType()
-            Float::class -> typeBuilder.floatType()
-            else -> error("Unsupported type $classifier")
-         }
-
-         acc.name(op.name).type(type).noDefault()
+         acc.name(op.name).type(schemaFor(op.returnType)).noDefault()
       }.endRecord()
    }
 
+   private fun schemaFor(type: KType): Schema {
+
+      val typeBuilder = if (type.isMarkedNullable)
+         SchemaBuilder.nullable()
+      else
+         SchemaBuilder.builder()
+
+      return when (val classifier = type.classifier) {
+         String::class -> typeBuilder.stringType()
+         Boolean::class -> typeBuilder.booleanType()
+         Int::class -> typeBuilder.intType()
+         Long::class -> typeBuilder.longType()
+         Short::class -> typeBuilder.intType()
+         Byte::class -> typeBuilder.intType()
+         Double::class -> typeBuilder.doubleType()
+         Float::class -> typeBuilder.floatType()
+         Set::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
+         List::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
+         else -> error("Unsupported type $classifier")
+      }
+   }
 }
