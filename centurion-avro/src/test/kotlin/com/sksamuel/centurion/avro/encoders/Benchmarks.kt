@@ -22,7 +22,9 @@ enum class UserType { User, Admin }
 fun main() {
 
    val user = User(Random.nextLong(), "sammy mcsamface", "sammy@mcsamface.com", Random.nextLong(), UserType.Admin)
-   val schema = ReflectionSchemaBuilder().schema(User::class)
+   val schema = ReflectionSchemaBuilder(true).schema(User::class)
+
+   GenericData.setStringType(schema, GenericData.StringType.String)
 
    repeat(5) {
       val time = measureTime {

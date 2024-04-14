@@ -11,7 +11,7 @@ object StringEncoder : Encoder<String> {
       return when (schema.type) {
          Schema.Type.BYTES -> ByteStringEncoder.encode(schema, value)
          Schema.Type.FIXED -> FixedStringEncoder.encode(schema, value)
-         Schema.Type.STRING -> when (schema.getObjectProp(GenericData.STRING_PROP)) {
+         Schema.Type.STRING -> when (schema.getProp(GenericData.STRING_PROP)) {
             "String" -> value
             else -> UTF8StringEncoder.encode(schema, value)
          }

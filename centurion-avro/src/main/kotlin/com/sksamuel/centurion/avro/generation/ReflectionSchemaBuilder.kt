@@ -2,11 +2,14 @@ package com.sksamuel.centurion.avro.generation
 
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
+import org.apache.avro.generic.GenericData
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
 
-class ReflectionSchemaBuilder {
+class ReflectionSchemaBuilder(
+   private val useJavaString: Boolean = false,
+) {
 
    fun schema(kclass: KClass<*>): Schema {
 
@@ -27,6 +30,8 @@ class ReflectionSchemaBuilder {
 
       return when (val classifier = type.classifier) {
          String::class -> typeBuilder.stringType()
+            .also { if (useJavaString) GenericData.setStringType(it, GenericData.StringType.String) }
+
          Boolean::class -> typeBuilder.booleanType()
          Int::class -> typeBuilder.intType()
          Long::class -> typeBuilder.longType()
