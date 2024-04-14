@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.avro
+package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
 

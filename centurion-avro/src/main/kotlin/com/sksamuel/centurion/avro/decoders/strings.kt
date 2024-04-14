@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.avro.decoders
 
-import com.sksamuel.centurion.avro.Decoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericFixed
 import org.apache.avro.util.Utf8
