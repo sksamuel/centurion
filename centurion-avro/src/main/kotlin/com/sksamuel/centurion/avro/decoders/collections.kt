@@ -14,3 +14,15 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
       }
    }
 }
+
+class SetDecoder<T>(private val decoder: Decoder<T>) : Decoder<Set<T>> {
+   override fun decode(schema: Schema, value: Any?): Set<T> {
+      require(schema.type == Schema.Type.ARRAY)
+      return when (value) {
+         is GenericData.Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
+         is List<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
+         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
+         else -> error("Unsupported list type $value")
+      }
+   }
+}

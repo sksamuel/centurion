@@ -38,6 +38,7 @@ class ReflectionRecordDecoderTest : FunSpec({
 
    test("nulls") {
       data class Foo(val a: String?, val b: String)
+
       val schema = SchemaBuilder.record("Foo").fields()
          .optionalString("a")
          .requiredString("b")
@@ -48,5 +49,35 @@ class ReflectionRecordDecoderTest : FunSpec({
       record.put("b", Utf8("hello"))
 
       ReflectionRecordDecoder<Foo>().decode(schema, record) shouldBe Foo(null, "hello")
+   }
+
+   test("sets") {
+      data class Foo(val set1: Set<Int>, val set2: Set<Long?>)
+
+      val schema = SchemaBuilder.record("Foo").fields()
+         .name("set1").type().array().items().intType().noDefault()
+         .name("set2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .endRecord()
+
+      val record = GenericData.Record(schema)
+      record.put("set1", listOf(1, 2))
+      record.put("set2", listOf(1, null, 2))
+
+      ReflectionRecordDecoder<Foo>().decode(schema, record) shouldBe Foo(setOf(1, 2), setOf(1L, null, 2L))
+   }
+
+   test("list") {
+      data class Foo(val list1: List<Int>, val list2: List<Long?>)
+
+      val schema = SchemaBuilder.record("Foo").fields()
+         .name("list1").type().array().items().intType().noDefault()
+         .name("list2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .endRecord()
+
+      val record = GenericData.Record(schema)
+      record.put("list1", listOf(1, 2))
+      record.put("list2", listOf(1, null, 2))
+
+      ReflectionRecordDecoder<Foo>().decode(schema, record) shouldBe Foo(listOf(1, 2), listOf(1L, null, 2L))
    }
 })

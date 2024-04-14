@@ -31,6 +31,8 @@ fun interface Decoder<T> {
             Double::class -> DoubleDecoder
             Int::class -> IntDecoder
             Long::class -> LongDecoder
+            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
+            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
