@@ -39,33 +39,57 @@ class ReflectionRecordEncoderTest : FunSpec({
    }
 
    test("sets") {
-      data class Foo(val set1: Set<Int>, val set2: Set<Long?>)
+      data class Foo(val set1: Set<Int>, val set2: Set<Long?>, val set3: Set<Wine>)
 
+      val enum = SchemaBuilder.enumeration("Wine").symbols("Malbec", "Shiraz")
       val schema = SchemaBuilder.record("Foo").fields()
          .name("set1").type().array().items().intType().noDefault()
          .name("set2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .name("set3").type().array().items().type(enum).noDefault()
          .endRecord()
 
       val expected = GenericData.Record(schema)
       expected.put("set1", listOf(1, 2))
       expected.put("set2", listOf(1L, null, 2L))
+      expected.put(
+         "set3",
+         listOf(
+            GenericData.get().createEnum("Shiraz", enum),
+            GenericData.get().createEnum("Malbec", enum),
+         )
+      )
 
-      ReflectionRecordEncoder().encode(schema, Foo(setOf(1, 2), setOf(1L, null, 2L))) shouldBe expected
+      ReflectionRecordEncoder().encode(
+         schema,
+         Foo(setOf(1, 2), setOf(1L, null, 2L), setOf(Wine.Shiraz, Wine.Malbec))
+      ) shouldBe expected
    }
 
    test("list") {
-      data class Foo(val list1: List<Int>, val list2: List<Long?>)
+      data class Foo(val list1: List<Int>, val list2: List<Long?>, val list3: List<Wine>)
 
+      val enum = SchemaBuilder.enumeration("Wine").symbols("Malbec", "Shiraz")
       val schema = SchemaBuilder.record("Foo").fields()
          .name("list1").type().array().items().intType().noDefault()
          .name("list2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .name("list3").type().array().items().type(enum).noDefault()
          .endRecord()
 
       val expected = GenericData.Record(schema)
       expected.put("list1", listOf(1, 2))
       expected.put("list2", listOf(1L, null, 2L))
+      expected.put(
+         "list3",
+         listOf(
+            GenericData.get().createEnum("Shiraz", enum),
+            GenericData.get().createEnum("Malbec", enum),
+         )
+      )
 
-      ReflectionRecordEncoder().encode(schema, Foo(listOf(1, 2), listOf(1L, null, 2L))) shouldBe expected
+      ReflectionRecordEncoder().encode(
+         schema,
+         Foo(listOf(1, 2), listOf(1L, null, 2L), listOf(Wine.Shiraz, Wine.Malbec))
+      ) shouldBe expected
    }
 })
 

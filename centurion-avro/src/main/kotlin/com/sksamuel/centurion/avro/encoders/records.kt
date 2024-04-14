@@ -21,7 +21,7 @@ class ReflectionRecordEncoder : Encoder<Any> {
       val record = GenericData.Record(schema)
 
       value::class.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
-         val field = schema.getField(member.name)
+         val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
          val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
          val v = member.getter.call(value)
          val encoded = encoder.encode(field.schema(), v)
