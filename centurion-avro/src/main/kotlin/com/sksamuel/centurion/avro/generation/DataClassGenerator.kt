@@ -53,6 +53,7 @@ object DataClassWriter {
          Type.LongType -> "Long"
          is Type.RecordType -> type.packageName + "." + type.className
          Type.StringType -> "String"
+         is Type.Nullable -> typeToString(type.element) + "?"
       }
    }
 }
@@ -70,6 +71,10 @@ sealed interface Type {
    object LongType : Type
    object FloatType : Type
    object DoubleType : Type
+
+   // a nullable type wraps any other type, denoting that it is permitted to be null
+   // this is analogous to Avro's union type, with two elements - null and another
+   data class Nullable(val element: Type) : Type
 }
 
 data class Member(val name: String, val type: Type)

@@ -20,8 +20,7 @@ class DataClassWriterTest : FunSpec({
                Member("g", Type.RecordType("x", "y")),
             )
          )
-      ).trim() shouldBe
-         """
+      ).trim() shouldBe """
 package com.sksamuel
 
 data class Foo(
@@ -36,4 +35,21 @@ data class Foo(
 """.trim()
    }
 
+   test("nullable type") {
+      DataClassWriter.write(
+         DataClass(
+            packageName = "a.b",
+            className = "C",
+            members = listOf(
+               Member("a", Type.Nullable(Type.StringType)),
+            )
+         )
+      ).trim() shouldBe """
+package a.b
+
+data class C(
+  val a: String?,
+)
+""".trim()
+   }
 })
