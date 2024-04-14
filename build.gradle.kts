@@ -25,8 +25,9 @@ allprojects {
    version = Ci.version
 
    java {
-      this.sourceCompatibility = JavaVersion.VERSION_1_8
-      this.targetCompatibility = JavaVersion.VERSION_1_8
+      targetCompatibility = JavaVersion.VERSION_11
+      sourceCompatibility = JavaVersion.VERSION_11
+      withSourcesJar()
    }
 
    repositories {
@@ -47,6 +48,10 @@ allprojects {
          showStandardStreams = true
          exceptionFormat = TestExceptionFormat.FULL
       }
+   }
+
+   kotlin {
+      target { this. }
    }
 
    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
