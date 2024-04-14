@@ -2,10 +2,15 @@ package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecord
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
-class RecordEncoder : Encoder<Any> {
+/**
+ * An [Encoder] that returns a [GenericRecord] for a given data class instance, using
+ * reflection to access the fields of the data class.
+ */
+class ReflectionRecordEncoder : Encoder<Any> {
 
    override fun encode(schema: Schema, value: Any): Any {
       require(schema.type == Schema.Type.RECORD)

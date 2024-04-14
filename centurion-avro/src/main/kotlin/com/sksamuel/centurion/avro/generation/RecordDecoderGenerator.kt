@@ -1,21 +1,21 @@
 package com.sksamuel.centurion.avro.generation
 
 /**
- * Creates a string version of an [Encoder] that can be used to convert this data class
- * to a Record
+ * A code generator that outputs Kotlin that will deserialize a generic record for a given
+ * type into an instance of that data class.
  */
-class GenericRecordDecoderGenerator {
+class RecordDecoderGenerator {
    fun generate(ds: DataClass): String {
       return buildString {
          appendLine("package ${ds.packageName}")
          appendLine()
-         appendLine("import com.sksamuel.centurion.avro.generation.GenericRecordDecoder")
+         appendLine("import com.sksamuel.centurion.avro.generation.GenericRecordDeserializer")
          appendLine("import org.apache.avro.Schema")
          appendLine("import org.apache.avro.generic.GenericData")
          appendLine("import org.apache.avro.generic.GenericRecord")
          appendLine()
          appendLine("/**")
-         appendLine(" * This is a generated [GenericRecordDecoder] that decodes Avro [GenericRecord]s to [${ds.className}]s")
+         appendLine(" * This is a generated [GenericRecordDeserializer] that deserializes Avro [GenericRecord]s to [${ds.className}]s")
          appendLine(" */")
          appendLine("object ${ds.className}Decoder : GenericRecordDecoder<${ds.className}> {")
          appendLine("  override fun decode(record: GenericRecord): ${ds.className} {")

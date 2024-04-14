@@ -13,7 +13,7 @@ class RecordEncoderTest : FunSpec({
       data class Foo(val a: String, val b: Boolean)
 
       val schema = SchemaBuilder.record("Foo").fields().requiredString("a").requiredBoolean("b").endRecord()
-      val actual = RecordEncoder().encode(schema, Foo("hello", true))
+      val actual = ReflectionRecordEncoder().encode(schema, Foo("hello", true))
 
       val expected = GenericData.Record(schema)
       expected.put("a", Utf8("hello"))
@@ -30,7 +30,7 @@ class RecordEncoderTest : FunSpec({
          .name("wine").type(wineSchema).noDefault()
          .endRecord()
 
-      val actual = RecordEncoder().encode(schema, Foo(Wine.Malbec))
+      val actual = ReflectionRecordEncoder().encode(schema, Foo(Wine.Malbec))
 
       val expected = GenericData.Record(schema)
       expected.put("wine", GenericData.get().createEnum("Malbec", wineSchema))

@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 class GenericRecordDecoderGeneratorTest : FunSpec({
 
    test("simple decoder") {
-      GenericRecordDecoderGenerator().generate(
+      RecordDecoderGenerator().generate(
          DataClass(
             "a.b",
             "Foo",

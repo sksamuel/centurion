@@ -1,12 +1,13 @@
 package com.sksamuel.centurion.avro.generation
 
+
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-class GenericRecordEncoderGeneratorTest : FunSpec({
+class RecordEncoderGeneratorTest : FunSpec({
 
    test("simple encoder") {
-      GenericRecordEncoderGenerator().generate(
+      RecordEncoderGenerator().generate(
          DataClass(
             "a.b",
             "Foo",
@@ -18,20 +19,19 @@ class GenericRecordEncoderGeneratorTest : FunSpec({
       ).trim() shouldBe """
 package a.b
 
-import com.sksamuel.centurion.avro.generation.GenericRecordEncoder
+import com.sksamuel.centurion.avro.encoders.*
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 
 /**
- * This is a generated [GenericRecordEncoder] that encodes [Foo]s to Avro [GenericRecord]s
+ * This is a generated [Encoder] that encodes [Foo]s to Avro [GenericRecord]s
  */
-object FooEncoder : GenericRecordEncoder<Foo> {
-  private val schema = Schema.create(Schema.Type.STRING)
-  override fun encode(value: Foo): GenericRecord {
+object FooEncoder : Encoder<Foo> {
+  override fun encode(schema: Schema, value: Foo): GenericRecord {
     val record = GenericData.Record(schema)
-    record.put("a", value.a)
-    record.put("b", value.b)
+    record.put("a", BooleanEncoder.encode(schema.getField("a").schema(), value.a))
+    record.put("b", StringEncoder.encode(schema.getField("b").schema(), value.b))
     return record
   }
 }
