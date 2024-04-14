@@ -26,14 +26,14 @@ fun main() {
 
    GenericData.setStringType(schema, GenericData.StringType.String)
 
-   repeat(5) {
-      val time = measureTime {
-         repeat(5_000_000) {
-            ReflectionRecordEncoder().encode(schema, user)
-         }
-      }
-      println("ReflectionRecordEncoder: $time")
-   }
+//   repeat(5) {
+//      val time = measureTime {
+//         repeat(5_000_000) {
+//            ReflectionRecordEncoder().encode(schema, user)
+//         }
+//      }
+//      println("ReflectionRecordEncoder: $time")
+//   }
 
    repeat(5) {
       val encoder = SpecificRecordEncoder(User::class, schema)
