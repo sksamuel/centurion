@@ -1,7 +1,5 @@
 package com.sksamuel.centurion.avro.encoders
 
-import com.sksamuel.centurion.avro.Encoder
-
 val ByteEncoder: Encoder<Byte> = Encoder.identity()
 val ShortEncoder: Encoder<Short> = Encoder.identity()
 val IntEncoder: Encoder<Int> = Encoder.identity()

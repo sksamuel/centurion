@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.avro.encoders
 
-import com.sksamuel.centurion.avro.Encoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 

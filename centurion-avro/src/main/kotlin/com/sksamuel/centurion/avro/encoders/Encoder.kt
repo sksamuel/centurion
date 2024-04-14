@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.avro
+package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
 
@@ -31,16 +31,15 @@ fun interface Encoder<T> {
       fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
    }
 
-   fun encode(schema: Schema, value: T): Any
+   fun encode(schema: Schema, value: T): Any?
 
    /**
     * Returns an [Encoder<U>] by applying a function [fn] that maps a [U]
     * to an [T], before encoding as an [T] using this encoder.
     */
-   fun <U> contraMap(fn: (U) -> T): Encoder<U> = object : Encoder<U> {
-      override fun encode(schema: Schema, value: U): Any {
-         return this@Encoder.encode(schema, fn(value))
-      }
+   fun <U> contraMap(fn: (U) -> T): Encoder<U> {
+      val self = this
+      return Encoder { schema, value -> self.encode(schema, fn(value)) }
    }
 }
 
