@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
+          distribution: "temurin"
 
       - name: run tests
         run: ./gradlew check
