@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
 import java.math.BigDecimal
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
@@ -34,7 +35,7 @@ fun interface Encoder<T> {
       fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
 
       fun encoderFor(type: KType): Encoder<*> {
-         val encoder: Encoder<*> = when (type.classifier) {
+         val encoder: Encoder<*> = when (val classifier = type.classifier) {
             String::class -> StringEncoder
             Boolean::class -> BooleanEncoder
             Float::class -> FloatEncoder
@@ -42,6 +43,7 @@ fun interface Encoder<T> {
             Int::class -> IntEncoder
             Long::class -> LongEncoder
             BigDecimal::class -> BigDecimalStringEncoder
+            is KClass<*> -> if (classifier.java.isEnum) EnumEncoder<Enum<*>>() else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
