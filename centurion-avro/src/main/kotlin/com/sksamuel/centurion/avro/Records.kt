@@ -11,8 +11,9 @@ object Records {
       val schema = Schemas.toAvro(struct.schema)
       val record = GenericData.Record(schema)
       struct.iterator().forEach { (field, value) ->
-         val encoded = if (value == null) null else Encoders.encoderFor(field.schema).encode(value)
-         record.put(field.name, encoded)
+         TODO()
+//         val encoded = if (value == null) null else Encoders.encoderFor(field.schema).encode(value)
+//         record.put(field.name, encoded)
       }
       return record
    }
