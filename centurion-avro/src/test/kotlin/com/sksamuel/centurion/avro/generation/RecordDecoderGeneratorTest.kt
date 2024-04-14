@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.generation
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-class GenericRecordDecoderGeneratorTest : FunSpec({
+class RecordDecoderGeneratorTest : FunSpec({
 
    test("simple decoder") {
       RecordDecoderGenerator().generate(
@@ -18,19 +18,20 @@ class GenericRecordDecoderGeneratorTest : FunSpec({
       ).trim() shouldBe """
 package a.b
 
-import com.sksamuel.centurion.avro.generation.GenericRecordDecoder
+import com.sksamuel.centurion.avro.decoders.*
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 
 /**
- * This is a generated [GenericRecordDecoder] that decodes Avro [GenericRecord]s to [Foo]s
+ * This is a generated [Decoder] that deserializes Avro [GenericRecord]s to [Foo]s
  */
-object FooDecoder : GenericRecordDecoder<Foo> {
-  override fun decode(record: GenericRecord): Foo {
+object FooDecoder : Decoder<Foo> {
+  override fun decode(schema: Schema, value: Any?): Foo {
+    require(value is GenericRecord)
     return Foo(
-      a = record.get("a"),
-      b = record.get("b"),
+      a = BooleanDecoder.decode(schema.getField("a").schema(), value.get("a")),
+      b = StringDecoder.decode(schema.getField("b").schema(), value.get("b")),
     )
   }
 }
