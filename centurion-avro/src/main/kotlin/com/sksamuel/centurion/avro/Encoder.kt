@@ -18,6 +18,19 @@ import org.apache.avro.Schema
  * returns a java.lang.Integer regardless of any schema input.
  */
 fun interface Encoder<T> {
+
+   companion object {
+      /**
+       * Returns an [Encoder] that encodes using the supplied function.
+       */
+      operator fun <T> invoke(f: (T) -> Any) = Encoder<T> { _, value -> f(value) }
+
+      /**
+       * Returns an [Encoder] that encodes by simply returning the input value.
+       */
+      fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
+   }
+
    fun encode(schema: Schema, value: T): Any
 
    /**
