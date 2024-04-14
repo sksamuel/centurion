@@ -18,7 +18,7 @@ class GenericRecordEncoderGeneratorTest : FunSpec({
       ).trim() shouldBe """
 package a.b
 
-import com.sksamuel.centurion.avro.GenericRecordEncoder
+import com.sksamuel.centurion.avro.generation.GenericRecordEncoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord

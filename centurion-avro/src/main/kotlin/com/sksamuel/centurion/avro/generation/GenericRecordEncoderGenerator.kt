@@ -9,7 +9,7 @@ class GenericRecordEncoderGenerator {
       return buildString {
          appendLine("package ${ds.packageName}")
          appendLine()
-         appendLine("import com.sksamuel.centurion.avro.GenericRecordEncoder")
+         appendLine("import com.sksamuel.centurion.avro.generation.GenericRecordEncoder")
          appendLine("import org.apache.avro.Schema")
          appendLine("import org.apache.avro.generic.GenericData")
          appendLine("import org.apache.avro.generic.GenericRecord")
