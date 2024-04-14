@@ -8,7 +8,7 @@ import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.util.Utf8
 
-class RecordDecoderTest : FunSpec({
+class ReflectionRecordDecoderTest : FunSpec({
 
    test("basic record decoder") {
       data class Foo(val a: String, val b: Boolean)
@@ -34,5 +34,19 @@ class RecordDecoderTest : FunSpec({
       record.put("wine", GenericData.get().createEnum("Shiraz", wineSchema))
 
       ReflectionRecordDecoder<Foo>().decode(schema, record) shouldBe Foo(Wine.Shiraz)
+   }
+
+   test("nulls") {
+      data class Foo(val a: String?, val b: String)
+      val schema = SchemaBuilder.record("Foo").fields()
+         .optionalString("a")
+         .requiredString("b")
+         .endRecord()
+
+      val record = GenericData.Record(schema)
+      record.put("a", null)
+      record.put("b", Utf8("hello"))
+
+      ReflectionRecordDecoder<Foo>().decode(schema, record) shouldBe Foo(null, "hello")
    }
 })

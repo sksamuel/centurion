@@ -34,8 +34,7 @@ fun interface Decoder<T> {
             is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
-         return decoder
-//         return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
+         return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
       }
    }
 }
