@@ -7,7 +7,7 @@ import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.util.Utf8
 
-class RecordEncoderTest : FunSpec({
+class ReflectionRecordEncoderTest : FunSpec({
 
    test("basic test") {
       data class Foo(val a: String, val b: Boolean)
@@ -36,6 +36,36 @@ class RecordEncoderTest : FunSpec({
       expected.put("wine", GenericData.get().createEnum("Malbec", wineSchema))
 
       actual shouldBe expected
+   }
+
+   test("sets") {
+      data class Foo(val set1: Set<Int>, val set2: Set<Long?>)
+
+      val schema = SchemaBuilder.record("Foo").fields()
+         .name("set1").type().array().items().intType().noDefault()
+         .name("set2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .endRecord()
+
+      val expected = GenericData.Record(schema)
+      expected.put("set1", listOf(1, 2))
+      expected.put("set2", listOf(1L, null, 2L))
+
+      ReflectionRecordEncoder().encode(schema, Foo(setOf(1, 2), setOf(1L, null, 2L))) shouldBe expected
+   }
+
+   test("list") {
+      data class Foo(val list1: List<Int>, val list2: List<Long?>)
+
+      val schema = SchemaBuilder.record("Foo").fields()
+         .name("list1").type().array().items().intType().noDefault()
+         .name("list2").type().array().items().type(SchemaBuilder.nullable().longType()).noDefault()
+         .endRecord()
+
+      val expected = GenericData.Record(schema)
+      expected.put("list1", listOf(1, 2))
+      expected.put("list2", listOf(1L, null, 2L))
+
+      ReflectionRecordEncoder().encode(schema, Foo(listOf(1, 2), listOf(1L, null, 2L))) shouldBe expected
    }
 })
 

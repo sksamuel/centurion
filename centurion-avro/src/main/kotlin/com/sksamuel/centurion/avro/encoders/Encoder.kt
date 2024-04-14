@@ -25,11 +25,6 @@ fun interface Encoder<T> {
    companion object {
 
       /**
-       * Returns an [Encoder] that encodes using the supplied function.
-       */
-      operator fun <T> invoke(f: (T) -> Any) = Encoder<T> { _, value -> f(value) }
-
-      /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
       fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
@@ -43,6 +38,8 @@ fun interface Encoder<T> {
             Int::class -> IntEncoder
             Long::class -> LongEncoder
             BigDecimal::class -> BigDecimalStringEncoder
+            Set::class -> GenericArraySetEncoder(encoderFor(type.arguments.first().type!!))
+            List::class -> GenericArrayListEncoder(encoderFor(type.arguments.first().type!!))
             is KClass<*> -> if (classifier.java.isEnum) EnumEncoder<Enum<*>>() else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
