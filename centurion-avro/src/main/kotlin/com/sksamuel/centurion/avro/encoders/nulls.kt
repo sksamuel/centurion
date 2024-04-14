@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.encoders
 import org.apache.avro.Schema
 
 /**
- * An [Encoder] that supports nullable types by wrapping in an Avro union.
+ * An [Encoder] that supports nullable types
  */
 class NullEncoder<T>(private val encoder: Encoder<T>) : Encoder<T?> {
    override fun encode(schema: Schema, value: T?): Any? {

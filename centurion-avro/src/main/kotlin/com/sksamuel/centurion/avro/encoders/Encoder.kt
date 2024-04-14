@@ -1,6 +1,8 @@
 package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
+import java.math.BigDecimal
+import kotlin.reflect.KType
 
 /**
  * An [Encoder] typeclass encodes a JVM value of type T into a value suitable
@@ -10,8 +12,8 @@ import org.apache.avro.Schema
  * or it could encode it as an instance of [GenericFixed].
  *
  * Some encoders use the schema to determine the encoding function to return. For example, strings
- * can be encoded as [UTF8]s, [GenericFixed]]s, [ByteBuffers] or [java.lang.String]s.
- * Therefore, the []Encoder<String>] typeclass instances uses the schema to select which of these
+ * can be encoded as [UTF8]s, [GenericFixed]s, [ByteBuffers] or [java.lang.String]s.
+ * Therefore, the [Encoder<String>] typeclass instances uses the schema to select which of these
  * implementations to use.
  *
  * Other types may not require the schema at all. For example, the default [Encoder<Int>] always
@@ -20,6 +22,7 @@ import org.apache.avro.Schema
 fun interface Encoder<T> {
 
    companion object {
+
       /**
        * Returns an [Encoder] that encodes using the supplied function.
        */
@@ -29,6 +32,20 @@ fun interface Encoder<T> {
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
       fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
+
+      fun encoderFor(type: KType): Encoder<*> {
+         val encoder: Encoder<*> = when (type.classifier) {
+            String::class -> StringEncoder
+            Boolean::class -> BooleanEncoder
+            Float::class -> FloatEncoder
+            Double::class -> DoubleEncoder
+            Int::class -> IntEncoder
+            Long::class -> LongEncoder
+            BigDecimal::class -> BigDecimalStringEncoder
+            else -> error("Unsupported type $type")
+         }
+         return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
+      }
    }
 
    fun encode(schema: Schema, value: T): Any?

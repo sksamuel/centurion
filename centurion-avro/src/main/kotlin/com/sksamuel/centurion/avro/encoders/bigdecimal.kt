@@ -10,7 +10,7 @@ import java.math.BigDecimal
  */
 object BigDecimalBytesEncoder : Encoder<BigDecimal> {
 
-   override fun encode(schema: Schema, value: BigDecimal): Any {
+   override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.BYTES)
 
       val logical = schema.logicalType as LogicalTypes.Decimal
@@ -26,7 +26,7 @@ object BigDecimalBytesEncoder : Encoder<BigDecimal> {
  */
 object BigDecimalStringEncoder : Encoder<BigDecimal> {
 
-   override fun encode(schema: Schema, value: BigDecimal): Any {
+   override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.STRING)
       val encoder = StringEncoder.contraMap<BigDecimal> { it.toString() }
       return encoder.encode(schema, value)
@@ -38,7 +38,7 @@ object BigDecimalStringEncoder : Encoder<BigDecimal> {
  */
 object BigDecimalFixedEncoder : Encoder<BigDecimal> {
 
-   override fun encode(schema: Schema, value: BigDecimal): Any {
+   override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.FIXED)
 
       val logical = schema.logicalType as LogicalTypes.Decimal
