@@ -36,6 +36,15 @@ class ReflectionSchemaBuilder {
          Float::class -> typeBuilder.floatType()
          Set::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
          List::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
+         is KClass<*> -> if (classifier.java.isEnum)
+            typeBuilder
+               .enumeration(classifier.java.name)
+               .namespace(classifier.java.packageName)
+               .symbols(*classifier.java.enumConstants.map { (it as Enum<*>).name }
+                  .toTypedArray())
+         else
+            error("Unsupported type $classifier")
+
          else -> error("Unsupported type $classifier")
       }
    }
