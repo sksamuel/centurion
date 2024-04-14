@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
+import kotlin.reflect.KType
 
 /**
  * A [Decoder] typeclass is used to convert an Avro value, such as a [GenericRecord],
@@ -18,6 +19,22 @@ fun interface Decoder<T> {
    fun <U> map(fn: (T) -> U): Decoder<U> {
       val self = this
       return Decoder { schema, value -> fn(self.decode(schema, value)) }
+   }
+
+   companion object {
+      fun decoderFor(type: KType): Decoder<*> {
+         val decoder: Decoder<*> = when (type.classifier) {
+            String::class -> StringDecoder
+            Boolean::class -> BooleanDecoder
+            Float::class -> FloatDecoder
+            Double::class -> DoubleDecoder
+            Int::class -> IntDecoder
+            Long::class -> LongDecoder
+            else -> error("Unsupported type $type")
+         }
+         return decoder
+//         return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
+      }
    }
 }
 

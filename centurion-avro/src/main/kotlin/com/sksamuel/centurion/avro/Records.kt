@@ -21,9 +21,10 @@ object Records {
    fun fromRecord(record: IndexedRecord): Struct {
       val schema = Schemas.fromAvro(record.schema) as Schema.Struct
       val values = schema.fields.withIndex().map { (index, field) ->
-         val value = record.get(index)
-         val decoder = Decoders.decoderFor(field.schema)
-         decoder.decode(value)
+         TODO()
+//         val value = record.get(index)
+//         val decoder = Decoders.decoderFor(field.schema)
+//         decoder.decode(value)
       }
       return Struct(schema, values)
    }
