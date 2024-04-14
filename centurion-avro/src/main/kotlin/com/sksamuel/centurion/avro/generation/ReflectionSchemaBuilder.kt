@@ -11,6 +11,11 @@ class ReflectionSchemaBuilder(
    private val useJavaString: Boolean = false,
 ) {
 
+   private val utf8String = SchemaBuilder.builder().stringType()
+   private val javaString = SchemaBuilder.builder().stringType().also {
+      GenericData.setStringType(it, GenericData.StringType.String)
+   }
+
    fun schema(kclass: KClass<*>): Schema {
 
       require(kclass.isData) { "Can only be called on data classes: was $kclass" }
@@ -23,27 +28,22 @@ class ReflectionSchemaBuilder(
 
    private fun schemaFor(type: KType): Schema {
 
-      val typeBuilder = if (type.isMarkedNullable)
-         SchemaBuilder.nullable()
-      else
-         SchemaBuilder.builder()
+      val builder = SchemaBuilder.builder()
 
-      return when (val classifier = type.classifier) {
-         String::class -> typeBuilder.stringType()
-            .also { if (useJavaString) GenericData.setStringType(it, GenericData.StringType.String) }
-
-         Boolean::class -> typeBuilder.booleanType()
-         Int::class -> typeBuilder.intType()
-         Long::class -> typeBuilder.longType()
-         Short::class -> typeBuilder.intType()
-         Byte::class -> typeBuilder.intType()
-         Double::class -> typeBuilder.doubleType()
-         Float::class -> typeBuilder.floatType()
-         Set::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
-         List::class -> typeBuilder.array().items(schemaFor(type.arguments.first().type!!))
-         Map::class -> typeBuilder.map().values(schemaFor(type.arguments[1].type!!))
+      val schema: Schema = when (val classifier = type.classifier) {
+         String::class -> if (useJavaString) javaString else utf8String
+         Boolean::class -> builder.booleanType()
+         Int::class -> builder.intType()
+         Long::class -> builder.longType()
+         Short::class -> builder.intType()
+         Byte::class -> builder.intType()
+         Double::class -> builder.doubleType()
+         Float::class -> builder.floatType()
+         Set::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
+         List::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
+         Map::class -> builder.map().values(schemaFor(type.arguments[1].type!!))
          is KClass<*> -> if (classifier.java.isEnum)
-            typeBuilder
+            builder
                .enumeration(classifier.java.name)
                .namespace(classifier.java.packageName)
                .symbols(*classifier.java.enumConstants.map { (it as Enum<*>).name }
@@ -53,5 +53,9 @@ class ReflectionSchemaBuilder(
 
          else -> error("Unsupported type $classifier")
       }
+
+      return if (type.isMarkedNullable) SchemaBuilder.unionOf().nullType().and().type(schema).endUnion() else schema
    }
 }
+
+fun Schema.nullunionof() = SchemaBuilder.unionOf().nullType().and().type(this).endUnion()
