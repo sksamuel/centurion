@@ -18,8 +18,7 @@ allprojects {
    }
 
    dependencies {
-      testImplementation(Libs.Kotest.assertions)
-      testImplementation(Libs.Kotest.junit5)
+      implementation(rootProject.libs.bundles.testing)
    }
 
    tasks.named<Test>("test") {
