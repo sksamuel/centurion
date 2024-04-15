@@ -60,8 +60,9 @@ class AvroBinaryWriter(
 
    private val encoder = factory.binaryEncoder(output, null)
 
-   fun write(record: GenericRecord) {
+   fun write(record: GenericRecord): AvroBinaryWriter {
       datumWriter.write(record, encoder)
+      return this
    }
 
    private fun flush() {
