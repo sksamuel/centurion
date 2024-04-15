@@ -5,6 +5,7 @@ import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.EncoderFactory
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
 ///**
@@ -27,15 +28,28 @@ class AvroBinaryWriterFactory(schema: Schema, private val factory: EncoderFactor
    constructor(schema: Schema) : this(schema, EncoderFactory.get())
 
    private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
+
+   /**
+    * Creates an [AvroBinaryWriter] that writes to the given [OutputStream].
+    * Calling close on the created writer will close this stream and ensure data is flushed.
+    */
    fun writer(output: OutputStream): AvroBinaryWriter {
       return AvroBinaryWriter(datumWriter, output, factory)
+   }
+
+   /**
+    * Creates an [AvroBinaryWriter] that uses a [ByteArrayOutputStream].
+    * Once records have been written, users can call bytes() to retrieve the [ByteArray].
+    */
+   fun writer(): AvroBinaryWriter {
+      return AvroBinaryWriter(datumWriter, ByteArrayOutputStream(), factory)
    }
 }
 
 class AvroBinaryWriter(
    private val datumWriter: DatumWriter<GenericRecord>,
    private val output: OutputStream,
-   private val factory: EncoderFactory,
+   factory: EncoderFactory,
 ) : AutoCloseable {
 
    private val encoder = factory.binaryEncoder(output, null)
@@ -44,12 +58,17 @@ class AvroBinaryWriter(
       datumWriter.write(record, encoder)
    }
 
-   fun flush() {
+   private fun flush() {
       encoder.flush()
    }
 
    override fun close() {
       flush()
       output.close()
+   }
+
+   fun bytes(): ByteArray {
+      flush()
+      return (output as ByteArrayOutputStream).toByteArray()
    }
 }
