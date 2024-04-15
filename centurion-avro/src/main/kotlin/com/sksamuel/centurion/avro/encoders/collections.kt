@@ -11,7 +11,7 @@ class GenericArrayArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Arr
    override fun encode(schema: Schema, value: Array<T>): Any {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }
-      return GenericData.Array<T>(elements.size, schema).also { it.addAll(elements as Collection<T>) }
+      return GenericData.Array(schema, elements)
    }
 }
 
@@ -22,7 +22,7 @@ class GenericArrayListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List
    override fun encode(schema: Schema, value: List<T>): Any {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }
-      return GenericData.Array<T>(elements.size, schema).also { it.addAll(elements as Collection<T>) }
+      return GenericData.Array(schema, elements)
    }
 }
 
@@ -33,9 +33,7 @@ class GenericArraySetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T
    override fun encode(schema: Schema, value: Set<T>): GenericArray<Any> {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }
-      val array = GenericData.get().newArray(null, elements.size, schema) as GenericArray<Any>
-      array.addAll(elements)
-      return array
+      return GenericData.Array(schema, elements)
    }
 }
 
