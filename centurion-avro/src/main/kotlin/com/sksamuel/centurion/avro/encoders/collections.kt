@@ -7,7 +7,7 @@ import org.apache.avro.generic.GenericData
 /**
  * An [Encoder] for Arrays of [T] that encodes into an Avro [GenericArray].
  */
-class GenericArrayArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
+class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
    override fun encode(schema: Schema, value: Array<T>): Any {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }
@@ -18,7 +18,7 @@ class GenericArrayArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Arr
 /**
  * An [Encoder] for Lists of [T] that encodes into an Avro [GenericArray].
  */
-class GenericArrayListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
+class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
    override fun encode(schema: Schema, value: List<T>): Any {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }
@@ -29,7 +29,7 @@ class GenericArrayListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List
 /**
  * An [Encoder] for Sets of [T] that encodes into an Avro [GenericArray].
  */
-class GenericArraySetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
+class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
    override fun encode(schema: Schema, value: Set<T>): GenericArray<Any> {
       require(schema.type == Schema.Type.ARRAY)
       val elements = value.map { encoder.encode(schema.elementType, it) }

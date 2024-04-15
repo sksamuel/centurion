@@ -26,6 +26,8 @@ object DataClassWriter {
          is Type.RecordType -> type.packageName + "." + type.className
          Type.StringType -> "String"
          is Type.Nullable -> typeToString(type.element) + "?"
+         is Type.ArrayType -> "List<${typeToString(type.elementType)}>"
+         is Type.MapType -> "Map<String, ${typeToString(type.valueType)}>"
       }
    }
 }

@@ -43,6 +43,8 @@ class RecordDecoderGenerator {
          is Type.Nullable -> TODO()
          is Type.RecordType -> TODO()
          Type.StringType -> "StringDecoder.decode($getSchema, $getValue)"
+         is Type.ArrayType -> "ListDecoder.decode($getSchema, $getValue)"
+         is Type.MapType -> "MapDecoder.decode($getSchema, $getValue)"
       }
    }
 }

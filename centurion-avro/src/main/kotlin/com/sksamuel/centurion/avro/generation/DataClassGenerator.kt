@@ -14,17 +14,22 @@ class DataClassGenerator {
    }
 
    private fun member(field: Schema.Field): Member {
-      val type = when (field.schema().type) {
-         Schema.Type.RECORD -> Type.RecordType(field.schema().namespace, field.schema().name)
+      return Member(field.name(), schema(field.schema()))
+   }
+
+   private fun schema(schema: Schema): Type {
+      return when (val type = schema.type) {
+         Schema.Type.RECORD -> Type.RecordType(schema.namespace, schema.name)
          Schema.Type.STRING -> Type.StringType
          Schema.Type.INT -> Type.IntType
          Schema.Type.LONG -> Type.LongType
          Schema.Type.FLOAT -> Type.FloatType
          Schema.Type.DOUBLE -> Type.DoubleType
          Schema.Type.BOOLEAN -> Type.BooleanType
+         Schema.Type.ARRAY -> Type.ArrayType(schema(schema.elementType))
+         Schema.Type.MAP -> Type.ArrayType(schema(schema.valueType))
          else -> error("Invalid code path")
       }
-      return Member(field.name(), type)
    }
 }
 
@@ -41,6 +46,9 @@ sealed interface Type {
    object LongType : Type
    object FloatType : Type
    object DoubleType : Type
+
+   data class ArrayType(val elementType: Type) : Type
+   data class MapType(val valueType: Type) : Type
 
    // a nullable type wraps any other type, denoting that it is permitted to be null
    // this is analogous to Avro's union type, with two elements - null and another

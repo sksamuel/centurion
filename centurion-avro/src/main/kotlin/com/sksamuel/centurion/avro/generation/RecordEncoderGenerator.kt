@@ -37,6 +37,8 @@ class RecordEncoderGenerator {
          is Type.Nullable -> TODO()
          is Type.RecordType -> TODO()
          Type.StringType -> "StringEncoder.encode($getSchema, value.${member.name})"
+         is Type.ArrayType -> "ListEncoder.encode($getSchema, value.${member.name})"
+         is Type.MapType -> "MapEncoder.encode($getSchema, value.${member.name})"
       }
    }
 }

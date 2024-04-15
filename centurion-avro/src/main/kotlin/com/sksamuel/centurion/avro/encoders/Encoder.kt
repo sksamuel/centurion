@@ -40,8 +40,8 @@ fun interface Encoder<T> {
             Int::class -> IntEncoder
             Long::class -> LongEncoder
             BigDecimal::class -> BigDecimalStringEncoder
-            Set::class -> GenericArraySetEncoder(encoderFor(type.arguments.first().type!!))
-            List::class -> GenericArrayListEncoder(encoderFor(type.arguments.first().type!!))
+            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
+            List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
             Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!))
             is KClass<*> -> if (classifier.java.isEnum) EnumEncoder<Enum<*>>() else error("Unsupported type $type")
             else -> error("Unsupported type $type")
