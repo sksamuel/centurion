@@ -55,7 +55,7 @@ class AvroBinaryReader(
       else -> error("Specify either ByteArray or InputStream")
    }
 
-   fun read(): GenericRecord? {
+   fun read(): GenericRecord {
       return datumReader.read(null, decoder)
    }
 
