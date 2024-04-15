@@ -26,26 +26,37 @@ fun main() {
 
    GenericData.setStringType(schema, GenericData.StringType.String)
 
-//   repeat(5) {
-//      val time = measureTime {
-//         repeat(5_000_000) {
-//            ReflectionRecordEncoder().encode(schema, user)
-//         }
-//      }
-//      println("ReflectionRecordEncoder: $time")
-//   }
+   repeat(2) {
+      val time = measureTime {
+         repeat(2_000_000) {
+            ReflectionRecordEncoder().encode(schema, user)
+         }
+      }
+      println("ReflectionRecordEncoder: $time")
+   }
 
-   repeat(5) {
+   repeat(10) {
       val encoder = SpecificRecordEncoder(User::class, schema)
       val time = measureTime {
-         repeat(5_000_000) {
+         repeat(2_000_000) {
             encoder.encode(schema, user)
          }
       }
-      println("SpecificRecordEncoder: $time")
+      println("SpecificRecordEncoder globalUseJavaString=false: $time")
    }
 
-   repeat(5) {
+   repeat(10) {
+      Encoder.globalUseJavaString = true
+      val encoder = SpecificRecordEncoder(User::class, schema)
+      val time = measureTime {
+         repeat(2_000_000) {
+            encoder.encode(schema, user)
+         }
+      }
+      println("SpecificRecordEncoder globalUseJavaString=true: $time")
+   }
+
+   repeat(10) {
 
       val encoder = Encoder<User> { schema, value ->
          val record = GenericData.Record(schema)
@@ -58,7 +69,7 @@ fun main() {
       }
 
       val time = measureTime {
-         repeat(5_000_000) {
+         repeat(2_000_000) {
             encoder.encode(schema, user)
          }
       }

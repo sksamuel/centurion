@@ -21,6 +21,14 @@ object StringEncoder : Encoder<String> {
    }
 }
 
+/**
+ * An [Encoder] for strings which always uses the JVM String object regardless
+ * of any [GenericData.STRING_PROP] settings on the schema.
+ */
+object JavaStringEncoder : Encoder<String> {
+   override fun encode(schema: Schema, value: String) = value
+}
+
 object UUIDEncoder : Encoder<UUID> {
    override fun encode(schema: Schema, value: UUID): Any {
       return Utf8(value.toString())

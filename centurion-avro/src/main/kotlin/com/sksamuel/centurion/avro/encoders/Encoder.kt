@@ -24,6 +24,8 @@ fun interface Encoder<T> {
 
    companion object {
 
+      var globalUseJavaString: Boolean = false
+
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
@@ -31,7 +33,7 @@ fun interface Encoder<T> {
 
       fun encoderFor(type: KType): Encoder<*> {
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
-            String::class -> StringEncoder
+            String::class -> if (globalUseJavaString) JavaStringEncoder else StringEncoder
             Boolean::class -> BooleanEncoder
             Float::class -> FloatEncoder
             Double::class -> DoubleEncoder
