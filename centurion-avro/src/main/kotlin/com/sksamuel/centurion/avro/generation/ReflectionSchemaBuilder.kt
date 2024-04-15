@@ -7,6 +7,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
 
+/**
+ * Uses reflection to build a [Schema] from a [KClass].
+ */
 class ReflectionSchemaBuilder(
    private val useJavaString: Boolean = false,
 ) {
