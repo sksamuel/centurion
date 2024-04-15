@@ -16,6 +16,8 @@ This library allows you to read, write and convert between the following formats
 * [Apache Arrow IPC](https://arrow.apache.org)
 * [Apache Avro](https://avro.apache.org)
 
+See [changelog](changelog.md) for release notes.
+
 ## Schema Conversions
 
 Centurion allows easy conversion of schemas between any of the supported formats, via Centurion's own internal format.
