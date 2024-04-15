@@ -22,7 +22,9 @@ import java.io.OutputStream
 
 /**
  * Creates an [AvroBinaryWriterFactory] for a given schema which can then be used
- * to create [AvroBinaryWriter]s. These writers share a thread safe [DatumWriter].
+ * to create [AvroBinaryWriter]s. All writers created from this factory share a thread safe [DatumWriter].
+ *
+ * Pass in a precreated [EncoderFactory] if you wish to configure buffer size.
  */
 class AvroBinaryWriterFactory(schema: Schema, private val factory: EncoderFactory) {
    constructor(schema: Schema) : this(schema, EncoderFactory.get())
@@ -46,6 +48,10 @@ class AvroBinaryWriterFactory(schema: Schema, private val factory: EncoderFactor
    }
 }
 
+/**
+ * An [AvroBinaryWriter] is a non-thread safe, one time use, writer to a given stream.
+ * Call [close] when all records have been written.
+ */
 class AvroBinaryWriter(
    private val datumWriter: DatumWriter<GenericRecord>,
    private val output: OutputStream,
@@ -67,6 +73,10 @@ class AvroBinaryWriter(
       output.close()
    }
 
+   /**
+    * Returns the bytes written. Throws an exception if this [AvroBinaryWriter] was *not*
+    * instantiated with a [ByteArrayOutputStream].
+    */
    fun bytes(): ByteArray {
       flush()
       return (output as ByteArrayOutputStream).toByteArray()
