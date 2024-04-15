@@ -23,8 +23,15 @@ class AvroBinaryReaderFactory(schema: Schema, private val factory: DecoderFactor
     * This variant is much slower than using a byte array. If you already have
     * the bytes available, that should be preferred.
     */
-   fun writer(input: InputStream): AvroBinaryReader {
+   fun reader(input: InputStream): AvroBinaryReader {
       return AvroBinaryReader(datumReader, input, null, factory)
+   }
+
+   /**
+    * Creates an [AvroBinaryReader] that reads from the given [ByteArray].
+    */
+   fun reader(bytes: ByteArray): AvroBinaryReader {
+      return AvroBinaryReader(datumReader, null, bytes, factory)
    }
 }
 
