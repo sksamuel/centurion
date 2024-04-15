@@ -11,10 +11,10 @@ import kotlin.time.measureTime
 
 data class User(
    val userId: Long,
-   val name: String,
-   val email: String,
+   val name: String?,
+   val email: String?,
    val lastActiveTimestamp: Long,
-   val type: UserType
+   val type: UserType?,
 )
 
 enum class UserType { User, Admin }
