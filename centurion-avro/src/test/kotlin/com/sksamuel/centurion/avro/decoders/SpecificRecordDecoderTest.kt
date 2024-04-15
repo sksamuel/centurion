@@ -33,7 +33,7 @@ class SpecificRecordDecoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("wine", GenericData.get().createEnum("Shiraz", wineSchema))
 
-      SpecificRecordDecoder<Foo>(Foo::class, schema).decode(schema, record) shouldBe Foo(Wine.Shiraz)
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(Wine.Shiraz)
    }
 
    test("nulls") {
@@ -48,7 +48,7 @@ class SpecificRecordDecoderTest : FunSpec({
       record.put("a", null)
       record.put("b", Utf8("hello"))
 
-      SpecificRecordDecoder<Foo>(Foo::class, schema).decode(schema, record) shouldBe Foo(null, "hello")
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(null, "hello")
    }
 
    test("sets") {
@@ -72,7 +72,7 @@ class SpecificRecordDecoderTest : FunSpec({
          )
       )
 
-      SpecificRecordDecoder<Foo>(Foo::class, schema).decode(schema, record) shouldBe Foo(
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(
          setOf(1, 2),
          setOf(1L, null, 2L),
          setOf(Wine.Shiraz, Wine.Malbec),
@@ -100,10 +100,42 @@ class SpecificRecordDecoderTest : FunSpec({
          )
       )
 
-      SpecificRecordDecoder<Foo>(Foo::class, schema).decode(schema, record) shouldBe Foo(
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(
          listOf(1, 2),
          listOf(1L, null, 2L),
          listOf(Wine.Shiraz, Wine.Malbec),
       )
+   }
+
+   test("maps") {
+      data class Foo(val map: Map<String, Int>)
+
+      val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
+         .fields()
+         .name("map").type().map().values().intType().noDefault()
+         .endRecord()
+
+      val map = mapOf("a" to 1, "b" to 2)
+
+      val record = GenericData.Record(schema)
+      record.put("map", map)
+
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(map)
+   }
+
+   test("maps of maps") {
+      data class Foo(val map: Map<String, Map<String, Int>>)
+
+      val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
+         .fields()
+         .name("map").type().map().values(SchemaBuilder.builder().map().values().intType()).noDefault()
+         .endRecord()
+
+      val maps = mapOf("a" to mapOf("a" to 1, "b" to 2), "b" to mapOf("a" to 3, "b" to 4))
+
+      val record = GenericData.Record(schema)
+      record.put("map", maps)
+
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(maps)
    }
 })

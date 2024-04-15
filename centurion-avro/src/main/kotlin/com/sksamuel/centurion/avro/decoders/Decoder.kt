@@ -33,6 +33,7 @@ fun interface Decoder<T> {
             Long::class -> LongDecoder
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
+            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
@@ -40,28 +41,3 @@ fun interface Decoder<T> {
       }
    }
 }
-
-//object Decoders {
-//   fun decoderFor(schema: Schema): Decoder<*> = when (schema) {
-//      is Schema.Array -> ListDecoder(schema.elements)
-//      is Schema.Enum -> TODO()
-//      is Schema.Map -> TODO()
-//      is Schema.Nullable -> TODO()
-//      Schema.Booleans -> BooleanDecoder
-//      Schema.Bytes -> TODO()
-//      is Schema.Decimal -> TODO()
-//      Schema.Float32 -> TODO()
-//      Schema.Float64 -> TODO()
-//      Schema.Int8 -> TODO()
-//      Schema.Int16 -> TODO()
-//      Schema.Int32 -> Int32Decoder
-//      Schema.Int64 -> Int64Decoder
-//      Schema.Nulls -> TODO()
-//      Schema.Strings -> StringDecoder
-//      Schema.TimestampMicros -> TODO()
-//      Schema.TimestampMillis -> TODO()
-//      Schema.UUID -> TODO()
-//      is Schema.Varchar -> TODO()
-//      is Schema.Struct -> TODO()
-//   }
-//}
