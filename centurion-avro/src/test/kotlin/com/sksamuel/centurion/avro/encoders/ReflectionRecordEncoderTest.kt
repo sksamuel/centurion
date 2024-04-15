@@ -91,6 +91,38 @@ class ReflectionRecordEncoderTest : FunSpec({
          Foo(listOf(1, 2), listOf(1L, null, 2L), listOf(Wine.Shiraz, Wine.Malbec))
       ) shouldBe expected
    }
+
+   test("maps") {
+      data class Foo(val map: Map<String, Int>)
+
+      val map = mapOf("a" to 1, "b" to 2)
+
+      val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
+         .fields()
+         .name("map").type().map().values(SchemaBuilder.builder().intType()).noDefault()
+         .endRecord()
+
+      val record = GenericData.Record(schema)
+      record.put("map", map)
+
+      ReflectionRecordEncoder().encode(schema, Foo(map)) shouldBe record
+   }
+
+   test("maps of maps") {
+      data class Foo(val map: Map<String, Map<String, Int>>)
+
+      val maps = mapOf("a" to mapOf("a" to 1, "b" to 2), "b" to mapOf("a" to 3, "b" to 4))
+
+      val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
+         .fields()
+         .name("map").type().map().values(SchemaBuilder.builder().map().values().intType()).noDefault()
+         .endRecord()
+
+      val record = GenericData.Record(schema)
+      record.put("map", maps)
+
+      ReflectionRecordEncoder().encode(schema, Foo(maps)) shouldBe record
+   }
 })
 
 enum class Wine { Shiraz, Malbec }
