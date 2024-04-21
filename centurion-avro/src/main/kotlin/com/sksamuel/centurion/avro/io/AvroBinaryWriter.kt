@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.io
 
 import org.apache.avro.Schema
+import org.apache.avro.file.DataFileWriter
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DatumWriter
@@ -50,7 +51,7 @@ class AvroBinaryWriterFactory(schema: Schema, private val factory: EncoderFactor
 
 /**
  * An [AvroBinaryWriter] is a non-thread safe, one time use, writer to a given stream.
- * Call [close] when all records have been written.
+ * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
  */
 class AvroBinaryWriter(
    private val datumWriter: DatumWriter<GenericRecord>,
