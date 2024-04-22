@@ -30,6 +30,10 @@ class SpecificRecordEncoder<T : Any>(
    private val schema: Schema,
 ) : Encoder<T> {
 
+   companion object {
+      inline operator fun <reified T : Any> invoke(schema: Schema) = SpecificRecordEncoder(T::class, schema)
+   }
+
    init {
       require(kclass.isData) { "Can only encode data classes: $kclass" }
    }

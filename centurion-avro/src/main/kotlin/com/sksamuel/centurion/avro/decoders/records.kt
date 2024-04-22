@@ -15,6 +15,10 @@ class SpecificRecordDecoder<T : Any>(
       require(kclass.isData) { "Decoders only support data class: was $kclass" }
    }
 
+   companion object {
+      inline operator fun <reified T : Any> invoke(schema: Schema) = SpecificRecordDecoder(T::class, schema)
+   }
+
    private val constructor = kclass.primaryConstructor ?: error("No primary constructor")
 
    private val members = constructor.parameters.map { param ->
