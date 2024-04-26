@@ -31,7 +31,13 @@ class MapDecoder<T>(private val decoder: Decoder<T>) : Decoder<Map<String, T>> {
    override fun decode(schema: Schema, value: Any?): Map<String, T> {
       require(schema.type == Schema.Type.MAP)
       return when (value) {
-         is Map<*, *> -> value.map { (k, v) -> Pair(k as String, decoder.decode(schema.valueType, v)) }.toMap()
+         is Map<*, *> -> value.map { (k, v) ->
+            Pair(
+               StringDecoder.decode(StringDecoder.STRING_SCHEMA, k),
+               decoder.decode(schema.valueType, v)
+            )
+         }.toMap()
+
          else -> error("Unsupported map type $value")
       }
    }

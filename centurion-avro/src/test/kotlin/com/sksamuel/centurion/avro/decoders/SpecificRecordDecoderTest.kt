@@ -123,6 +123,22 @@ class SpecificRecordDecoderTest : FunSpec({
       SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(map)
    }
 
+   test("maps using UTF8") {
+      data class Foo(val map: Map<String, Int>)
+
+      val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
+         .fields()
+         .name("map").type().map().values().intType().noDefault()
+         .endRecord()
+
+      val map = mapOf(Utf8("a") to 1, "b" to 2)
+
+      val record = GenericData.Record(schema)
+      record.put("map", map)
+
+      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(mapOf("a" to 1, "b" to 2))
+   }
+
    test("maps of maps") {
       data class Foo(val map: Map<String, Map<String, Int>>)
 

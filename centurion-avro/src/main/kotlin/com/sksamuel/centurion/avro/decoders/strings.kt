@@ -12,6 +12,9 @@ import java.nio.ByteBuffer
  * the schema, but are nevertheless usable.
  */
 object StringDecoder : Decoder<String> {
+
+   val STRING_SCHEMA = Schema.create(Schema.Type.STRING)
+
    override fun decode(schema: Schema, value: Any?): String {
       return when (value) {
          is Utf8 -> value.toString()
