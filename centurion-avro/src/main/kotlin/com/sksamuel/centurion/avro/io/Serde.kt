@@ -1,8 +1,6 @@
 package com.sksamuel.centurion.avro.io
 
 import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
-import com.sksamuel.centurion.avro.encoders.RecordDecoder
-import com.sksamuel.centurion.avro.encoders.RecordEncoder
 import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
@@ -17,7 +15,7 @@ import kotlin.reflect.KClass
  * This class is thread safe.
  */
 class Serde<T : Any>(
-   schema: Schema,
+   private val schema: Schema,
    kclass: KClass<T>,
    options: SerdeOptions,
 ) {
@@ -46,16 +44,16 @@ class Serde<T : Any>(
       }
    }
 
-   private val encoder = RecordEncoder(schema, SpecificRecordEncoder(kclass, schema))
-   private val decoder = RecordDecoder(SpecificRecordDecoder(kclass, schema))
+   private val encoder = SpecificRecordEncoder(kclass, schema)
+   private val decoder = SpecificRecordDecoder(kclass, schema)
    private val encoderFactory = EncoderFactory()
       .configureBufferSize(options.bufferSize)
       .configureBlockSize(options.blockBufferSize)
    private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
    private val readerFactory = BinaryReaderFactory(schema)
 
-   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(obj))
-   fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(bytes)))
+   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(schema, obj))
+   fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes))
 }
 
 private const val DEFAULT_BUFFER_SIZE = 2048

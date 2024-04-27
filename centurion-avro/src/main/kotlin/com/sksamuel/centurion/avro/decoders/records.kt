@@ -12,7 +12,7 @@ class SpecificRecordDecoder<T : Any>(
 
    init {
       require(schema.type == Schema.Type.RECORD)
-      require(kclass.isData) { "Decoders only support data class: was $kclass" }
+      require(kclass.isData) { "SpecificRecordDecoder only support data class: was $kclass" }
    }
 
    companion object {
@@ -28,7 +28,8 @@ class SpecificRecordDecoder<T : Any>(
    }
 
    override fun decode(schema: Schema, value: Any?): T {
-      require(value is GenericRecord) { "ReflectionRecordDecoder only supports GenericRecords: was $value" }
+      if (value == null) error("SpecificRecordDecoder does not support null types")
+      require(value is GenericRecord) { "SpecificRecordDecoder only supports GenericRecords: was $value" }
       val args = members.map { (name, field, decoder) ->
          val arg = value.get(name)
          decoder.decode(field.schema(), arg)
