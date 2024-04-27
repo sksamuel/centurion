@@ -6,6 +6,7 @@ import com.sksamuel.centurion.avro.encoders.RecordEncoder
 import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayInputStream
 import kotlin.reflect.KClass
@@ -16,10 +17,16 @@ import kotlin.reflect.KClass
  *
  * This class is thread safe.
  */
-class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
+class Serde<T : Any>(
+   schema: Schema,
+   kclass: KClass<T>,
+   options: SerdeOptions,
+) {
 
    init {
       require(kclass.isData)
+      if (options.fastReader)
+         GenericData.get().setFastReaderEnabled(true)
    }
 
    companion object {
@@ -27,25 +34,36 @@ class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
       /**
        * Creates a [Schema] reflectively from the given [kclass] using a [ReflectionSchemaBuilder].
        */
-      operator fun <T : Any> invoke(kclass: KClass<T>): Serde<T> {
+      operator fun <T : Any> invoke(kclass: KClass<T>, options: SerdeOptions = SerdeOptions()): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
-         return Serde(schema, kclass)
+         return Serde(schema, kclass, options)
       }
 
       /**
        * Creates a [Schema] reflectively from the given type parameter [T] using a [ReflectionSchemaBuilder].
        */
-      inline operator fun <reified T : Any> invoke(): Serde<T> {
-         val schema = ReflectionSchemaBuilder(true).schema(T::class)
-         return Serde(schema, T::class)
+      inline operator fun <reified T : Any> invoke(options: SerdeOptions = SerdeOptions()): Serde<T> {
+         return Serde(T::class, options)
       }
    }
 
    private val encoder = RecordEncoder(schema, SpecificRecordEncoder(kclass, schema))
    private val decoder = RecordDecoder(SpecificRecordDecoder(kclass, schema))
-   private val writerFactory = BinaryWriterFactory(schema, EncoderFactory())
+   private val encoderFactory = EncoderFactory()
+      .configureBufferSize(options.bufferSize)
+      .configureBlockSize(options.blockBufferSize)
+   private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
    private val readerFactory = BinaryReaderFactory(schema)
 
    fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(obj))
    fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(ByteArrayInputStream(bytes))))
 }
+
+private val DEFAULT_BUFFER_SIZE = 2048
+private val DEFAULT_BLOCK_BUFFER_SIZE = 64 * 1024
+
+data class SerdeOptions(
+   val fastReader: Boolean = false,
+   val bufferSize: Int = DEFAULT_BUFFER_SIZE,
+   val blockBufferSize: Int = DEFAULT_BLOCK_BUFFER_SIZE
+)
