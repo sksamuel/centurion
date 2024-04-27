@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericEnumSymbol
+import org.apache.avro.util.Utf8
 import kotlin.reflect.KClass
 
 class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<Enum<T>> {
@@ -20,6 +21,8 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<Enum<T>> {
       require(schema.type == Schema.Type.ENUM)
       return when (value) {
          is GenericEnumSymbol<*> -> java.lang.Enum.valueOf(j, value.toString())
+         is String -> java.lang.Enum.valueOf(j, value)
+         is Utf8 -> java.lang.Enum.valueOf(j, value.toString())
          else -> error("Unsupported enum type $value")
       }
    }
