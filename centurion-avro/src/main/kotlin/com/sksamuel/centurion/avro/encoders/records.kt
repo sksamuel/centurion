@@ -69,7 +69,7 @@ class SpecificRecordEncoder<T : Any>(
    private val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
       val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
       val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
-      Tuple4(field.schema(), encoder, member.name, member.getter)
+      Tuple4(field.schema(), encoder, member.getter, field.pos())
    }
 
    override fun encode(schema: Schema, value: T): GenericRecord {
@@ -77,10 +77,10 @@ class SpecificRecordEncoder<T : Any>(
 
       val record = GenericData.Record(schema)
 
-      encoders.map { (schema, encoder, name, getter) ->
+      encoders.map { (schema, encoder, getter, pos) ->
          val v = getter.call(value)
          val encoded = encoder.encode(schema, v)
-         record.put(name, encoded)
+         record.put(pos, encoded)
       }
 
       return record
