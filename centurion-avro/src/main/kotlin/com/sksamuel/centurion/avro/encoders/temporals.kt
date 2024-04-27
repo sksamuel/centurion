@@ -17,6 +17,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
+import java.util.concurrent.TimeUnit
 
 object LocalDateTimeEncoder : Encoder<LocalDateTime> {
    override fun encode(schema: Schema, value: LocalDateTime): Any? {
@@ -34,7 +35,7 @@ object LocalTimeEncoder : Encoder<LocalTime> {
       return when {
          schema.logicalType is TimeMillis -> TimeMillisConversion().toInt(value, schema, schema.logicalType)
          schema.logicalType is TimeMicros -> TimeMicrosConversion().toLong(value, schema, schema.logicalType)
-         schema.type == Schema.Type.LONG -> value.toNanoOfDay()
+         schema.type == Schema.Type.INT -> TimeUnit.NANOSECONDS.toMillis(value.toNanoOfDay())
          else -> error("Unsupported schema for LocalDateTime: $schema")
       }
    }
