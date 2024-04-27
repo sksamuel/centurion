@@ -1,12 +1,14 @@
 package com.sksamuel.centurion.avro.io
 
 import org.apache.avro.Schema
+import org.apache.avro.file.Codec
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.nio.ByteBuffer
 
 ///**
 // * An [AvroWriter] will write [GenericRecord]s to an output stream.
@@ -26,7 +28,10 @@ import java.io.OutputStream
  *
  * Pass in a pre-created [EncoderFactory] if you wish to configure buffer size.
  */
-class BinaryWriterFactory(schema: Schema, private val factory: EncoderFactory) {
+class BinaryWriterFactory(
+   schema: Schema,
+   private val factory: EncoderFactory,
+) {
    constructor(schema: Schema) : this(schema, EncoderFactory.get())
 
    private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
@@ -51,9 +56,12 @@ class BinaryWriterFactory(schema: Schema, private val factory: EncoderFactory) {
     * Creates an avro encoded byte array from the given [record].
     * This method is a convenience function that is useful when you want to write a single record.
     * If you wish to write multiple records, create a [BinaryWriter] using [writer].
+    *
+    * Pass in a [Codec] to compress output.
     */
-   fun write(record: GenericRecord): ByteArray {
-      return BinaryWriter(datumWriter, ByteArrayOutputStream(), factory).use { it.write(record) }.bytes()
+   fun write(record: GenericRecord, codec: Codec? = null): ByteArray {
+      val bytes = BinaryWriter(datumWriter, ByteArrayOutputStream(), factory).use { it.write(record) }.bytes()
+      return if (codec == null) bytes else codec.compress(ByteBuffer.wrap(bytes)).compact().array()
    }
 
    /**

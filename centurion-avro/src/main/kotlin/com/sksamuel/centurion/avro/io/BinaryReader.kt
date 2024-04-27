@@ -1,19 +1,26 @@
 package com.sksamuel.centurion.avro.io
 
 import org.apache.avro.Schema
+import org.apache.avro.file.Codec
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DatumReader
 import org.apache.avro.io.DecoderFactory
 import java.io.InputStream
+import java.nio.ByteBuffer
 
 /**
  * Creates an [BinaryReaderFactory] for a given schema which can then be used
- * to create [BinaryReader]s. All reader created from this factory share a thread safe [DatumReader].
+ * to create [BinaryReader]s.
  *
- * Pass in a precreated [DecoderFactory] if you wish to configure buffer size.
+ * All readers created from this factory share a thread safe [DatumReader] for efficiency.
+ *
+ * Pass in a pre-created [DecoderFactory] if you wish to configure buffer size.
  */
-class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
+class BinaryReaderFactory(
+   schema: Schema,
+   private val factory: DecoderFactory,
+) {
    constructor(schema: Schema) : this(schema, DecoderFactory.get())
 
    private val datumReader = GenericDatumReader<GenericRecord>(schema)
@@ -30,13 +37,32 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
 
    /**
     * Creates an [BinaryReader] that reads from the given [ByteArray].
+    *
+    * Pass in a [Codec] if the input is compressed.
     */
-   fun reader(bytes: ByteArray): BinaryReader {
-      return BinaryReader(datumReader, null, bytes, factory)
+   fun reader(bytes: ByteArray, codec: Codec? = null): BinaryReader {
+      return BinaryReader(
+         datumReader = datumReader,
+         input = null,
+         bytes = codec?.decompress(ByteBuffer.wrap(bytes))?.array() ?: bytes,
+         factory = factory
+      )
    }
 
-   fun read(bytes: ByteArray): GenericRecord {
-      return BinaryReader(datumReader, null, bytes, factory).read()
+   /**
+    * Reads avro encoded bytes from the given [bytes] to a [GenericRecord].
+    * This method is a convenience function that is useful when you want to read a single record.
+    * If you wish to read multiple records, create a [BinaryWriter] using [reader].
+    *
+    * Pass in a [Codec] if the input is compressed.
+    */
+   fun read(bytes: ByteArray, codec: Codec? = null): GenericRecord {
+      return BinaryReader(
+         datumReader = datumReader,
+         input = null,
+         bytes = codec?.decompress(ByteBuffer.wrap(bytes))?.array() ?: bytes,
+         factory = factory
+      ).read()
    }
 
    /**
@@ -47,7 +73,7 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
     * The given [input] stream will be closed after this function returns.
     *
     * This variant is slower than using a byte array. If you already have
-    *the bytes available, that should be preferred.
+    * the bytes available, that should be preferred.
     */
    fun read(input: InputStream): GenericRecord {
       return BinaryReader(datumReader, input, null, factory).use { it.read() }
