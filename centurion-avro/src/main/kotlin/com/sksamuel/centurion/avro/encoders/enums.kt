@@ -13,7 +13,7 @@ class EnumEncoder<T : Enum<*>> : Encoder<T> {
       require(schema.type == Schema.Type.ENUM)
       val symbol = value as Enum<*>
       return if (Encoder.globalUseJavaStringForEnum)
-         symbol
+         symbol.name
       else
          GenericData.get().createEnum(symbol.name, schema)
    }
