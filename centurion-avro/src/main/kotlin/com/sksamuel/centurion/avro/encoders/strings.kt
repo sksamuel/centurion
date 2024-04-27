@@ -36,8 +36,15 @@ object JavaStringEncoder : Encoder<String> {
 /**
  * An [Encoder] for UUID that encodes as avro [Utf8]s.
  */
-object UUIDEncoder : Encoder<UUID> {
+object Utf8UUIDEncoder : Encoder<UUID> {
    override fun encode(schema: Schema, value: UUID): Utf8 = Utf8(value.toString())
+}
+
+/**
+ * An [Encoder] for UUID that encodes as JVM Strings.
+ */
+object JavaStringUUIDEncoder : Encoder<UUID> {
+   override fun encode(schema: Schema, value: UUID): String = value.toString()
 }
 
 /**
