@@ -34,9 +34,9 @@ class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
 
    private val encoder = RecordEncoder(schema, SpecificRecordEncoder(kclass, schema))
    private val decoder = RecordDecoder(SpecificRecordDecoder(kclass, schema))
-   private val writerFactory = AvroBinaryWriterFactory(schema, EncoderFactory())
-   private val readerFactory = AvroBinaryReaderFactory(schema)
+   private val writerFactory = BinaryWriterFactory(schema, EncoderFactory())
+   private val readerFactory = BinaryReaderFactory(schema)
 
-   fun serialize(obj: T): ByteArray = writerFactory.writer().write(encoder.encode(obj)).bytes()
+   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(obj))
    fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.reader(ByteArrayInputStream(bytes)).read()))
 }

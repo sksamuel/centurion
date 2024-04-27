@@ -8,37 +8,37 @@ import org.apache.avro.io.DecoderFactory
 import java.io.InputStream
 
 /**
- * Creates an [AvroBinaryReaderFactory] for a given schema which can then be used
- * to create [AvroBinaryReader]s. All reader created from this factory share a thread safe [DatumReader].
+ * Creates an [BinaryReaderFactory] for a given schema which can then be used
+ * to create [BinaryReader]s. All reader created from this factory share a thread safe [DatumReader].
  *
  * Pass in a precreated [DecoderFactory] if you wish to configure buffer size.
  */
-class AvroBinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
+class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
    constructor(schema: Schema) : this(schema, DecoderFactory.get())
 
    private val datumReader = GenericDatumReader<GenericRecord>(schema)
 
    /**
-    * Creates an [AvroBinaryReader] that reads from the given [InputStream].
+    * Creates an [BinaryReader] that reads from the given [InputStream].
     * This variant is much slower than using a byte array. If you already have
     * the bytes available, that should be preferred.
     */
-   fun reader(input: InputStream): AvroBinaryReader {
-      return AvroBinaryReader(datumReader, input, null, factory)
+   fun reader(input: InputStream): BinaryReader {
+      return BinaryReader(datumReader, input, null, factory)
    }
 
    /**
-    * Creates an [AvroBinaryReader] that reads from the given [ByteArray].
+    * Creates an [BinaryReader] that reads from the given [ByteArray].
     */
-   fun reader(bytes: ByteArray): AvroBinaryReader {
-      return AvroBinaryReader(datumReader, null, bytes, factory)
+   fun reader(bytes: ByteArray): BinaryReader {
+      return BinaryReader(datumReader, null, bytes, factory)
    }
 }
 
 /**
- * An [AvroBinaryReader] is a non-thread safe, one time use, reader from a given stream or byte array.
+ * An [BinaryReader] is a non-thread safe, one time use, reader from a given stream or byte array.
  */
-class AvroBinaryReader(
+class BinaryReader(
    private val datumReader: DatumReader<GenericRecord>,
    private val input: InputStream?,
    bytes: ByteArray?,
