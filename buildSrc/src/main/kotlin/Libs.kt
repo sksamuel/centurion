@@ -23,17 +23,6 @@ object Libs {
     const val common = "org.apache.hadoop:hadoop-common:2.10.1"
     const val client = "org.apache.hadoop:hadoop-client:2.10.1"
   }
-
-  object Jackson {
-    const val core = "com.fasterxml.jackson.core:jackson-core:2.12.3"
-    const val databind = "com.fasterxml.jackson.core:jackson-databind:2.12.3"
-  }
-
-  object Kotest {
-    private const val version = "5.0.1"
-    const val assertions = "io.kotest:kotest-assertions-core:$version"
-    const val junit5 = "io.kotest:kotest-runner-junit5:$version"
-  }
 }
 
 object Projects {

@@ -5,6 +5,7 @@ import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
+import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import kotlin.reflect.KClass
 
@@ -46,21 +47,28 @@ class Serde<T : Any>(
 
    private val encoder = SpecificRecordEncoder(kclass, schema)
    private val decoder = SpecificRecordDecoder(kclass, schema)
+
    private val encoderFactory = EncoderFactory()
-      .configureBufferSize(options.bufferSize)
+      .configureBufferSize(options.encoderBufferSize)
       .configureBlockSize(options.blockBufferSize)
+
+   private val decoderFactory = DecoderFactory()
+      .configureDecoderBufferSize(options.decoderBufferSize)
+
    private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
-   private val readerFactory = BinaryReaderFactory(schema)
+   private val readerFactory = BinaryReaderFactory(schema, decoderFactory)
 
    fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(schema, obj))
    fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes))
 }
 
-private const val DEFAULT_BUFFER_SIZE = 2048
+private const val DEFAULT_ENCODER_BUFFER_SIZE = 2048
+private const val DEFAULT_DECODER_BUFFER_SIZE = 8192
 private const val DEFAULT_BLOCK_BUFFER_SIZE = 64 * 1024
 
 data class SerdeOptions(
    val fastReader: Boolean = false,
-   val bufferSize: Int = DEFAULT_BUFFER_SIZE,
+   val encoderBufferSize: Int = DEFAULT_ENCODER_BUFFER_SIZE,
+   val decoderBufferSize: Int = DEFAULT_DECODER_BUFFER_SIZE,
    val blockBufferSize: Int = DEFAULT_BLOCK_BUFFER_SIZE
 )
