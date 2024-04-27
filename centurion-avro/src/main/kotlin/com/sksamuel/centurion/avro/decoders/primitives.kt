@@ -16,8 +16,8 @@ object ShortDecoder : Decoder<Short> {
    override fun decode(schema: Schema, value: Any?): Short {
       require(schema.type == Schema.Type.INT)
       return when (value) {
-         is Byte -> value.toShort()
          is Short -> value
+         is Byte -> value.toShort()
          else -> error("Unsupported value $value")
       }
    }
@@ -27,9 +27,9 @@ object IntDecoder : Decoder<Int> {
    override fun decode(schema: Schema, value: Any?): Int {
       require(schema.type == Schema.Type.INT)
       return when (value) {
-         is Byte -> value.toInt()
-         is Short -> value.toInt()
          is Int -> value
+         is Short -> value.toInt()
+         is Byte -> value.toInt()
          else -> error("Unsupported value $value")
       }
    }
@@ -39,10 +39,10 @@ object LongDecoder : Decoder<Long> {
    override fun decode(schema: Schema, value: Any?): Long {
       require(schema.type == Schema.Type.LONG)
       return when (value) {
+         is Long -> value
+         is Int -> value.toLong()
          is Byte -> value.toLong()
          is Short -> value.toLong()
-         is Int -> value.toLong()
-         is Long -> value
          else -> error("Unsupported value $value")
       }
    }
@@ -52,8 +52,8 @@ object DoubleDecoder : Decoder<Double> {
    override fun decode(schema: Schema, value: Any?): Double {
       require(schema.type == Schema.Type.DOUBLE)
       return when (value) {
-         is Float -> value.toDouble()
          is Double -> value
+         is Float -> value.toDouble()
          else -> error("Unsupported value $value")
       }
    }

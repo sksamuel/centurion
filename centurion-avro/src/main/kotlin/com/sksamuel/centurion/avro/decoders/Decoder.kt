@@ -1,7 +1,5 @@
 package com.sksamuel.centurion.avro.decoders
 
-import com.sksamuel.centurion.avro.encoders.InstantEncoder
-import com.sksamuel.centurion.avro.encoders.LocalTimeEncoder
 import org.apache.avro.Schema
 import java.time.Instant
 import java.time.LocalTime
