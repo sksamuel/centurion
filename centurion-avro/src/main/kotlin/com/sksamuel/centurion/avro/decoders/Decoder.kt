@@ -1,6 +1,10 @@
 package com.sksamuel.centurion.avro.decoders
 
+import com.sksamuel.centurion.avro.encoders.InstantEncoder
+import com.sksamuel.centurion.avro.encoders.LocalTimeEncoder
 import org.apache.avro.Schema
+import java.time.Instant
+import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -34,6 +38,8 @@ fun interface Decoder<T> {
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
+            LocalTime::class -> LocalTimeDecoder
+            Instant::class -> InstantDecoder
             is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }

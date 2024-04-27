@@ -2,6 +2,8 @@ package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
 import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -47,6 +49,8 @@ fun interface Encoder<T> {
                encoderFor(type.arguments[1].type!!)
             )
 
+            LocalTime::class -> LocalTimeEncoder
+            Instant::class -> InstantEncoder
             is KClass<*> -> if (classifier.java.isEnum) EnumEncoder<Enum<*>>() else error("Unsupported type $type")
             else -> error("Unsupported type $type")
          }
