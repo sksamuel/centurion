@@ -53,10 +53,7 @@ class BinaryWriterFactory(schema: Schema, private val factory: EncoderFactory) {
     * If you wish to write multiple records, create a [BinaryWriter] using [writer].
     */
    fun write(record: GenericRecord): ByteArray {
-      val writer = BinaryWriter(datumWriter, ByteArrayOutputStream(), factory)
-      writer.write(record)
-      writer.close()
-      return writer.bytes()
+      return BinaryWriter(datumWriter, ByteArrayOutputStream(), factory).use { it.write(record) }.bytes()
    }
 
    /**
@@ -67,9 +64,7 @@ class BinaryWriterFactory(schema: Schema, private val factory: EncoderFactory) {
     * The given [output] stream will be closed after this function returns.
     */
    fun write(record: GenericRecord, output: OutputStream) {
-      val writer = BinaryWriter(datumWriter, output, factory)
-      writer.write(record)
-      writer.close()
+      BinaryWriter(datumWriter, output, factory).use { it.write(record) }
    }
 }
 

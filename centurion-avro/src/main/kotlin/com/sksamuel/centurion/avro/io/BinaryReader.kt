@@ -39,6 +39,13 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
       return BinaryReader(datumReader, null, bytes, factory).read()
    }
 
+   /**
+    * Reads avro encoded bytes from the given [input] stream to a [GenericRecord].
+    * This method is a convenience function that is useful when you want to read a single record.
+    * If you wish to read multiple records, create a [BinaryWriter] using [reader].
+    *
+    * The given [input] stream will be closed after this function returns.
+    */
    fun read(input: InputStream): GenericRecord {
       return BinaryReader(datumReader, input, null, factory).use { it.read() }
    }
