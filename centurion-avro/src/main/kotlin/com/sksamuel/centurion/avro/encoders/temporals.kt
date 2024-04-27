@@ -9,6 +9,7 @@ import org.apache.avro.data.TimeConversions.LocalTimestampMicrosConversion
 import org.apache.avro.data.TimeConversions.LocalTimestampMillisConversion
 import org.apache.avro.data.TimeConversions.TimeMicrosConversion
 import org.apache.avro.data.TimeConversions.TimeMillisConversion
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -32,5 +33,15 @@ object LocalTimeEncoder : Encoder<LocalTime> {
          schema.type == Schema.Type.LONG -> value.toNanoOfDay()
          else -> error("Unsupported schema for LocalDateTime: $schema")
       }
+   }
+}
+
+/**
+ * An [Encoder] for [Instant] which returns the epoch millis as a [Long].
+ */
+object InstantEncoder : Encoder<Instant> {
+   override fun encode(schema: Schema, value: Instant): Long {
+      require(schema.type == Schema.Type.LONG)
+      return value.toEpochMilli()
    }
 }
