@@ -39,7 +39,8 @@ class RecordEncoderGenerator {
    private fun encoderFor(property: KProperty1<out Any, *>): String {
       val getSchema = "schema.getField(\"${property.name}\").schema()"
       val getValue = "value.${property.name}"
-      val encoder = encoderFor(property.returnType)
+      val baseEncoder = encoderFor(property.returnType)
+      val encoder = if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
       return "$encoder.encode($getSchema, $getValue)"
    }
 

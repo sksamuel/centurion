@@ -9,12 +9,12 @@ class RecordEncoderGeneratorTest : FunSpec({
 
    data class MyFoo(
       val b: Boolean,
-      val s: String,
+      val s: String?,
       val c: Long,
       val sets: Set<String>,
       val lists: List<Int>,
       val maps: Map<String, Double>,
-      val wine: Wine,
+      val wine: Wine?,
    )
 
    test("simple encoder") {
@@ -36,9 +36,9 @@ object MyFooEncoder : Encoder<MyFoo> {
     record.put("c", LongEncoder.encode(schema.getField("c").schema(), value.c))
     record.put("lists", ListEncoder(IntEncoder).encode(schema.getField("lists").schema(), value.lists))
     record.put("maps", MapEncoder(StringEncoder, DoubleEncoder).encode(schema.getField("maps").schema(), value.maps))
-    record.put("s", StringEncoder.encode(schema.getField("s").schema(), value.s))
+    record.put("s", NullEncoder(StringEncoder).encode(schema.getField("s").schema(), value.s))
     record.put("sets", SetEncoder(StringEncoder).encode(schema.getField("sets").schema(), value.sets))
-    record.put("wine", EnumEncoder().encode(schema.getField("wine").schema(), value.wine))
+    record.put("wine", NullEncoder(EnumEncoder()).encode(schema.getField("wine").schema(), value.wine))
     return record
   }
 }
