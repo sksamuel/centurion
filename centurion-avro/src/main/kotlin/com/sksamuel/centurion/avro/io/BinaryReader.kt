@@ -20,7 +20,8 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
 
    /**
     * Creates an [BinaryReader] that reads from the given [InputStream].
-    * This variant is much slower than using a byte array. If you already have
+    *
+    * This variant is slower than using a byte array. If you already have
     * the bytes available, that should be preferred.
     */
    fun reader(input: InputStream): BinaryReader {
@@ -32,6 +33,14 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
     */
    fun reader(bytes: ByteArray): BinaryReader {
       return BinaryReader(datumReader, null, bytes, factory)
+   }
+
+   fun read(bytes: ByteArray): GenericRecord {
+      return BinaryReader(datumReader, null, bytes, factory).read()
+   }
+
+   fun read(input: InputStream): GenericRecord {
+      return BinaryReader(datumReader, input, null, factory).use { it.read() }
    }
 }
 
