@@ -47,3 +47,4 @@ object MyFooEncoder : Encoder<MyFoo> {
 
 })
 
+
