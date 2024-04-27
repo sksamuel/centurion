@@ -36,6 +36,7 @@ class SpecificRecordEncoder<T : Any>(
 
    init {
       require(kclass.isData) { "Can only encode data classes: $kclass" }
+      require(schema.type == Schema.Type.RECORD) { "Provided schema must be a RECORD" }
    }
 
    private val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
@@ -45,7 +46,7 @@ class SpecificRecordEncoder<T : Any>(
    }
 
    override fun encode(schema: Schema, value: T): Any {
-      require(schema.type == Schema.Type.RECORD)
+      require(this.schema == schema) { "Provided schema must match schema used to create this class" }
 
       val record = GenericData.Record(schema)
 

@@ -6,6 +6,10 @@ import org.apache.avro.util.Utf8
 import java.nio.ByteBuffer
 import java.util.UUID
 
+/**
+ * An [Encoder] for strings which always uses the schema to determine if a string should be stored as
+ * bytes, fixed, utf8 or a java String type.
+ */
 object StringEncoder : Encoder<String> {
    override fun encode(schema: Schema, value: String): Any {
       return when (schema.type) {
@@ -26,29 +30,28 @@ object StringEncoder : Encoder<String> {
  * of any [GenericData.STRING_PROP] settings on the schema.
  */
 object JavaStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String) = value
-}
-
-object UUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema, value: UUID): Any {
-      return Utf8(value.toString())
-   }
+   override fun encode(schema: Schema, value: String): String = value
 }
 
 /**
- * An [[Encoder]] for Strings that encodes as avro [[Utf8]]s.
+ * An [Encoder] for UUID that encodes as avro [Utf8]s.
+ */
+object UUIDEncoder : Encoder<UUID> {
+   override fun encode(schema: Schema, value: UUID): Utf8 = Utf8(value.toString())
+}
+
+/**
+ * An [Encoder] for Strings that encodes as avro [Utf8]s.
  */
 object UTF8StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any {
-      return Utf8(value)
-   }
+   override fun encode(schema: Schema, value: String): Utf8 = Utf8(value)
 }
 
 /**
  * An [Encoder] for Strings that encodes as [ByteBuffer]s.
  */
 object ByteStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any {
+   override fun encode(schema: Schema, value: String): ByteBuffer {
       return ByteBuffer.wrap(value.encodeToByteArray())
    }
 }

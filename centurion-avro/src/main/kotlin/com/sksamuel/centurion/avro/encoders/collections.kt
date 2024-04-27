@@ -1,5 +1,6 @@
 package com.sksamuel.centurion.avro.encoders
 
+import com.sksamuel.centurion.avro.decoders.StringDecoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericArray
 import org.apache.avro.generic.GenericData
@@ -37,9 +38,14 @@ class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
    }
 }
 
-class MapEncoder<T>(private val encoder: Encoder<T>) : Encoder<Map<String, T>> {
-   override fun encode(schema: Schema, value: Map<String, T>): Map<String, Any?> {
+class MapEncoder<T>(
+   private val keyEncoder: Encoder<String>,
+   private val valueEncoder: Encoder<T>
+) : Encoder<Map<String, T>> {
+   override fun encode(schema: Schema, value: Map<String, T>): Map<Any?, Any?> {
       require(schema.type == Schema.Type.MAP)
-      return value.mapValues { encoder.encode(schema.valueType, it.value) }
+      return value.map { (key, value) ->
+         keyEncoder.encode(StringDecoder.STRING_SCHEMA, key) to valueEncoder.encode(schema.valueType, value)
+      }.toMap()
    }
 }

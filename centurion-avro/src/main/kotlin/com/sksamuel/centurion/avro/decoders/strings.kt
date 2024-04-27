@@ -28,7 +28,7 @@ object StringDecoder : Decoder<String> {
 }
 
 /**
- * A [Decoder] for [CharSequence] that pattern match on the incoming type to decode.
+ * A [Decoder] for [CharSequence] that pattern matches on the incoming type to decode.
  *
  * The schema is not used, meaning this decoder is forgiving of types that do not conform to
  * the schema, but are nevertheless usable.
