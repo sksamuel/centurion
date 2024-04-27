@@ -45,6 +45,9 @@ class BinaryReaderFactory(schema: Schema, private val factory: DecoderFactory) {
     * If you wish to read multiple records, create a [BinaryWriter] using [reader].
     *
     * The given [input] stream will be closed after this function returns.
+    *
+    * This variant is slower than using a byte array. If you already have
+    *the bytes available, that should be preferred.
     */
    fun read(input: InputStream): GenericRecord {
       return BinaryReader(datumReader, input, null, factory).use { it.read() }

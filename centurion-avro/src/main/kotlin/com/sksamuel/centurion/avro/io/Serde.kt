@@ -8,7 +8,6 @@ import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.io.EncoderFactory
-import java.io.ByteArrayInputStream
 import kotlin.reflect.KClass
 
 /**
@@ -56,7 +55,7 @@ class Serde<T : Any>(
    private val readerFactory = BinaryReaderFactory(schema)
 
    fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(obj))
-   fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(ByteArrayInputStream(bytes))))
+   fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(bytes)))
 }
 
 private const val DEFAULT_BUFFER_SIZE = 2048
