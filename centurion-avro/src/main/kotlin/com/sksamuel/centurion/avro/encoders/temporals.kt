@@ -16,6 +16,7 @@ import org.apache.avro.data.TimeConversions.TimestampMillisConversion
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
@@ -54,3 +55,5 @@ object InstantEncoder : Encoder<Instant> {
       }
    }
 }
+
+val OffsetDateTimeEncoder : Encoder<OffsetDateTime> = InstantEncoder.contraMap { it.toInstant() }
