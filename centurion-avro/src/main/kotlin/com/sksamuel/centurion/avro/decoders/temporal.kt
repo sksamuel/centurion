@@ -10,6 +10,8 @@ import org.apache.avro.data.TimeConversions.TimestampMicrosConversion
 import org.apache.avro.data.TimeConversions.TimestampMillisConversion
 import java.time.Instant
 import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -56,3 +58,5 @@ object LocalTimeDecoder : Decoder<LocalTime> {
       }
    }
 }
+
+val OffsetDateTimeDecoder: Decoder<OffsetDateTime> = InstantDecoder.map { it.atOffset(ZoneOffset.UTC) }
