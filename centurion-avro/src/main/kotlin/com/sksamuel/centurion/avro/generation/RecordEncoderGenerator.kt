@@ -4,7 +4,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.starProjectedType
 
 /**
  * Generates Kotlin code to programatically create an Encoder for a specific type.

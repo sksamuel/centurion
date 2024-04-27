@@ -1,29 +1,31 @@
 package com.sksamuel.centurion.avro.io
 
+import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
+import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.file.Codec
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import kotlin.reflect.KClass
 
 /**
- * A [Serde] provides an easy way to convert between data classes and avro encoded bytes
- * using reflection based encoders and decoders.
+ * A [Serde] provides an easy way to convert between data classes and avro encoded bytes.
  *
  * This class is thread safe.
  */
 class Serde<T : Any>(
    private val schema: Schema,
-   kclass: KClass<T>,
+   private val encoder: Encoder<T>,
+   private val decoder: Decoder<T>,
    private val options: SerdeOptions,
 ) {
 
    init {
-      require(kclass.isData)
       if (options.fastReader)
          GenericData.get().setFastReaderEnabled(true)
    }
@@ -38,7 +40,9 @@ class Serde<T : Any>(
          options: SerdeOptions = SerdeOptions()
       ): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
-         return Serde(schema, kclass, options)
+         val encoder = SpecificRecordEncoder(kclass, schema)
+         val decoder = SpecificRecordDecoder(kclass, schema)
+         return Serde(schema, encoder, decoder, options)
       }
 
       /**
@@ -48,9 +52,6 @@ class Serde<T : Any>(
          return Serde(T::class, options)
       }
    }
-
-   private val encoder = SpecificRecordEncoder(kclass, schema)
-   private val decoder = SpecificRecordDecoder(kclass, schema)
 
    private val encoderFactory = EncoderFactory()
       .configureBufferSize(options.encoderBufferSize)
@@ -62,7 +63,7 @@ class Serde<T : Any>(
    private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
    private val readerFactory = BinaryReaderFactory(schema, decoderFactory)
 
-   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(schema, obj), options.codec)
+   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(schema, obj) as GenericRecord, options.codec)
    fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes, options.codec))
 }
 

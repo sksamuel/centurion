@@ -3,8 +3,11 @@
 ### 1.2.1
 
 * Added optimized string and primitive decoders
-* Added `Instant` and `LocalTime` encoders and decoders
+* Added `Instant`, `LocalTime`, `LocalDateTime`, `OffsetDateTime` encoders and decoders
 * Added `JavaStringUUIDEncoder`
+* Added `RecordEncoderGenerator`
+* Optimized pattern matching for primitive decoders
+* Optimized field lookups for reflection based encoders
 
 ### 1.2.0 (April 2024)
 
