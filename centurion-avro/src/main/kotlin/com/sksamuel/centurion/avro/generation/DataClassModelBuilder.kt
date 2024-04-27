@@ -5,7 +5,7 @@ import org.apache.avro.Schema
 /**
  * Generates a data class model for a given schema.
  */
-class DataClassGenerator {
+class DataClassModelBuilder {
 
    fun generate(schema: Schema): DataClass {
       require(schema.type == Schema.Type.RECORD) { "Type must be a record in order to generate a data class" }
