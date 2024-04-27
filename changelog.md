@@ -15,4 +15,4 @@
 
 ### 1.1.0 (April 2024)
 
-* Added Avro4s port of Encoders, Decoder, Writers and Readers to `centurion-avro`
+* Added [Avro4s](https://github.com/sksamuel/avro4s) port of Encoders, Decoder, Writers and Readers to `centurion-avro`
