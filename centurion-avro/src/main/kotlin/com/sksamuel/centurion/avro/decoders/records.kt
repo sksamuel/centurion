@@ -24,14 +24,14 @@ class SpecificRecordDecoder<T : Any>(
    private val members = constructor.parameters.map { param ->
       val field = schema.getField(param.name)
       val decoder = Decoder.decoderFor(param.type)
-      Triple(param.name, field, decoder)
+      Triple(field.pos(), field, decoder)
    }
 
    override fun decode(schema: Schema, value: Any?): T {
       if (value == null) error("SpecificRecordDecoder does not support null types")
       require(value is GenericRecord) { "SpecificRecordDecoder only supports GenericRecords: was $value" }
-      val args = members.map { (name, field, decoder) ->
-         val arg = value.get(name)
+      val args = members.map { (pos, field, decoder) ->
+         val arg = value.get(pos)
          decoder.decode(field.schema(), arg)
       }
       return constructor.call(*args.toTypedArray())
