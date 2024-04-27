@@ -123,6 +123,7 @@ class ReflectionRecordEncoderTest : FunSpec({
       record.put("map", maps)
 
       ReflectionRecordEncoder().encode(schema, Foo(maps)) shouldBe record
+      Encoder.globalUseJavaString = false
    }
 })
 

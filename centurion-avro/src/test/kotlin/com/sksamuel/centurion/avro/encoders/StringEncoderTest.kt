@@ -14,6 +14,13 @@ class StringEncoderTest : FunSpec({
       StringEncoder.encode(schema, "hello").shouldBeTypeOf<String>()
    }
 
+   test("should use java string when global prop is set") {
+      val schema = SchemaBuilder.builder().stringType()
+      Encoder.globalUseJavaString = true
+      StringEncoder.encode(schema, "hello").shouldBeTypeOf<String>()
+      Encoder.globalUseJavaString = false
+   }
+
    test("should use Utf8 when prop is not set") {
       val schema = SchemaBuilder.builder().stringType()
       StringEncoder.encode(schema, "hello").shouldBeTypeOf<Utf8>()
