@@ -11,7 +11,8 @@ import java.io.ByteArrayInputStream
 import kotlin.reflect.KClass
 
 /**
- * A [Serde] provides an easy way to convert between data classes and avro encoded bytes.
+ * A [Serde] provides an easy way to convert between data classes and avro encoded bytes
+ * using reflection based encoders and decoders.
  */
 class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
 
@@ -21,11 +22,17 @@ class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
 
    companion object {
 
+      /**
+       * Creates a [Schema] reflectively from the given [kclass] using a [ReflectionSchemaBuilder].
+       */
       operator fun <T : Any> invoke(kclass: KClass<T>): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
          return Serde(schema, kclass)
       }
 
+      /**
+       * Creates a [Schema] reflectively from the given type parameter [T] using a [ReflectionSchemaBuilder].
+       */
       inline operator fun <reified T : Any> invoke(): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(T::class)
          return Serde(schema, T::class)
@@ -38,5 +45,5 @@ class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
    private val readerFactory = BinaryReaderFactory(schema)
 
    fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(obj))
-   fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.reader(ByteArrayInputStream(bytes)).read()))
+   fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(ByteArrayInputStream(bytes))))
 }
