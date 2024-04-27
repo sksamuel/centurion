@@ -59,8 +59,8 @@ class Serde<T : Any>(
    fun deserialize(bytes: ByteArray): T = decoder.decode((readerFactory.read(ByteArrayInputStream(bytes))))
 }
 
-private val DEFAULT_BUFFER_SIZE = 2048
-private val DEFAULT_BLOCK_BUFFER_SIZE = 64 * 1024
+private const val DEFAULT_BUFFER_SIZE = 2048
+private const val DEFAULT_BLOCK_BUFFER_SIZE = 64 * 1024
 
 data class SerdeOptions(
    val fastReader: Boolean = false,
