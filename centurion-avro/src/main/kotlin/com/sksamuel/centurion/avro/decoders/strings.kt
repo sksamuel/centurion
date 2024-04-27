@@ -17,7 +17,6 @@ object StringDecoder : Decoder<String> {
 
    override fun decode(schema: Schema, value: Any?): String {
       return when (value) {
-         is Utf8 -> value.toString()
          is CharSequence -> value.toString()
          is ByteArray -> Utf8(value).toString()
          is ByteBuffer -> Utf8(value.array()).toString()
