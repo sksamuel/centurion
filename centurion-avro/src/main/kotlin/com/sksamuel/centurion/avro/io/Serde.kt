@@ -13,6 +13,8 @@ import kotlin.reflect.KClass
 /**
  * A [Serde] provides an easy way to convert between data classes and avro encoded bytes
  * using reflection based encoders and decoders.
+ *
+ * This class is thread safe.
  */
 class Serde<T : Any>(schema: Schema, kclass: KClass<T>) {
 
