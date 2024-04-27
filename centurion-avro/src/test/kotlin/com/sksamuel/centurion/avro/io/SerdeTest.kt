@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.io
 import com.sksamuel.centurion.avro.encoders.User
 import com.sksamuel.centurion.avro.encoders.UserType
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.ints.shouldBeLessThan
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.apache.avro.file.BZip2Codec
 import kotlin.random.Random
@@ -26,7 +26,7 @@ class SerdeTest : FunSpec({
       )
       val serde1 = Serde<User>()
       val serde2 = Serde<User>(SerdeOptions(codec = BZip2Codec()))
-      serde1.serialize(user).size shouldBeLessThan serde2.serialize(user).size
+      serde1.serialize(user).size shouldBeGreaterThan serde2.serialize(user).size
       serde2.deserialize(serde2.serialize(user)) shouldBe user
    }
 })
