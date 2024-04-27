@@ -4,11 +4,15 @@ import org.apache.avro.LogicalTypes.LocalTimestampMicros
 import org.apache.avro.LogicalTypes.LocalTimestampMillis
 import org.apache.avro.LogicalTypes.TimeMicros
 import org.apache.avro.LogicalTypes.TimeMillis
+import org.apache.avro.LogicalTypes.TimestampMicros
+import org.apache.avro.LogicalTypes.TimestampMillis
 import org.apache.avro.Schema
 import org.apache.avro.data.TimeConversions.LocalTimestampMicrosConversion
 import org.apache.avro.data.TimeConversions.LocalTimestampMillisConversion
 import org.apache.avro.data.TimeConversions.TimeMicrosConversion
 import org.apache.avro.data.TimeConversions.TimeMillisConversion
+import org.apache.avro.data.TimeConversions.TimestampMicrosConversion
+import org.apache.avro.data.TimeConversions.TimestampMillisConversion
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -37,11 +41,15 @@ object LocalTimeEncoder : Encoder<LocalTime> {
 }
 
 /**
- * An [Encoder] for [Instant] which returns the epoch millis as a [Long].
+ * An [Encoder] for [Instant].
  */
 object InstantEncoder : Encoder<Instant> {
    override fun encode(schema: Schema, value: Instant): Long {
-      require(schema.type == Schema.Type.LONG)
-      return value.toEpochMilli()
+      return when {
+         schema.logicalType is TimestampMillis -> TimestampMillisConversion().toLong(value, schema, schema.logicalType)
+         schema.logicalType is TimestampMicros -> TimestampMicrosConversion().toLong(value, schema, schema.logicalType)
+         schema.type == Schema.Type.LONG -> value.toEpochMilli()
+         else -> error("Unsupported schema for LocalDateTime: $schema")
+      }
    }
 }
