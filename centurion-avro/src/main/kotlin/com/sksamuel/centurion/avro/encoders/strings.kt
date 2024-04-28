@@ -12,14 +12,11 @@ import java.util.UUID
  */
 object StringEncoder : Encoder<String> {
    override fun encode(schema: Schema): (String) -> Any? {
+      if (Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String")
+         return JavaStringEncoder.encode(schema)
+
       return when (schema.type) {
-         Schema.Type.STRING -> when {
-            Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String" ->
-               Encoder.identity<String>().encode(schema)
-
-            else -> UTF8StringEncoder.encode(schema)
-         }
-
+         Schema.Type.STRING -> UTF8StringEncoder.encode(schema)
          Schema.Type.BYTES -> ByteStringEncoder.encode(schema)
          Schema.Type.FIXED -> FixedStringEncoder.encode(schema)
          else -> error("Unsupported type for string schema: $schema")
