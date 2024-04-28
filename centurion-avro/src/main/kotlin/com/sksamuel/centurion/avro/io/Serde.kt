@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
  */
 class Serde<T : Any>(
    private val schema: Schema,
-   private val encoder: Encoder<T>,
+   encoder: Encoder<T>,
    private val decoder: Decoder<T>,
    private val options: SerdeOptions,
 ) {
@@ -63,9 +63,9 @@ class Serde<T : Any>(
    private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
    private val readerFactory = BinaryReaderFactory(schema, decoderFactory)
 
-   fun serialize(obj: T): ByteArray =
-      writerFactory.write(encoder.encode(schema).invoke(obj) as GenericRecord, options.codec)
+   private val encodeFn = encoder.encode(schema)
 
+   fun serialize(obj: T): ByteArray = writerFactory.write(encodeFn.invoke(obj) as GenericRecord, options.codec)
    fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes, options.codec))
 }
 
