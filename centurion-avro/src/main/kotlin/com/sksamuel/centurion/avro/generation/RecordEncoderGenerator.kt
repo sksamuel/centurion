@@ -50,7 +50,16 @@ class RecordEncoderGenerator {
    private fun encoderInvocation(property: KProperty1<out Any, *>): String {
       val getSchema = "${property.name}Schema"
       val getValue = "value.${property.name}"
-      return "${property.name}Encoder.encode($getSchema, $getValue)"
+
+      return when (property.returnType.classifier) {
+         Boolean::class -> getValue
+         Double::class -> getValue
+         Float::class -> getValue
+         Int::class -> getValue
+         Long::class ->getValue
+         String::class -> getValue
+         else -> "${property.name}Encoder.encode($getSchema, $getValue)"
+      }
    }
 
    private fun encoderFor(type: KType): String {

@@ -11,6 +11,9 @@ class RecordEncoderGeneratorTest : FunSpec({
       val b: Boolean,
       val s: String?,
       val c: Long,
+      val d: Double,
+      val i: Int,
+      val f: Float,
       val sets: Set<String>,
       val lists: List<Int>,
       val maps: Map<String, Double>,
@@ -37,6 +40,15 @@ class MyFooEncoder(schema: Schema) : Encoder<MyFoo> {
   private val cEncoder = LongEncoder
   private val cSchema  = schema.getField("c").schema()
   private val cPos     = schema.getField("c").pos()
+  private val dEncoder = DoubleEncoder
+  private val dSchema  = schema.getField("d").schema()
+  private val dPos     = schema.getField("d").pos()
+  private val fEncoder = FloatEncoder
+  private val fSchema  = schema.getField("f").schema()
+  private val fPos     = schema.getField("f").pos()
+  private val iEncoder = IntEncoder
+  private val iSchema  = schema.getField("i").schema()
+  private val iPos     = schema.getField("i").pos()
   private val listsEncoder = ListEncoder(IntEncoder)
   private val listsSchema  = schema.getField("lists").schema()
   private val listsPos     = schema.getField("lists").pos()
@@ -55,11 +67,14 @@ class MyFooEncoder(schema: Schema) : Encoder<MyFoo> {
 
   override fun encode(schema: Schema, value: MyFoo): GenericRecord {
     val record = GenericData.Record(schema)
-    record.put(bPos, bEncoder.encode(bSchema, value.b))
-    record.put(cPos, cEncoder.encode(cSchema, value.c))
+    record.put(bPos, value.b)
+    record.put(cPos, value.c)
+    record.put(dPos, value.d)
+    record.put(fPos, value.f)
+    record.put(iPos, value.i)
     record.put(listsPos, listsEncoder.encode(listsSchema, value.lists))
     record.put(mapsPos, mapsEncoder.encode(mapsSchema, value.maps))
-    record.put(sPos, sEncoder.encode(sSchema, value.s))
+    record.put(sPos, value.s)
     record.put(setsPos, setsEncoder.encode(setsSchema, value.sets))
     record.put(winePos, wineEncoder.encode(wineSchema, value.wine))
     return record
