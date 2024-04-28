@@ -45,6 +45,8 @@ fun interface Encoder<T> {
             BigDecimal::class -> BigDecimalStringEncoder
             Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
             List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
+            LongArray::class -> LongArrayEncoder(LongEncoder)
+            IntArray::class -> IntArrayEncoder(IntEncoder)
             Map::class -> MapEncoder(
                if (globalUseJavaString) JavaStringEncoder else StringEncoder,
                encoderFor(type.arguments[1].type!!)

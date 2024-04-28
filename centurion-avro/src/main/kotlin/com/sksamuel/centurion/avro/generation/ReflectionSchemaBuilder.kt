@@ -44,6 +44,9 @@ class ReflectionSchemaBuilder(
          Float::class -> builder.floatType()
          Set::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
          List::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
+         Array::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
+         LongArray::class -> builder.array().items(Schema.create(Schema.Type.LONG))
+         IntArray::class -> builder.array().items(Schema.create(Schema.Type.INT))
          Map::class -> builder.map().values(schemaFor(type.arguments[1].type!!))
          is KClass<*> -> if (classifier.java.isEnum)
             builder

@@ -39,6 +39,8 @@ fun interface Decoder<T> {
             Int::class -> if (useStrictPrimitiveDecoders) StrictIntDecoder else IntDecoder
             Long::class -> if (useStrictPrimitiveDecoders) StrictLongDecoder else LongDecoder
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
+            LongArray::class -> LongArrayDecoder(if (useStrictPrimitiveDecoders) StrictLongDecoder else LongDecoder)
+            IntArray::class -> IntArrayDecoder(if (useStrictPrimitiveDecoders) StrictIntDecoder else IntDecoder)
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeDecoder

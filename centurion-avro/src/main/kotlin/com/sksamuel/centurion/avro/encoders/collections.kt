@@ -5,10 +5,38 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericArray
 
 /**
- * An [Encoder] for Arrays of [T] that encodes into an Avro [GenericArray].
+ * An [Encoder] for Arrays of [T].
  */
 class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
    override fun encode(schema: Schema): (Array<T>) -> Any? {
+      require(schema.type == Schema.Type.ARRAY)
+      val elements = encoder.encode(schema.elementType)
+      return { value ->
+         if (value.isEmpty()) emptyList()
+         else value.map { elements.invoke(it) }
+      }
+   }
+}
+
+/**
+ * An [Encoder] for LongArrays.
+ */
+class LongArrayEncoder(private val encoder: Encoder<Long>) : Encoder<LongArray> {
+   override fun encode(schema: Schema): (LongArray) -> Any? {
+      require(schema.type == Schema.Type.ARRAY)
+      val elements = encoder.encode(schema.elementType)
+      return { value ->
+         if (value.isEmpty()) emptyList()
+         else value.map { elements.invoke(it) }
+      }
+   }
+}
+
+/**
+ * An [Encoder] for IntArrays.
+ */
+class IntArrayEncoder(private val encoder: Encoder<Int>) : Encoder<IntArray> {
+   override fun encode(schema: Schema): (IntArray) -> Any? {
       require(schema.type == Schema.Type.ARRAY)
       val elements = encoder.encode(schema.elementType)
       return { value ->
