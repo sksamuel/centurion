@@ -41,6 +41,10 @@ object IntDecoder : Decoder<Int> {
    }
 }
 
+object StrictLongDecoder : Decoder<Long> {
+   override fun decode(schema: Schema): (Any?) -> Long = { it as Long }
+}
+
 object LongDecoder : Decoder<Long> {
    override fun decode(schema: Schema): (Any?) -> Long {
       require(schema.type == Schema.Type.LONG)
@@ -56,6 +60,10 @@ object LongDecoder : Decoder<Long> {
    }
 }
 
+object StrictIntDecoder : Decoder<Int> {
+   override fun decode(schema: Schema): (Any?) -> Int = { it as Int }
+}
+
 object DoubleDecoder : Decoder<Double> {
    override fun decode(schema: Schema): (Any?) -> Double {
       require(schema.type == Schema.Type.DOUBLE)
@@ -67,6 +75,10 @@ object DoubleDecoder : Decoder<Double> {
          }
       }
    }
+}
+
+object StrictDoubleDecoder : Decoder<Double> {
+   override fun decode(schema: Schema): (Any?) -> Double = { it as Double }
 }
 
 object FloatDecoder : Decoder<Float> {
@@ -81,6 +93,10 @@ object FloatDecoder : Decoder<Float> {
    }
 }
 
+object StrictFloatDecoder : Decoder<Float> {
+   override fun decode(schema: Schema): (Any?) -> Float = { it as Float }
+}
+
 object BooleanDecoder : Decoder<Boolean> {
    override fun decode(schema: Schema): (Any?) -> Boolean {
       require(schema.type == Schema.Type.BOOLEAN)
@@ -91,4 +107,8 @@ object BooleanDecoder : Decoder<Boolean> {
          }
       }
    }
+}
+
+object StrictBooleanDecoder : Decoder<Boolean> {
+   override fun decode(schema: Schema): (Any?) -> Boolean = { it as Boolean }
 }
