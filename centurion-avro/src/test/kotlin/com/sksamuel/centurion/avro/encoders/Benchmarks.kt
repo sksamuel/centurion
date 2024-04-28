@@ -36,7 +36,7 @@ fun main() {
    }
 
    repeat(10) {
-      val encoder = SpecificRecordEncoder(User::class, schema)
+      val encoder = SpecificRecordEncoder(User::class)
       val time = measureTime {
          repeat(2_000_000) {
             encoder.encode(schema).invoke(user)
@@ -47,7 +47,7 @@ fun main() {
 
    repeat(10) {
       Encoder.globalUseJavaString = true
-      val encoder = SpecificRecordEncoder(User::class, schema)
+      val encoder = SpecificRecordEncoder(User::class)
       val time = measureTime {
          repeat(2_000_000) {
             encoder.encode(schema).invoke(user)

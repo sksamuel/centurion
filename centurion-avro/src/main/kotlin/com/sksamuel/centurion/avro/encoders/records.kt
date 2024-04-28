@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.avro.encoders
 
-import io.kotest.core.Tuple4
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
@@ -21,7 +20,7 @@ import kotlin.reflect.full.declaredMemberProperties
 class ReflectionRecordEncoder : Encoder<Any> {
 
    override fun encode(schema: Schema): (Any) -> Any? {
-      return { value -> SpecificRecordEncoder(value::class as KClass<Any>, schema).encode(schema).invoke(value) }
+      return { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema).invoke(value) }
    }
 }
 
@@ -38,7 +37,7 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
    override fun encode(schema: Schema): (Any) -> Any? {
       return { value ->
          encoders.getOrPut(schema.fullName) {
-            SpecificRecordEncoder(value::class as KClass<Any>, schema)
+            SpecificRecordEncoder(value::class as KClass<Any>)
          }.encode(schema).invoke(value)
       }
    }
@@ -56,26 +55,25 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
  */
 class SpecificRecordEncoder<T : Any>(
    private val kclass: KClass<T>,
-   private val schema: Schema,
 ) : Encoder<T> {
 
    companion object {
-      inline operator fun <reified T : Any> invoke(schema: Schema) = SpecificRecordEncoder(T::class, schema)
+      inline operator fun <reified T : Any> invoke() = SpecificRecordEncoder(T::class)
    }
 
    init {
       require(kclass.isData) { "Can only encode data classes: $kclass" }
-      require(schema.type == Schema.Type.RECORD) { "Provided schema must be a RECORD" }
-   }
-
-   private val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
-      val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
-      val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
-      Triple(encoder.encode(field.schema()), member.getter, field.pos())
    }
 
    override fun encode(schema: Schema): (T) -> Any? {
-      require(this.schema.fullName == schema.fullName) { "Provided schema must match schema used to create this class" }
+      require(schema.type == Schema.Type.RECORD) { "Provided schema must be a RECORD" }
+
+      val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
+         val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
+         val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
+         Triple(encoder.encode(field.schema()), member.getter, field.pos())
+      }
+
       return { value ->
          val record = GenericData.Record(schema)
 
