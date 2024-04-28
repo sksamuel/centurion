@@ -3,7 +3,6 @@ package com.sksamuel.centurion.avro.encoders
 import com.sksamuel.centurion.avro.decoders.StringDecoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericArray
-import org.apache.avro.generic.GenericData
 
 /**
  * An [Encoder] for Arrays of [T] that encodes into an Avro [GenericArray].
@@ -11,6 +10,7 @@ import org.apache.avro.generic.GenericData
 class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
    override fun encode(schema: Schema, value: Array<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
+      if (value.isEmpty()) return emptyList()
       return value.map { encoder.encode(schema.elementType, it) }
    }
 }
@@ -21,7 +21,7 @@ class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
 class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
    override fun encode(schema: Schema, value: List<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      if (value.isEmpty()) return GenericData.Array<T>(0, schema)
+      if (value.isEmpty()) return emptyList()
       return value.map { encoder.encode(schema.elementType, it) }
    }
 }
@@ -32,7 +32,7 @@ class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
 class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
    override fun encode(schema: Schema, value: Set<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      if (value.isEmpty()) return GenericData.Array(0, schema)
+      if (value.isEmpty()) return emptyList()
       return value.map { encoder.encode(schema.elementType, it) }
    }
 }
