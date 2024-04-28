@@ -60,7 +60,7 @@ class BinaryWriterFactory(
     * Pass in a [Codec] to compress output.
     */
    fun write(record: GenericRecord, codec: Codec? = null): ByteArray {
-      val bytes = BinaryWriter(datumWriter, ByteArrayOutputStream(), factory).use { it.write(record) }.bytes()
+      val bytes = BinaryWriter(datumWriter, ByteArrayOutputStream(), factory).also { it.write(record) }.bytes()
       return if (codec == null) bytes else {
          val compressed = codec.compress(ByteBuffer.wrap(bytes))
          val b = ByteArray(compressed.remaining())
