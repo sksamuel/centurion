@@ -1,5 +1,6 @@
 package com.sksamuel.centurion.avro
 
+import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
 import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import com.sksamuel.centurion.avro.encoders.Wine
@@ -10,6 +11,7 @@ import io.kotest.matchers.shouldBe
 class RoundTripTest : FunSpec() {
    init {
       test("round trip encode / decode") {
+         Decoder.useStrictPrimitiveDecoders = true
          val schema = ReflectionSchemaBuilder().schema(RoundTrip::class)
          val rt = RoundTrip(
             s = null,
@@ -37,6 +39,7 @@ class RoundTripTest : FunSpec() {
          actual.maps shouldBe actual.maps
          actual.wine shouldBe actual.wine
          actual.arrays shouldBe actual.arrays
+         Decoder.useStrictPrimitiveDecoders = false
       }
    }
 }
