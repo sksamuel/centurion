@@ -5,37 +5,43 @@ import org.apache.avro.generic.GenericData
 import java.nio.ByteBuffer
 
 object ByteBufferEncoder : Encoder<ByteBuffer> {
-   override fun encode(schema: Schema, value: ByteBuffer): Any {
+   override fun encode(schema: Schema): (ByteBuffer) -> Any? {
       return when (schema.type) {
-         Schema.Type.BYTES -> value
-         Schema.Type.FIXED -> FixedByteBufferEncoder.encode(schema, value)
+         Schema.Type.BYTES -> Encoder.identity<ByteBuffer>().encode(schema)
+         Schema.Type.FIXED -> FixedByteBufferEncoder.encode(schema)
          else -> error("ByteBufferEncoder doesn't support schema type ${schema.type}")
       }
    }
 }
 
 object FixedByteBufferEncoder : Encoder<ByteBuffer> {
-   override fun encode(schema: Schema, value: ByteBuffer): Any {
-      val array = ByteArray(schema.fixedSize)
-      System.arraycopy(value.array(), 0, array, 0, value.array().size)
-      return GenericData.get().createFixed(null, array, schema)
+   override fun encode(schema: Schema): (ByteBuffer) -> Any? {
+      require(schema.type == Schema.Type.FIXED)
+      return {
+         val array = ByteArray(schema.fixedSize)
+         System.arraycopy(it.array(), 0, array, 0, it.array().size)
+         GenericData.get().createFixed(null, array, schema)
+      }
    }
 }
 
 object ByteArrayEncoder : Encoder<ByteArray> {
-   override fun encode(schema: Schema, value: ByteArray): Any {
+   override fun encode(schema: Schema): (ByteArray) -> Any? {
       return when (schema.type) {
-         Schema.Type.BYTES -> ByteBuffer.wrap(value)
-         Schema.Type.FIXED -> FixedByteArrayEncoder.encode(schema, value)
+         Schema.Type.BYTES -> Encoder.identity<ByteArray>().encode(schema)
+         Schema.Type.FIXED -> FixedByteArrayEncoder.encode(schema)
          else -> error("ByteArrayEncoder doesn't support schema type ${schema.type}")
       }
    }
 }
 
 object FixedByteArrayEncoder : Encoder<ByteArray> {
-   override fun encode(schema: Schema, value: ByteArray): Any {
-      val array = ByteArray(schema.fixedSize)
-      System.arraycopy(value, 0, array, 0, value.size)
-      return GenericData.get().createFixed(null, array, schema)
+   override fun encode(schema: Schema): (ByteArray) -> Any? {
+      require(schema.type == Schema.Type.FIXED)
+      return {
+         val array = ByteArray(schema.fixedSize)
+         System.arraycopy(it, 0, array, 0, it.size)
+         GenericData.get().createFixed(null, array, schema)
+      }
    }
 }

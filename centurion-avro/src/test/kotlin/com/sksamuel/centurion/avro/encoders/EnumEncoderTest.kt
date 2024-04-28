@@ -9,7 +9,7 @@ class EnumEncoderTest : FunSpec({
 
    test("use EnumSymbol") {
       val schema = Schema.createEnum("Wine", null, null, listOf("Shiraz", "Malbec"))
-      EnumEncoder().encode(schema, Wine.Shiraz) shouldBe EnumSymbol(schema, "Shiraz")
+      EnumEncoder().encode(schema).invoke(Wine.Shiraz) shouldBe EnumSymbol(schema, "Shiraz")
    }
 
 })

@@ -20,8 +20,8 @@ import kotlin.reflect.full.declaredMemberProperties
  */
 class ReflectionRecordEncoder : Encoder<Any> {
 
-   override fun encode(schema: Schema, value: Any): Any {
-      return SpecificRecordEncoder(value::class as KClass<Any>, schema).encode(schema, value)
+   override fun encode(schema: Schema): (Any) -> Any? {
+      return { value -> SpecificRecordEncoder(value::class as KClass<Any>, schema).encode(schema).invoke(value) }
    }
 }
 
@@ -35,10 +35,12 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
 
    private val encoders = ConcurrentHashMap<String, SpecificRecordEncoder<Any>>()
 
-   override fun encode(schema: Schema, value: Any): Any {
-      return encoders.getOrPut(schema.fullName) {
-         SpecificRecordEncoder(value::class as KClass<Any>, schema)
-      }.encode(schema, value)
+   override fun encode(schema: Schema): (Any) -> Any? {
+      return { value ->
+         encoders.getOrPut(schema.fullName) {
+            SpecificRecordEncoder(value::class as KClass<Any>, schema)
+         }.encode(schema).invoke(value)
+      }
    }
 }
 
@@ -72,17 +74,18 @@ class SpecificRecordEncoder<T : Any>(
       Tuple4(field.schema(), encoder, member.getter, field.pos())
    }
 
-   override fun encode(schema: Schema, value: T): GenericRecord {
+   override fun encode(schema: Schema): (T) -> Any? {
       require(this.schema.fullName == schema.fullName) { "Provided schema must match schema used to create this class" }
+      return { value ->
+         val record = GenericData.Record(schema)
 
-      val record = GenericData.Record(schema)
+         encoders.map { (schema, encoder, getter, pos) ->
+            val v = getter.call(value)
+            val encoded = encoder.encode(schema).invoke(v)
+            record.put(pos, encoded)
+         }
 
-      encoders.map { (schema, encoder, getter, pos) ->
-         val v = getter.call(value)
-         val encoded = encoder.encode(schema, v)
-         record.put(pos, encoded)
+         record
       }
-
-      return record
    }
 }

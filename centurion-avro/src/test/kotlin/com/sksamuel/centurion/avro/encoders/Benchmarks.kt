@@ -29,7 +29,7 @@ fun main() {
    repeat(2) {
       val time = measureTime {
          repeat(2_000_000) {
-            ReflectionRecordEncoder().encode(schema, user)
+            ReflectionRecordEncoder().encode(schema).invoke(user)
          }
       }
       println("ReflectionRecordEncoder: $time")
@@ -39,7 +39,7 @@ fun main() {
       val encoder = SpecificRecordEncoder(User::class, schema)
       val time = measureTime {
          repeat(2_000_000) {
-            encoder.encode(schema, user)
+            encoder.encode(schema).invoke(user)
          }
       }
       println("SpecificRecordEncoder globalUseJavaString=false: $time")
@@ -50,7 +50,7 @@ fun main() {
       val encoder = SpecificRecordEncoder(User::class, schema)
       val time = measureTime {
          repeat(2_000_000) {
-            encoder.encode(schema, user)
+            encoder.encode(schema).invoke(user)
          }
       }
       println("SpecificRecordEncoder globalUseJavaString=true: $time")
@@ -58,19 +58,21 @@ fun main() {
 
    repeat(10) {
 
-      val encoder = Encoder<User> { schema, value ->
-         val record = GenericData.Record(schema)
-         record.put("userId", value.userId)
-         record.put("name", Utf8(value.name))
-         record.put("email", Utf8(value.email))
-         record.put("lastActiveTimestamp", value.lastActiveTimestamp)
-         record.put("type", GenericData.get().createEnum("Admin", schema.getField("type").schema()))
-         record
+      val encoder = Encoder<User> { schema ->
+         {
+            val record = GenericData.Record(schema)
+            record.put("userId", it.userId)
+            record.put("name", Utf8(it.name))
+            record.put("email", Utf8(it.email))
+            record.put("lastActiveTimestamp", it.lastActiveTimestamp)
+            record.put("type", GenericData.get().createEnum("Admin", schema.getField("type").schema()))
+            record
+         }
       }
 
       val time = measureTime {
          repeat(2_000_000) {
-            encoder.encode(schema, user)
+            encoder.encode(schema).invoke(user)
          }
       }
       println("SpecificEncoder: $time")

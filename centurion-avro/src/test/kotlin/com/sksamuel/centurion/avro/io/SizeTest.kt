@@ -27,7 +27,7 @@ fun main() {
 
    GenericData.setStringType(schema, GenericData.StringType.String)
    val encoder = SpecificRecordEncoder(User::class, schema)
-   val record = encoder.encode(schema, user) as GenericRecord
+   val record = encoder.encode(schema).invoke(user) as GenericRecord
 
    println(BinaryWriterFactory(schema).writer(ByteArrayOutputStream()).write(record).bytes().size)
 

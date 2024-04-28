@@ -11,14 +11,17 @@ import java.util.UUID
  * bytes, fixed, utf8 or a java String type.
  */
 object StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any {
+   override fun encode(schema: Schema): (String) -> Any? {
       return when (schema.type) {
-         Schema.Type.STRING -> when  {
-            Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String" -> value
-            else -> UTF8StringEncoder.encode(schema, value)
+         Schema.Type.STRING -> when {
+            Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String" ->
+               Encoder.identity<String>().encode(schema)
+
+            else -> UTF8StringEncoder.encode(schema)
          }
-         Schema.Type.BYTES -> ByteStringEncoder.encode(schema, value)
-         Schema.Type.FIXED -> FixedStringEncoder.encode(schema, value)
+
+         Schema.Type.BYTES -> ByteStringEncoder.encode(schema)
+         Schema.Type.FIXED -> FixedStringEncoder.encode(schema)
          else -> error("Unsupported type for string schema: $schema")
       }
    }
@@ -29,36 +32,36 @@ object StringEncoder : Encoder<String> {
  * of any [GenericData.STRING_PROP] settings on the schema.
  */
 object JavaStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): String = value
+   override fun encode(schema: Schema): (String) -> Any? = { it }
 }
 
 /**
  * An [Encoder] for UUID that encodes as avro [Utf8]s.
  */
 object Utf8UUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema, value: UUID): Utf8 = Utf8(value.toString())
+   override fun encode(schema: Schema): (UUID) -> Any? = { Utf8(it.toString()) }
 }
 
 /**
  * An [Encoder] for UUID that encodes as JVM Strings.
  */
 object JavaStringUUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema, value: UUID): String = value.toString()
+   override fun encode(schema: Schema): (UUID) -> Any? = { it.toString() }
 }
 
 /**
  * An [Encoder] for Strings that encodes as avro [Utf8]s.
  */
 object UTF8StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Utf8 = Utf8(value)
+   override fun encode(schema: Schema): (String) -> Any? = { Utf8(it) }
 }
 
 /**
  * An [Encoder] for Strings that encodes as [ByteBuffer]s.
  */
 object ByteStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): ByteBuffer {
-      return ByteBuffer.wrap(value.encodeToByteArray())
+   override fun encode(schema: Schema): (String) -> Any? {
+      return { ByteBuffer.wrap(it.encodeToByteArray()) }
    }
 }
 
@@ -66,10 +69,12 @@ object ByteStringEncoder : Encoder<String> {
  * An [Encoder] for Strings that encodes as [GenericFixed]s.
  */
 object FixedStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any {
-      val bytes = value.encodeToByteArray()
-      if (bytes.size > schema.fixedSize)
-         error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
-      return GenericData.get().createFixed(null, bytes, schema)
+   override fun encode(schema: Schema): (String) -> Any? {
+      return { value ->
+         val bytes = value.encodeToByteArray()
+         if (bytes.size > schema.fixedSize)
+            error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
+         GenericData.get().createFixed(null, bytes, schema)
+      }
    }
 }

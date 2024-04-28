@@ -63,7 +63,9 @@ class Serde<T : Any>(
    private val writerFactory = BinaryWriterFactory(schema, encoderFactory)
    private val readerFactory = BinaryReaderFactory(schema, decoderFactory)
 
-   fun serialize(obj: T): ByteArray = writerFactory.write(encoder.encode(schema, obj) as GenericRecord, options.codec)
+   fun serialize(obj: T): ByteArray =
+      writerFactory.write(encoder.encode(schema).invoke(obj) as GenericRecord, options.codec)
+
    fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes, options.codec))
 }
 

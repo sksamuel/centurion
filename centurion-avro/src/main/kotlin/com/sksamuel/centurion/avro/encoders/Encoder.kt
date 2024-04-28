@@ -31,7 +31,7 @@ fun interface Encoder<T> {
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
-      fun <T : Any> identity(): Encoder<T> = Encoder { _, value -> value }
+      fun <T : Any> identity(): Encoder<T> = Encoder { _ -> { it } }
 
       fun encoderFor(type: KType): Encoder<*> {
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
@@ -58,7 +58,7 @@ fun interface Encoder<T> {
       }
    }
 
-   fun encode(schema: Schema, value: T): Any?
+   fun encode(schema: Schema): (T) -> Any?
 
    /**
     * Returns an [Encoder<U>] by applying a function [fn] that maps a [U]
@@ -66,7 +66,7 @@ fun interface Encoder<T> {
     */
    fun <U> contraMap(fn: (U) -> T): Encoder<U> {
       val self = this
-      return Encoder { schema, value -> self.encode(schema, fn(value)) }
+      return Encoder { schema -> { self.encode(schema).invoke(fn(it)) } }
    }
 }
 

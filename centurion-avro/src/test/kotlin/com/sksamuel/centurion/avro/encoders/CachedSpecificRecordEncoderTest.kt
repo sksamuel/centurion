@@ -18,7 +18,7 @@ class CachedSpecificRecordEncoderTest : FunSpec({
       expected.put("b", true)
 
       repeat(10) {
-         val actual = CachedSpecificRecordEncoder().encode(schema, Foo("hello", true))
+         val actual = CachedSpecificRecordEncoder().encode(schema).invoke(Foo("hello", true))
          actual shouldBe expected
       }
    }
