@@ -33,7 +33,8 @@ class Serde<T : Any>(
    companion object {
 
       /**
-       * Creates a [Schema] reflectively from the given [kclass] using a [ReflectionSchemaBuilder].
+       * Creates a [Schema], [Encoder] and [Decoder] reflectively from the given [kclass]
+       * using a [ReflectionSchemaBuilder].
        */
       operator fun <T : Any> invoke(
          kclass: KClass<T>,

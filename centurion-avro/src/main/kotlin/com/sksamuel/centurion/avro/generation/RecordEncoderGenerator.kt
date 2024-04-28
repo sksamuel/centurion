@@ -26,39 +26,40 @@ class RecordEncoderGenerator {
          appendLine("class ${kclass.java.simpleName}Encoder(schema: Schema) : Encoder<${kclass.java.simpleName}> {")
          appendLine()
          kclass.declaredMemberProperties.forEach { property ->
-            appendLine("  private val ${property.name}Encoder = ${encoderVal(property)}")
-            appendLine("  private val ${property.name}Schema  = schema.getField(\"${property.name}\").schema()")
-            appendLine("  private val ${property.name}Pos     = schema.getField(\"${property.name}\").pos()")
+            appendLine("  private val ${property.name}Schema = schema.getField(\"${property.name}\").schema()")
+            appendLine("  private val ${property.name}Pos    = schema.getField(\"${property.name}\").pos()")
+            appendLine("  private val ${property.name}Encode = ${encode(property)}")
          }
          appendLine()
-         appendLine("  override fun encode(schema: Schema, value: ${kclass.java.simpleName}): GenericRecord {")
-         appendLine("    val record = GenericData.Record(schema)")
+         appendLine("  override fun encode(schema: Schema): (${kclass.java.simpleName}) -> GenericRecord {")
+         appendLine("    return { value ->")
+         appendLine("      val record = GenericData.Record(schema)")
          kclass.declaredMemberProperties.forEach { property ->
-            appendLine("    record.put(${property.name}Pos, ${encoderInvocation(property)})")
+            appendLine("      record.put(${property.name}Pos, ${encoderInvocation(property)})")
          }
-         appendLine("    return record")
+         appendLine("      record")
+         appendLine("    }")
          appendLine("  }")
          appendLine("}")
       }
    }
 
-   private fun encoderVal(property: KProperty1<out Any, *>): String {
+   private fun encode(property: KProperty1<out Any, *>): String {
       val baseEncoder = encoderFor(property.returnType)
-      return if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
+      val wrapped = if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
+      return "$wrapped.encode(${property.name}Schema)"
    }
 
    private fun encoderInvocation(property: KProperty1<out Any, *>): String {
-      val getSchema = "${property.name}Schema"
       val getValue = "value.${property.name}"
-
       return when (property.returnType.classifier) {
          Boolean::class -> getValue
          Double::class -> getValue
          Float::class -> getValue
          Int::class -> getValue
-         Long::class ->getValue
+         Long::class -> getValue
          String::class -> getValue
-         else -> "${property.name}Encoder.encode($getSchema, $getValue)"
+         else -> "${property.name}Encode.invoke($getValue)"
       }
    }
 
