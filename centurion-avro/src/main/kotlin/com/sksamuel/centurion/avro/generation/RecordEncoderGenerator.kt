@@ -23,16 +23,18 @@ class RecordEncoderGenerator {
          appendLine("/**")
          appendLine(" * This is a generated [Encoder] that encodes [${kclass.java.simpleName}]s to Avro [GenericRecord]s")
          appendLine(" */")
-         appendLine("object ${kclass.java.simpleName}Encoder : Encoder<${kclass.java.simpleName}> {")
+         appendLine("object ${kclass.java.simpleName}Encoder(private val schema: Schema) : Encoder<${kclass.java.simpleName}> {")
          appendLine()
          kclass.declaredMemberProperties.forEach { property ->
             appendLine("  private val ${property.name}Encoder = ${encoderVal(property)}")
+            appendLine("  private val ${property.name}Schema  = schema.getField(\"${property.name}\").schema()")
+            appendLine("  private val ${property.name}Pos     = schema.getField(\"${property.name}\").pos()")
          }
          appendLine()
          appendLine("  override fun encode(schema: Schema, value: ${kclass.java.simpleName}): GenericRecord {")
          appendLine("    val record = GenericData.Record(schema)")
          kclass.declaredMemberProperties.forEach { property ->
-            appendLine("    record.put(\"${property.name}\", ${encoderInvocation(property)})")
+            appendLine("    record.put(${property.name}Pos, ${encoderInvocation(property)})")
          }
          appendLine("    return record")
          appendLine("  }")
@@ -46,7 +48,7 @@ class RecordEncoderGenerator {
    }
 
    private fun encoderInvocation(property: KProperty1<out Any, *>): String {
-      val getSchema = "schema.getField(\"${property.name}\").schema()"
+      val getSchema = "${property.name}Schema"
       val getValue = "value.${property.name}"
       return "${property.name}Encoder.encode($getSchema, $getValue)"
    }
