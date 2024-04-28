@@ -28,9 +28,11 @@ class RecordEncoderGenerator {
          appendLine("  override fun encode(schema: Schema): (${kclass.java.simpleName}) -> GenericRecord {")
          appendLine()
          kclass.declaredMemberProperties.forEach { property ->
-            appendLine("    val ${property.name}Schema = schema.getField(\"${property.name}\").schema()")
+            if (!isDirect(property))
+               appendLine("    val ${property.name}Schema = schema.getField(\"${property.name}\").schema()")
             appendLine("    val ${property.name}Pos    = schema.getField(\"${property.name}\").pos()")
-            appendLine("    val ${property.name}Encode = ${encode(property)}")
+            if (!isDirect(property))
+               appendLine("    val ${property.name}Encode = ${encode(property)}")
          }
          appendLine()
          appendLine("    return { value ->")
@@ -51,17 +53,28 @@ class RecordEncoderGenerator {
       return "$wrapped.encode(${property.name}Schema)"
    }
 
+   /**
+    * Returns true if the generator will bypass any Encoder and use the value directly.
+    * This is used for primitives where the Encoder is just a pass through.
+    */
+   private fun isDirect(property: KProperty1<out Any, *>): Boolean {
+      return when (property.returnType.classifier) {
+         Boolean::class -> true
+         Double::class -> true
+         Float::class -> true
+         Int::class -> true
+         Long::class -> true
+         String::class -> true
+         else -> false
+      }
+   }
+
    private fun encoderInvocation(property: KProperty1<out Any, *>): String {
       val getValue = "value.${property.name}"
-      return when (property.returnType.classifier) {
-         Boolean::class -> getValue
-         Double::class -> getValue
-         Float::class -> getValue
-         Int::class -> getValue
-         Long::class -> getValue
-         String::class -> getValue
-         else -> "${property.name}Encode.invoke($getValue)"
-      }
+      return if (isDirect(property))
+         getValue
+      else
+         "${property.name}Encode.invoke($getValue)"
    }
 
    private fun encoderFor(type: KType): String {
