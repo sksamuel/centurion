@@ -41,7 +41,7 @@ class Serde<T : Any>(
       ): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
          val encoder = SpecificRecordEncoder(kclass, schema)
-         val decoder = SpecificRecordDecoder(kclass, schema)
+         val decoder: SpecificRecordDecoder<T> = SpecificRecordDecoder(kclass, schema)
          return Serde(schema, encoder, decoder, options)
       }
 

@@ -30,15 +30,24 @@ import org.apache.avro.generic.GenericRecord
  * This is a generated [Encoder] that encodes [MyFoo]s to Avro [GenericRecord]s
  */
 object MyFooEncoder : Encoder<MyFoo> {
+
+  private val bEncoder = BooleanEncoder
+  private val cEncoder = LongEncoder
+  private val listsEncoder = ListEncoder(IntEncoder)
+  private val mapsEncoder = MapEncoder(StringEncoder, DoubleEncoder)
+  private val sEncoder = NullEncoder(StringEncoder)
+  private val setsEncoder = SetEncoder(StringEncoder)
+  private val wineEncoder = NullEncoder(EnumEncoder())
+
   override fun encode(schema: Schema, value: MyFoo): GenericRecord {
     val record = GenericData.Record(schema)
-    record.put("b", BooleanEncoder.encode(schema.getField("b").schema(), value.b))
-    record.put("c", LongEncoder.encode(schema.getField("c").schema(), value.c))
-    record.put("lists", ListEncoder(IntEncoder).encode(schema.getField("lists").schema(), value.lists))
-    record.put("maps", MapEncoder(StringEncoder, DoubleEncoder).encode(schema.getField("maps").schema(), value.maps))
-    record.put("s", NullEncoder(StringEncoder).encode(schema.getField("s").schema(), value.s))
-    record.put("sets", SetEncoder(StringEncoder).encode(schema.getField("sets").schema(), value.sets))
-    record.put("wine", NullEncoder(EnumEncoder()).encode(schema.getField("wine").schema(), value.wine))
+    record.put("b", bEncoder.encode(schema.getField("b").schema(), value.b))
+    record.put("c", cEncoder.encode(schema.getField("c").schema(), value.c))
+    record.put("lists", listsEncoder.encode(schema.getField("lists").schema(), value.lists))
+    record.put("maps", mapsEncoder.encode(schema.getField("maps").schema(), value.maps))
+    record.put("s", sEncoder.encode(schema.getField("s").schema(), value.s))
+    record.put("sets", setsEncoder.encode(schema.getField("sets").schema(), value.sets))
+    record.put("wine", wineEncoder.encode(schema.getField("wine").schema(), value.wine))
     return record
   }
 }
@@ -46,5 +55,3 @@ object MyFooEncoder : Encoder<MyFoo> {
    }
 
 })
-
-

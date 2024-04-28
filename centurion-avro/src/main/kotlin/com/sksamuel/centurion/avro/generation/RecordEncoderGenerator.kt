@@ -24,10 +24,15 @@ class RecordEncoderGenerator {
          appendLine(" * This is a generated [Encoder] that encodes [${kclass.java.simpleName}]s to Avro [GenericRecord]s")
          appendLine(" */")
          appendLine("object ${kclass.java.simpleName}Encoder : Encoder<${kclass.java.simpleName}> {")
+         appendLine()
+         kclass.declaredMemberProperties.forEach { property ->
+            appendLine("  private val ${property.name}Encoder = ${encoderVal(property)}")
+         }
+         appendLine()
          appendLine("  override fun encode(schema: Schema, value: ${kclass.java.simpleName}): GenericRecord {")
          appendLine("    val record = GenericData.Record(schema)")
          kclass.declaredMemberProperties.forEach { property ->
-            appendLine("    record.put(\"${property.name}\", ${encoderFor(property)})")
+            appendLine("    record.put(\"${property.name}\", ${encoderInvocation(property)})")
          }
          appendLine("    return record")
          appendLine("  }")
@@ -35,12 +40,15 @@ class RecordEncoderGenerator {
       }
    }
 
-   private fun encoderFor(property: KProperty1<out Any, *>): String {
+   private fun encoderVal(property: KProperty1<out Any, *>): String {
+      val baseEncoder = encoderFor(property.returnType)
+      return if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
+   }
+
+   private fun encoderInvocation(property: KProperty1<out Any, *>): String {
       val getSchema = "schema.getField(\"${property.name}\").schema()"
       val getValue = "value.${property.name}"
-      val baseEncoder = encoderFor(property.returnType)
-      val encoder = if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
-      return "$encoder.encode($getSchema, $getValue)"
+      return "${property.name}Encoder.encode($getSchema, $getValue)"
    }
 
    private fun encoderFor(type: KType): String {
