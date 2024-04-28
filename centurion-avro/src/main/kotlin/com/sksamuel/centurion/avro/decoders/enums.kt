@@ -5,7 +5,7 @@ import org.apache.avro.generic.GenericEnumSymbol
 import org.apache.avro.util.Utf8
 import kotlin.reflect.KClass
 
-class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<Enum<T>> {
+class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<T> {
 
    private val j: Class<T> = kclass.java
 
@@ -17,15 +17,17 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<Enum<T>> {
       inline operator fun <reified T : Enum<T>> invoke() = EnumDecoder(T::class)
    }
 
-   override fun decode(schema: Schema): (Any?) -> Enum<T> {
+   override fun decode(schema: Schema): (Any?) -> T {
       require(schema.type == Schema.Type.ENUM)
+      val map = j.enumConstants.associateBy { it.name }
       return { value ->
-         when (value) {
-            is GenericEnumSymbol<*> -> java.lang.Enum.valueOf(j, value.toString())
-            is String -> java.lang.Enum.valueOf(j, value)
-            is Utf8 -> java.lang.Enum.valueOf(j, value.toString())
-            else -> error("Unsupported enum type $value")
+         val symbol = when (value) {
+            is GenericEnumSymbol<*> -> value.toString()
+            is String -> value
+            is Utf8 -> value.toString()
+            else -> error("Unsupported enum container $value")
          }
+         map[symbol] ?: error("Unknown symbol $value")
       }
    }
 }
