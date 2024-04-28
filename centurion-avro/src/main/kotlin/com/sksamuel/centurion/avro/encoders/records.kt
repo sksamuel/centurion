@@ -71,7 +71,7 @@ class SpecificRecordEncoder<T : Any>(
    private val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
       val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
       val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
-      Triple(encoder.encode(schema), member.getter, field.pos())
+      Triple(encoder.encode(field.schema()), member.getter, field.pos())
    }
 
    override fun encode(schema: Schema): (T) -> Any? {
