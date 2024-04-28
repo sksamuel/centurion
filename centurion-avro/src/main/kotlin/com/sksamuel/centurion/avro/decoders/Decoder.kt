@@ -33,14 +33,16 @@ fun interface Decoder<T> {
       fun decoderFor(type: KType): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
             String::class -> StringDecoder
-            Boolean::class -> if (useStrictPrimitiveDecoders) StrictBooleanDecoder else BooleanDecoder
-            Float::class -> if (useStrictPrimitiveDecoders) StrictFloatDecoder else FloatDecoder
-            Double::class -> if (useStrictPrimitiveDecoders) StrictDoubleDecoder else DoubleDecoder
-            Int::class -> if (useStrictPrimitiveDecoders) StrictIntDecoder else IntDecoder
-            Long::class -> if (useStrictPrimitiveDecoders) StrictLongDecoder else LongDecoder
+            Boolean::class -> BooleanDecoder
+            Float::class -> FloatDecoder
+            Double::class -> DoubleDecoder
+            Int::class -> IntDecoder
+            Long::class -> LongDecoder
+            Byte::class -> ByteDecoder
+            Short::class -> ShortDecoder
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
-            LongArray::class -> LongArrayDecoder(if (useStrictPrimitiveDecoders) StrictLongDecoder else LongDecoder)
-            IntArray::class -> IntArrayDecoder(if (useStrictPrimitiveDecoders) StrictIntDecoder else IntDecoder)
+            LongArray::class -> LongArrayDecoder(LongDecoder)
+            IntArray::class -> IntArrayDecoder(IntDecoder)
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeDecoder

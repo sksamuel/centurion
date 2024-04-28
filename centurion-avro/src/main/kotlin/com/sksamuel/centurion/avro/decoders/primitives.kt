@@ -30,6 +30,7 @@ object ShortDecoder : Decoder<Short> {
 object IntDecoder : Decoder<Int> {
    override fun decode(schema: Schema): (Any?) -> Int {
       require(schema.type == Schema.Type.INT)
+      if (Decoder.useStrictPrimitiveDecoders) return { it as Int }
       return { value ->
          when (value) {
             is Int -> value
@@ -41,13 +42,10 @@ object IntDecoder : Decoder<Int> {
    }
 }
 
-object StrictLongDecoder : Decoder<Long> {
-   override fun decode(schema: Schema): (Any?) -> Long = { it as Long }
-}
-
 object LongDecoder : Decoder<Long> {
    override fun decode(schema: Schema): (Any?) -> Long {
       require(schema.type == Schema.Type.LONG)
+      if (Decoder.useStrictPrimitiveDecoders) return { it as Long }
       return { value ->
          when (value) {
             is Long -> value
@@ -60,13 +58,10 @@ object LongDecoder : Decoder<Long> {
    }
 }
 
-object StrictIntDecoder : Decoder<Int> {
-   override fun decode(schema: Schema): (Any?) -> Int = { it as Int }
-}
-
 object DoubleDecoder : Decoder<Double> {
    override fun decode(schema: Schema): (Any?) -> Double {
       require(schema.type == Schema.Type.DOUBLE)
+      if (Decoder.useStrictPrimitiveDecoders) return { it as Double }
       return { value ->
          when (value) {
             is Double -> value
@@ -77,13 +72,10 @@ object DoubleDecoder : Decoder<Double> {
    }
 }
 
-object StrictDoubleDecoder : Decoder<Double> {
-   override fun decode(schema: Schema): (Any?) -> Double = { it as Double }
-}
-
 object FloatDecoder : Decoder<Float> {
    override fun decode(schema: Schema): (Any?) -> Float {
       require(schema.type == Schema.Type.FLOAT)
+      if (Decoder.useStrictPrimitiveDecoders) return { it as Float }
       return { value ->
          when (value) {
             is Float -> value
@@ -93,13 +85,10 @@ object FloatDecoder : Decoder<Float> {
    }
 }
 
-object StrictFloatDecoder : Decoder<Float> {
-   override fun decode(schema: Schema): (Any?) -> Float = { it as Float }
-}
-
 object BooleanDecoder : Decoder<Boolean> {
    override fun decode(schema: Schema): (Any?) -> Boolean {
       require(schema.type == Schema.Type.BOOLEAN)
+      if (Decoder.useStrictPrimitiveDecoders) return { it as Boolean }
       return { value ->
          when (value) {
             is Boolean -> value
@@ -107,8 +96,4 @@ object BooleanDecoder : Decoder<Boolean> {
          }
       }
    }
-}
-
-object StrictBooleanDecoder : Decoder<Boolean> {
-   override fun decode(schema: Schema): (Any?) -> Boolean = { it as Boolean }
 }
