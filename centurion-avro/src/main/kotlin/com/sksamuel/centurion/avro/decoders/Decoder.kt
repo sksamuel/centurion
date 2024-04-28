@@ -17,11 +17,13 @@ import kotlin.reflect.KType
  */
 fun interface Decoder<T> {
 
-   fun decode(schema: Schema, value: Any?): T
+   fun decode(schema: Schema): (Any?) -> T
 
    fun <U> map(fn: (T) -> U): Decoder<U> {
       val self = this
-      return Decoder { schema, value -> fn(self.decode(schema, value)) }
+      return Decoder { schema ->
+         { value -> fn(self.decode(schema).invoke(value)) }
+      }
    }
 
    companion object {

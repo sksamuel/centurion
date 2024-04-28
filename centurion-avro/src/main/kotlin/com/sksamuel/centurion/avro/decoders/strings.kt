@@ -15,13 +15,15 @@ object StringDecoder : Decoder<String> {
 
    val STRING_SCHEMA: Schema = Schema.create(Schema.Type.STRING)
 
-   override fun decode(schema: Schema, value: Any?): String {
-      return when (value) {
-         is CharSequence -> value.toString()
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.array()).toString()
-         is GenericFixed -> Utf8(value.bytes()).toString()
-         else -> error("Unsupported type $value")
+   override fun decode(schema: Schema): (Any?) -> String {
+      return { value ->
+         when (value) {
+            is CharSequence -> value.toString()
+            is ByteArray -> Utf8(value).toString()
+            is ByteBuffer -> Utf8(value.array()).toString()
+            is GenericFixed -> Utf8(value.bytes()).toString()
+            else -> error("Unsupported type $value")
+         }
       }
    }
 }
@@ -41,14 +43,15 @@ val CharSequenceDecoder: Decoder<CharSequence> = StringDecoder.map { it }
  * the schema, but are nevertheless usable.
  */
 object UTF8Decoder : Decoder<Utf8> {
-   override fun decode(schema: Schema, value: Any?): Utf8 {
-      return when (value) {
-         is Utf8 -> value
-         is CharSequence -> Utf8(value.toString())
-         is ByteArray -> Utf8(value)
-         is ByteBuffer -> Utf8(value.array())
-         is GenericFixed -> Utf8(value.bytes())
-         else -> error("Unsupported type $value")
+   override fun decode(schema: Schema): (Any?) -> Utf8 {
+      return { value ->
+         when (value) {
+            is CharSequence -> Utf8(value.toString())
+            is ByteArray -> Utf8(value)
+            is ByteBuffer -> Utf8(value.array())
+            is GenericFixed -> Utf8(value.bytes())
+            else -> error("Unsupported type $value")
+         }
       }
    }
 }
@@ -60,17 +63,19 @@ object UTF8Decoder : Decoder<Utf8> {
  * encoding from the schema.
  */
 object StrictStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema, value: Any?): String {
-      return when (schema.type) {
-         Schema.Type.STRING -> when (value) {
-            is String -> value
-            is Utf8 -> value.toString()
+   override fun decode(schema: Schema): (Any?) -> String {
+      return { value ->
+         when (schema.type) {
+            Schema.Type.STRING -> when (value) {
+               is String -> value
+               is Utf8 -> value.toString()
+               else -> error("Unsupported type for string schema: $schema")
+            }
+
+            Schema.Type.BYTES -> ByteStringDecoder.decode(schema).invoke(value)
+            Schema.Type.FIXED -> GenericFixedStringDecoder.decode(schema).invoke(value)
             else -> error("Unsupported type for string schema: $schema")
          }
-
-         Schema.Type.BYTES -> ByteStringDecoder.decode(schema, value)
-         Schema.Type.FIXED -> GenericFixedStringDecoder.decode(schema, value)
-         else -> error("Unsupported type for string schema: $schema")
       }
    }
 }
@@ -79,12 +84,14 @@ object StrictStringDecoder : Decoder<String> {
  * A [Decoder] for Strings that decodes from [ByteBuffer]s and [ByteArray]s.
  */
 object ByteStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema, value: Any?): String {
+   override fun decode(schema: Schema): (Any?) -> String {
       require(schema.type == Schema.Type.BYTES)
-      return when (value) {
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.array()).toString()
-         else -> error("This decoder expects bytes but was $value")
+      return { value ->
+         when (value) {
+            is ByteArray -> Utf8(value).toString()
+            is ByteBuffer -> Utf8(value.array()).toString()
+            else -> error("This decoder expects bytes but was $value")
+         }
       }
    }
 }
@@ -93,11 +100,13 @@ object ByteStringDecoder : Decoder<String> {
  * A [Decoder] for Strings that decodes from [GenericFixed]s.
  */
 object GenericFixedStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema, value: Any?): String {
+   override fun decode(schema: Schema): (Any?) -> String {
       require(schema.type == Schema.Type.FIXED)
-      return when (value) {
-         is GenericFixed -> Utf8(value.bytes()).toString()
-         else -> error("This decoder expects GenericFixed but was $value")
+      return { value ->
+         when (value) {
+            is GenericFixed -> Utf8(value.bytes()).toString()
+            else -> error("This decoder expects GenericFixed but was $value")
+         }
       }
    }
 }

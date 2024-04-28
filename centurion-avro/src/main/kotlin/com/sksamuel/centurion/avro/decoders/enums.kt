@@ -17,13 +17,15 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<Enum<T>> {
       inline operator fun <reified T : Enum<T>> invoke() = EnumDecoder(T::class)
    }
 
-   override fun decode(schema: Schema, value: Any?): Enum<T> {
+   override fun decode(schema: Schema): (Any?) -> Enum<T> {
       require(schema.type == Schema.Type.ENUM)
-      return when (value) {
-         is GenericEnumSymbol<*> -> java.lang.Enum.valueOf(j, value.toString())
-         is String -> java.lang.Enum.valueOf(j, value)
-         is Utf8 -> java.lang.Enum.valueOf(j, value.toString())
-         else -> error("Unsupported enum type $value")
+      return { value ->
+         when (value) {
+            is GenericEnumSymbol<*> -> java.lang.Enum.valueOf(j, value.toString())
+            is String -> java.lang.Enum.valueOf(j, value)
+            is Utf8 -> java.lang.Enum.valueOf(j, value.toString())
+            else -> error("Unsupported enum type $value")
+         }
       }
    }
 }

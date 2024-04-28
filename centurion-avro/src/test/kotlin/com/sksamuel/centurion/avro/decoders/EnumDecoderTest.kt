@@ -11,15 +11,15 @@ class EnumDecoderTest : FunSpec({
    val schema = Schema.createEnum("W", null, null, listOf("Wobble", "Wibble"))
 
    test("support GenericEnumSymbol") {
-      EnumDecoder(W::class).decode(schema, GenericData.get().createEnum("Wibble", schema)) shouldBe W.Wibble
+      EnumDecoder(W::class).decode(schema).invoke(GenericData.get().createEnum("Wibble", schema)) shouldBe W.Wibble
    }
 
    test("support strings") {
-      EnumDecoder(W::class).decode(schema, "Wibble") shouldBe W.Wibble
+      EnumDecoder(W::class).decode(schema).invoke("Wibble") shouldBe W.Wibble
    }
 
    test("support UTF8s") {
-      EnumDecoder(W::class).decode(schema, Utf8("Wibble")) shouldBe W.Wibble
+      EnumDecoder(W::class).decode(schema).invoke(Utf8("Wibble")) shouldBe W.Wibble
    }
 
 })

@@ -42,7 +42,7 @@ class Serde<T : Any>(
       ): Serde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
          val encoder = SpecificRecordEncoder(kclass)
-         val decoder: SpecificRecordDecoder<T> = SpecificRecordDecoder(kclass, schema)
+         val decoder: SpecificRecordDecoder<T> = SpecificRecordDecoder(kclass)
          return Serde(schema, encoder, decoder, options)
       }
 
@@ -65,9 +65,10 @@ class Serde<T : Any>(
    private val readerFactory = BinaryReaderFactory(schema, decoderFactory)
 
    private val encodeFn = encoder.encode(schema)
+   private val decodeFn = decoder.decode(schema)
 
    fun serialize(obj: T): ByteArray = writerFactory.write(encodeFn.invoke(obj) as GenericRecord, options.codec)
-   fun deserialize(bytes: ByteArray): T = decoder.decode(schema, readerFactory.read(bytes, options.codec))
+   fun deserialize(bytes: ByteArray): T = decodeFn(readerFactory.read(bytes, options.codec))
 }
 
 private const val DEFAULT_ENCODER_BUFFER_SIZE = 2048

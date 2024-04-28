@@ -66,7 +66,11 @@ fun interface Encoder<T> {
     */
    fun <U> contraMap(fn: (U) -> T): Encoder<U> {
       val self = this
-      return Encoder { schema -> { self.encode(schema).invoke(fn(it)) } }
+      return Encoder { schema ->
+         val e: (T) -> Any? = self.encode(schema)
+         val f: (U) -> Any? = { value: U -> e.invoke(fn(value)) }
+         f
+      }
    }
 }
 

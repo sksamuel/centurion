@@ -19,7 +19,7 @@ class SpecificRecordDecoderTest : FunSpec({
       record.put("a", Utf8("hello"))
       record.put("b", true)
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo("hello", true)
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo("hello", true)
    }
 
    test("enums") {
@@ -33,7 +33,7 @@ class SpecificRecordDecoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("wine", GenericData.get().createEnum("Shiraz", wineSchema))
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(Wine.Shiraz)
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(Wine.Shiraz)
    }
 
    test("nulls") {
@@ -48,7 +48,7 @@ class SpecificRecordDecoderTest : FunSpec({
       record.put("a", null)
       record.put("b", Utf8("hello"))
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(null, "hello")
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(null, "hello")
    }
 
    test("sets") {
@@ -72,7 +72,7 @@ class SpecificRecordDecoderTest : FunSpec({
          )
       )
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(
          setOf(1, 2),
          setOf(1L, null, 2L),
          setOf(Wine.Shiraz, Wine.Malbec),
@@ -100,7 +100,7 @@ class SpecificRecordDecoderTest : FunSpec({
          )
       )
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(
          listOf(1, 2),
          listOf(1L, null, 2L),
          listOf(Wine.Shiraz, Wine.Malbec),
@@ -120,7 +120,7 @@ class SpecificRecordDecoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("map", map)
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(map)
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(map)
    }
 
    test("maps using UTF8") {
@@ -136,7 +136,7 @@ class SpecificRecordDecoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("map", map)
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(mapOf("a" to 1, "b" to 2))
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(mapOf("a" to 1, "b" to 2))
    }
 
    test("maps of maps") {
@@ -152,6 +152,6 @@ class SpecificRecordDecoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("map", maps)
 
-      SpecificRecordDecoder(Foo::class, schema).decode(schema, record) shouldBe Foo(maps)
+      SpecificRecordDecoder(Foo::class).decode(schema).invoke(record) shouldBe Foo(maps)
    }
 })
