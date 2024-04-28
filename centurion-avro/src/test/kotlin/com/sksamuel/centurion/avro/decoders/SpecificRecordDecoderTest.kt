@@ -63,7 +63,7 @@ class SpecificRecordDecoderTest : FunSpec({
 
       val record = GenericData.Record(schema)
       record.put("set1", listOf(1, 2))
-      record.put("set2", listOf(1, null, 2))
+      record.put("set2", listOf(1L, null, 2L))
       record.put(
          "set3",
          listOf(
@@ -91,7 +91,7 @@ class SpecificRecordDecoderTest : FunSpec({
 
       val record = GenericData.Record(schema)
       record.put("list1", listOf(1, 2))
-      record.put("list2", listOf(1, null, 2))
+      record.put("list2", listOf(1L, null, 2L))
       record.put(
          "list3",
          listOf(
