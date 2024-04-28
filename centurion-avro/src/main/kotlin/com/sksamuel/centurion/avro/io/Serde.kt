@@ -19,9 +19,9 @@ import kotlin.reflect.KClass
  * This class is thread safe.
  */
 class Serde<T : Any>(
-   private val schema: Schema,
+   schema: Schema,
    encoder: Encoder<T>,
-   private val decoder: Decoder<T>,
+   decoder: Decoder<T>,
    private val options: SerdeOptions,
 ) {
 
