@@ -13,7 +13,7 @@ import kotlin.reflect.full.declaredMemberProperties
  * reflection to access the fields of the data class.
  *
  * The [ReflectionRecordEncoder] is generic, but slower than [SpecificRecordEncoder] which can
- * pre-create some of the reflection calls needed, at the cost of needing to know the schema in advance.
+ * pre-create some of the reflection calls needed in advance.
  *
  * See [CachedSpecificRecordEncoder].
  */
@@ -32,13 +32,13 @@ class ReflectionRecordEncoder : Encoder<Any> {
  */
 class CachedSpecificRecordEncoder : Encoder<Any> {
 
-   private val encoders = ConcurrentHashMap<String, SpecificRecordEncoder<Any>>()
+   private val encoders = ConcurrentHashMap<String, (Any) -> Any?>()
 
    override fun encode(schema: Schema): (Any) -> Any? {
       return { value ->
          encoders.getOrPut(schema.fullName) {
-            SpecificRecordEncoder(value::class as KClass<Any>)
-         }.encode(schema).invoke(value)
+            { SpecificRecordEncoder(value::class as KClass<Any>).encode(schema) }
+         }.invoke(value)
       }
    }
 }
@@ -47,7 +47,7 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
  * An [Encoder] that returns a [GenericRecord] for a given data class instance, using
  * reflection to access the fields of the data class.
  *
- * In contrast to [ReflectionRecordEncoder], this encoder requires the class and schema in advance,
+ * In contrast to [ReflectionRecordEncoder], this encoder requires the class in advance,
  * which it uses to pre-generate some of the reflective calls needed. This approach is faster,
  * but a new encoder must be created for each data class.
  *
@@ -76,13 +76,11 @@ class SpecificRecordEncoder<T : Any>(
 
       return { value ->
          val record = GenericData.Record(schema)
-
          encoders.map { (encode, getter, pos) ->
             val v = getter.call(value)
             val encoded = encode.invoke(v)
             record.put(pos, encoded)
          }
-
          record
       }
    }
