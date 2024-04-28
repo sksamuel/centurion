@@ -18,7 +18,7 @@ allprojects {
    }
 
    dependencies {
-      implementation(rootProject.libs.bundles.testing)
+      testImplementation(rootProject.libs.bundles.testing)
    }
 
    tasks.named<Test>("test") {
