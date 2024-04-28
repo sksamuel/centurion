@@ -27,7 +27,6 @@ fun interface Encoder<T> {
    companion object {
 
       var globalUseJavaString: Boolean = false
-      var globalUseJavaStringForEnum: Boolean = false
 
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.

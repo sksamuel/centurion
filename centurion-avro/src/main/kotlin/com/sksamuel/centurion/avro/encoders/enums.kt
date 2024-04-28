@@ -5,16 +5,12 @@ import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericEnumSymbol
 
 /**
- * An [Encoder] for enum values that encodes data as instances of [GenericEnumSymbol], or if
- * [Encoder.globalUseJavaStringForEnum] is true, then encodes as Strings.
+ * An [Encoder] for enum values that encodes data as instances of [GenericEnumSymbol].
  */
 class EnumEncoder<T : Enum<*>> : Encoder<T> {
-   override fun encode(schema: Schema, value: T): Any? {
+   override fun encode(schema: Schema, value: T): GenericEnumSymbol<GenericData.EnumSymbol> {
       require(schema.type == Schema.Type.ENUM)
       val symbol = value as Enum<*>
-      return if (Encoder.globalUseJavaStringForEnum)
-         symbol.name
-      else
-         GenericData.get().createEnum(symbol.name, schema)
+      return GenericData.EnumSymbol(schema, symbol.name)
    }
 }

@@ -12,11 +12,4 @@ class EnumEncoderTest : FunSpec({
       EnumEncoder().encode(schema, Wine.Shiraz) shouldBe EnumSymbol(schema, "Shiraz")
    }
 
-   test("detect globalUseJavaStringForEnum") {
-      Encoder.globalUseJavaStringForEnum = true
-      val schema = Schema.createEnum("Wine", null, null, listOf("Shiraz", "Malbec"))
-      EnumEncoder().encode(schema, Wine.Shiraz) shouldBe "Shiraz"
-      Encoder.globalUseJavaStringForEnum = false
-   }
-
 })
