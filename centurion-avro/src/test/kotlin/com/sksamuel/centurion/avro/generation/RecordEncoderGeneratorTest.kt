@@ -36,8 +36,6 @@ object MyFooEncoder : Encoder<MyFoo> {
 
   override fun encode(schema: Schema): (MyFoo) -> GenericRecord {
 
-    return { value ->
-
     val bSchema = schema.getField("b").schema()
     val bPos    = schema.getField("b").pos()
     val bEncode = BooleanEncoder.encode(bSchema)
@@ -69,6 +67,7 @@ object MyFooEncoder : Encoder<MyFoo> {
     val winePos    = schema.getField("wine").pos()
     val wineEncode = NullEncoder(EnumEncoder()).encode(wineSchema)
 
+    return { value ->
       val record = GenericData.Record(schema)
       record.put(bPos, value.b)
       record.put(cPos, value.c)

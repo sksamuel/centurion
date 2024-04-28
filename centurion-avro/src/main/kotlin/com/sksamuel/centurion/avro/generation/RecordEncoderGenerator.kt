@@ -27,14 +27,13 @@ class RecordEncoderGenerator {
          appendLine()
          appendLine("  override fun encode(schema: Schema): (${kclass.java.simpleName}) -> GenericRecord {")
          appendLine()
-         appendLine("    return { value ->")
-         appendLine()
          kclass.declaredMemberProperties.forEach { property ->
             appendLine("    val ${property.name}Schema = schema.getField(\"${property.name}\").schema()")
             appendLine("    val ${property.name}Pos    = schema.getField(\"${property.name}\").pos()")
             appendLine("    val ${property.name}Encode = ${encode(property)}")
          }
          appendLine()
+         appendLine("    return { value ->")
          appendLine("      val record = GenericData.Record(schema)")
          kclass.declaredMemberProperties.forEach { property ->
             appendLine("      record.put(${property.name}Pos, ${encoderInvocation(property)})")
