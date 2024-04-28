@@ -28,12 +28,11 @@ class SpecificRecordDecoder<T : Any>(
          Pair(field.pos(), decoder.decode(field.schema()))
       }
 
-      return { value ->
-         if (value == null) error("SpecificRecordDecoder does not support null types")
-         require(value is GenericRecord) { "SpecificRecordDecoder only supports GenericRecords: was $value" }
+      return { record ->
+         require(record is GenericRecord) { "SpecificRecordDecoder only supports GenericRecords: was $record" }
 
          val args = members.map { (pos, decode) ->
-            val arg = value.get(pos)
+            val arg = record.get(pos)
             decode(arg)
          }
 
