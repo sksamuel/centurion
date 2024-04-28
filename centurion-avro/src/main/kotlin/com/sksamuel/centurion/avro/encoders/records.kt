@@ -35,10 +35,8 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
    private val encoders = ConcurrentHashMap<String, (Any) -> Any?>()
 
    override fun encode(schema: Schema): (Any) -> Any? {
-      return { value ->
-         encoders.getOrPut(schema.fullName) {
-            { SpecificRecordEncoder(value::class as KClass<Any>).encode(schema) }
-         }.invoke(value)
+      return encoders.getOrPut(schema.fullName) {
+         { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema).invoke(value) }
       }
    }
 }
