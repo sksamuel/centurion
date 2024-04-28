@@ -9,10 +9,9 @@ import org.apache.avro.generic.GenericData
  * An [Encoder] for Arrays of [T] that encodes into an Avro [GenericArray].
  */
 class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
-   override fun encode(schema: Schema, value: Array<T>): Any {
+   override fun encode(schema: Schema, value: Array<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      val elements = value.map { encoder.encode(schema.elementType, it) }
-      return GenericData.Array(schema, elements)
+      return value.map { encoder.encode(schema.elementType, it) }
    }
 }
 
@@ -20,11 +19,10 @@ class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
  * An [Encoder] for Lists of [T] that encodes into an Avro [GenericArray].
  */
 class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
-   override fun encode(schema: Schema, value: List<T>): Any {
+   override fun encode(schema: Schema, value: List<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
       if (value.isEmpty()) return GenericData.Array<T>(0, schema)
-      val elements = value.map { encoder.encode(schema.elementType, it) }
-      return GenericData.Array(schema, elements)
+      return value.map { encoder.encode(schema.elementType, it) }
    }
 }
 
@@ -32,11 +30,10 @@ class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
  * An [Encoder] for Sets of [T] that encodes into an Avro [GenericArray].
  */
 class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
-   override fun encode(schema: Schema, value: Set<T>): GenericArray<Any> {
+   override fun encode(schema: Schema, value: Set<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
       if (value.isEmpty()) return GenericData.Array(0, schema)
-      val elements = value.map { encoder.encode(schema.elementType, it) }
-      return GenericData.Array(schema, elements)
+      return value.map { encoder.encode(schema.elementType, it) }
    }
 }
 
