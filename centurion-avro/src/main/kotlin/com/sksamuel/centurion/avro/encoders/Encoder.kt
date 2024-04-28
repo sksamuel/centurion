@@ -42,6 +42,8 @@ fun interface Encoder<T> {
             Double::class -> DoubleEncoder
             Int::class -> IntEncoder
             Long::class -> LongEncoder
+            Short::class -> ShortEncoder
+            Byte::class -> ByteEncoder
             BigDecimal::class -> BigDecimalStringEncoder
             Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
             List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
