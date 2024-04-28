@@ -10,9 +10,10 @@ import org.apache.avro.generic.GenericArray
 class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
    override fun encode(schema: Schema): (Array<T>) -> Any? {
       require(schema.type == Schema.Type.ARRAY)
+      val elements = encoder.encode(schema.elementType)
       return { value ->
          if (value.isEmpty()) emptyList()
-         else value.map { encoder.encode(schema.elementType) }
+         else value.map { elements.invoke(it) }
       }
    }
 }

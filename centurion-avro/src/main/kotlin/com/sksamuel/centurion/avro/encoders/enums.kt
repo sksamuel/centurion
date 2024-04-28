@@ -10,8 +10,8 @@ import org.apache.avro.generic.GenericEnumSymbol
 class EnumEncoder<T : Enum<*>> : Encoder<T> {
    override fun encode(schema: Schema): (T) -> Any? {
       require(schema.type == Schema.Type.ENUM)
-      return {
-         val symbol = it as Enum<*>
+      return { value ->
+         val symbol = value as Enum<*>
          GenericData.EnumSymbol(schema, symbol.name)
       }
    }
