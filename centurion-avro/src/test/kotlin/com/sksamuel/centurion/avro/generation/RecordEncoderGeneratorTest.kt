@@ -29,25 +29,39 @@ import org.apache.avro.generic.GenericRecord
 /**
  * This is a generated [Encoder] that encodes [MyFoo]s to Avro [GenericRecord]s
  */
-object MyFooEncoder : Encoder<MyFoo> {
+class MyFooEncoder(schema: Schema) : Encoder<MyFoo> {
 
   private val bEncoder = BooleanEncoder
+  private val bSchema  = schema.getField("b").schema()
+  private val bPos     = schema.getField("b").pos()
   private val cEncoder = LongEncoder
+  private val cSchema  = schema.getField("c").schema()
+  private val cPos     = schema.getField("c").pos()
   private val listsEncoder = ListEncoder(IntEncoder)
+  private val listsSchema  = schema.getField("lists").schema()
+  private val listsPos     = schema.getField("lists").pos()
   private val mapsEncoder = MapEncoder(StringEncoder, DoubleEncoder)
+  private val mapsSchema  = schema.getField("maps").schema()
+  private val mapsPos     = schema.getField("maps").pos()
   private val sEncoder = NullEncoder(StringEncoder)
+  private val sSchema  = schema.getField("s").schema()
+  private val sPos     = schema.getField("s").pos()
   private val setsEncoder = SetEncoder(StringEncoder)
+  private val setsSchema  = schema.getField("sets").schema()
+  private val setsPos     = schema.getField("sets").pos()
   private val wineEncoder = NullEncoder(EnumEncoder())
+  private val wineSchema  = schema.getField("wine").schema()
+  private val winePos     = schema.getField("wine").pos()
 
   override fun encode(schema: Schema, value: MyFoo): GenericRecord {
     val record = GenericData.Record(schema)
-    record.put("b", bEncoder.encode(schema.getField("b").schema(), value.b))
-    record.put("c", cEncoder.encode(schema.getField("c").schema(), value.c))
-    record.put("lists", listsEncoder.encode(schema.getField("lists").schema(), value.lists))
-    record.put("maps", mapsEncoder.encode(schema.getField("maps").schema(), value.maps))
-    record.put("s", sEncoder.encode(schema.getField("s").schema(), value.s))
-    record.put("sets", setsEncoder.encode(schema.getField("sets").schema(), value.sets))
-    record.put("wine", wineEncoder.encode(schema.getField("wine").schema(), value.wine))
+    record.put(bPos, bEncoder.encode(bSchema, value.b))
+    record.put(cPos, cEncoder.encode(cSchema, value.c))
+    record.put(listsPos, listsEncoder.encode(listsSchema, value.lists))
+    record.put(mapsPos, mapsEncoder.encode(mapsSchema, value.maps))
+    record.put(sPos, sEncoder.encode(sSchema, value.s))
+    record.put(setsPos, setsEncoder.encode(setsSchema, value.sets))
+    record.put(winePos, wineEncoder.encode(wineSchema, value.wine))
     return record
   }
 }

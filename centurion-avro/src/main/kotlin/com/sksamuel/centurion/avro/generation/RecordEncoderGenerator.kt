@@ -23,7 +23,7 @@ class RecordEncoderGenerator {
          appendLine("/**")
          appendLine(" * This is a generated [Encoder] that encodes [${kclass.java.simpleName}]s to Avro [GenericRecord]s")
          appendLine(" */")
-         appendLine("object ${kclass.java.simpleName}Encoder(private val schema: Schema) : Encoder<${kclass.java.simpleName}> {")
+         appendLine("class ${kclass.java.simpleName}Encoder(schema: Schema) : Encoder<${kclass.java.simpleName}> {")
          appendLine()
          kclass.declaredMemberProperties.forEach { property ->
             appendLine("  private val ${property.name}Encoder = ${encoderVal(property)}")
