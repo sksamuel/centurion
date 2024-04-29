@@ -28,7 +28,7 @@ fun interface Decoder<T> {
 
    companion object {
 
-      var useStrictPrimitiveDecoders = true
+      var useStrictPrimitiveDecoders = false
 
       fun decoderFor(type: KType): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
