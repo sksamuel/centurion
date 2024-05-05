@@ -1,25 +1,25 @@
 ## Changelog
 
-### 1.3.3
+### 1.3.3 (May 2024)
 
 * Added `SpecificSerde` and `CompressingSerde`.
 * Added `ReflectionSerdeFactory` and `CachedReflectionSerdeFactory`.
 * Added `DataReader` and `DataWriter`.
 
-### 1.3.2
+### 1.3.2 (April 2024)
 
 * Optimized `StringEncoder` when `globalUseJavaString` is set
 * Added `LongArray` and `IntArray` support.
 
-### 1.3.1
+### 1.3.1 (April 2024)
 
 * Fixed record generators to only use schema access at creation time.
 
-### 1.3.0
+### 1.3.0 (April 2024)
 
 * Encoder and Decoder contract changed to return a function which accepts a schema, in order to pre-compute field access.
 
-### 1.2.1
+### 1.2.1 (April 2024)
 
 * Added optimized string and primitive decoders
 * Added `Instant`, `LocalTime`, `LocalDateTime`, `OffsetDateTime` encoders and decoders
