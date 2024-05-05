@@ -12,7 +12,7 @@ class SerdeTest : FunSpec({
 
    test("round trip happy path") {
       val user = User(Random.nextLong(), "sammy mcsamface", "sammy@mcsamface.com", Random.nextLong(), UserType.Admin)
-      val serde = Serde<User>()
+      val serde = ReflectionSerdeFactory.create<User>()
       serde.deserialize(serde.serialize(user)) shouldBe user
    }
 
@@ -24,8 +24,8 @@ class SerdeTest : FunSpec({
          Random.nextLong(),
          UserType.Admin
       )
-      val serde1 = Serde<User>()
-      val serde2 = Serde<User>(SerdeOptions(codec = BZip2Codec()))
+      val serde1 = ReflectionSerdeFactory.create<User>()
+      val serde2 = ReflectionSerdeFactory.create<User>(SerdeOptions(codec = BZip2Codec()))
       serde1.serialize(user).size shouldBeGreaterThan serde2.serialize(user).size
       serde2.deserialize(serde2.serialize(user)) shouldBe user
    }

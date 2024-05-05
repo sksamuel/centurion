@@ -18,12 +18,16 @@ import java.nio.ByteBuffer
  * Pass in a pre-created [DecoderFactory] if you wish to configure buffer size.
  */
 class BinaryReaderFactory(
-   schema: Schema,
+   reader: Schema,
+   writer: Schema,
    private val factory: DecoderFactory,
 ) {
-   constructor(schema: Schema) : this(schema, DecoderFactory.get())
 
-   private val datumReader = GenericDatumReader<GenericRecord>(schema)
+   constructor(schema: Schema) : this(schema, schema, DecoderFactory.get())
+   constructor(reader: Schema, writer: Schema) : this(reader, writer, DecoderFactory.get())
+   constructor(schema: Schema, factory: DecoderFactory) : this(schema, schema, factory)
+
+   private val datumReader = GenericDatumReader<GenericRecord>(/* writer = */ writer, /* reader = */ reader)
 
    /**
     * Creates an [BinaryReader] that reads from the given [InputStream].

@@ -32,7 +32,37 @@ class BinaryWriterFactory(
    schema: Schema,
    private val factory: EncoderFactory,
 ) {
+
+   /**
+    * Creates an [BinaryWriterFactory] with the default [EncoderFactory].
+    */
    constructor(schema: Schema) : this(schema, EncoderFactory.get())
+
+   companion object {
+
+      /**
+       * Creates an avro encoded byte array from the given [record].
+       * This method is a convenience function that is useful when you want to write a single record.
+       *
+       * Pass in a [Codec] to compress output.
+       *
+       * For better performance, considering creating a [BinaryWriterFactory] which will use
+       * a shared [GenericDatumWriter] and allows customizating the [EncoderFactory].
+       */
+      fun write(record: GenericRecord, codec: Codec? = null): ByteArray {
+         val datumWriter = GenericDatumWriter<GenericRecord>(record.schema)
+
+         val writer = BinaryWriter(datumWriter, ByteArrayOutputStream(), EncoderFactory.get())
+         writer.write(record)
+         writer.close()
+         return if (codec == null) writer.bytes() else {
+            val compressed = codec.compress(ByteBuffer.wrap(writer.bytes()))
+            val b = ByteArray(compressed.remaining())
+            compressed.get(b)
+            b
+         }
+      }
+   }
 
    private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
 

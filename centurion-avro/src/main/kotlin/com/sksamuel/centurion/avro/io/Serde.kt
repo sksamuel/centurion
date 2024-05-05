@@ -24,6 +24,10 @@ class Serde<T : Any>(
    private val options: SerdeOptions,
 ) {
 
+   companion object {
+
+   }
+
    init {
       if (options.fastReader)
          GenericData.get().setFastReaderEnabled(true)
