@@ -1,22 +1,21 @@
 package com.sksamuel.centurion.avro.io
 
 import com.sksamuel.centurion.avro.decoders.Decoder
-import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
-import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
-import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.file.Codec
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import kotlin.reflect.KClass
 
 /**
- * A [Serde] provides an easy way to convert between data classes and avro encoded bytes.
+ * A [Serde] provides an easy way to convert between a specific data class [T] and avro encoded bytes
+ * by delegating to an [Encoder] and [Decoder] that handles that type.
  *
- * This class is thread safe.
+ * If you wish to create a [Serde] reflectively, see [ReflectionSerdeFactory].
+ *
+ * This class is thread safe once constructed.
  */
 class Serde<T : Any>(
    schema: Schema,
@@ -28,30 +27,6 @@ class Serde<T : Any>(
    init {
       if (options.fastReader)
          GenericData.get().setFastReaderEnabled(true)
-   }
-
-   companion object {
-
-      /**
-       * Creates a [Schema], [Encoder] and [Decoder] reflectively from the given [kclass]
-       * using a [ReflectionSchemaBuilder].
-       */
-      operator fun <T : Any> invoke(
-         kclass: KClass<T>,
-         options: SerdeOptions = SerdeOptions()
-      ): Serde<T> {
-         val schema = ReflectionSchemaBuilder(true).schema(kclass)
-         val encoder = SpecificRecordEncoder(kclass)
-         val decoder: SpecificRecordDecoder<T> = SpecificRecordDecoder(kclass)
-         return Serde(schema, encoder, decoder, options)
-      }
-
-      /**
-       * Creates a [Schema] reflectively from the given type parameter [T] using a [ReflectionSchemaBuilder].
-       */
-      inline operator fun <reified T : Any> invoke(options: SerdeOptions = SerdeOptions()): Serde<T> {
-         return Serde(T::class, options)
-      }
    }
 
    private val encoderFactory = EncoderFactory()
