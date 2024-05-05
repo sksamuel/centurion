@@ -29,7 +29,7 @@ fun main() {
    val encoder = SpecificRecordEncoder(User::class)
    val record = encoder.encode(schema).invoke(user) as GenericRecord
 
-   println(BinaryWriterFactory(schema).writer(ByteArrayOutputStream()).write(record).bytes().size)
+   println(BinaryWriterFactory().writer(schema).write(record).bytes().size)
 
    val baos = ByteArrayOutputStream()
    val writer = DataFileWriter(GenericDatumWriter<GenericRecord>(schema))

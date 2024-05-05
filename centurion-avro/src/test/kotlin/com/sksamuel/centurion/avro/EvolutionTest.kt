@@ -28,8 +28,8 @@ class EvolutionTest : FunSpec() {
          record1.put("a", "hello")
          record1.put("b", true)
 
-         val bytes = BinaryWriterFactory.toBytes(record1)
-         val record2 = BinaryReaderFactory(schema2, schema1).reader(bytes).read()
+         val bytes = BinaryWriterFactory().toBytes(record1)
+         val record2 = BinaryReaderFactory().reader(schema2, schema1, bytes).read()
 
          record2["a"] shouldBe Utf8("hello")
          record2["b"] shouldBe true

@@ -1,16 +1,7 @@
-package com.sksamuel.centurion.avro.io
+package com.sksamuel.centurion.avro.io.serde
 
 import org.apache.avro.file.Codec
 import java.nio.ByteBuffer
-
-/**
- * A [Serde] provides an easy way to convert between a single data class instance [T]
- * and avro encoded byte arrays.
- */
-interface Serde<T : Any> {
-   fun serialize(obj: T): ByteArray
-   fun deserialize(bytes: ByteArray): T
-}
 
 /**
  * A [CompressingSerde] wraps another [Serde] applying compression after serialization,

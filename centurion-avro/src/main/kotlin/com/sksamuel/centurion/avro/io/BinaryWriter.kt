@@ -8,18 +8,6 @@ import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
-///**
-// * An [AvroWriter] will write [GenericRecord]s to an output stream.
-// *
-// * There are three implementations of this stream
-// *  - a Data stream,
-// *  - a Binary stream
-// *  - a Json stream
-// *
-// * See the methods on the companion object to create instances of each
-// * of these types of stream.
-// */
-
 /**
  * Creates a [BinaryWriterFactory] for a given schema which can then be used to create [BinaryWriter]s.
  *
@@ -28,79 +16,55 @@ import java.io.OutputStream
  * Pass in a pre-created [EncoderFactory] if you wish to configure buffer size.
  */
 class BinaryWriterFactory(
-   schema: Schema,
    private val factory: EncoderFactory,
 ) {
 
    /**
     * Creates a [BinaryWriterFactory] with the default [EncoderFactory].
     */
-   constructor(schema: Schema) : this(schema, EncoderFactory.get())
-
-   companion object {
-
-      /**
-       * Creates an avro encoded byte array from the given [record].
-       *
-       * This method is a convenience function that is useful when you want to write a single record
-       * in a single method call.
-       *
-       * For better performance, considering creating a [BinaryWriterFactory] which will use
-       * a shared [GenericDatumWriter] and allows customizating the [EncoderFactory].
-       */
-      fun toBytes(record: GenericRecord): ByteArray {
-         val baos = ByteArrayOutputStream()
-         toBytes(record, baos)
-         return baos.toByteArray()
-      }
-
-      /**
-       * Writes avro encoded bytes to the given [output] stream from the given [record].
-       *
-       * This method is a convenience function that is useful when you want to write a single record
-       * in a single method call.
-       *
-       * The given [output] stream will be closed after this function returns.
-       *
-       * For better performance, considering creating a [BinaryWriterFactory] which will use
-       * a shared [GenericDatumWriter] and allows customizating the [EncoderFactory].
-       */
-      fun toBytes(record: GenericRecord, output: OutputStream) {
-         val datumWriter = GenericDatumWriter<GenericRecord>(record.schema)
-         BinaryWriter(datumWriter, output, EncoderFactory.get()).use { it.write(record) }
-      }
-   }
-
-   private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
+   constructor() : this(EncoderFactory.get())
 
    /**
     * Creates a [BinaryWriter] that writes to the given [OutputStream].
-    * Calling close on the created writer will close this stream and ensure data is flushed.
     */
-   fun writer(output: OutputStream): BinaryWriter {
-      return BinaryWriter(datumWriter, output, factory)
+   fun writer(schema: Schema, output: OutputStream): BinaryWriter {
+      return BinaryWriter(schema, output, factory)
    }
 
    /**
     * Creates a [BinaryWriter] that uses a [ByteArrayOutputStream].
     * Once records have been written, users can call bytes() to retrieve the [ByteArray].
     */
-   fun writer(): BinaryWriter {
-      return BinaryWriter(datumWriter, ByteArrayOutputStream(), factory)
+   fun writer(schema: Schema): BinaryWriter {
+      return BinaryWriter(schema, ByteArrayOutputStream(), factory)
+   }
+
+   /**
+    * Creates an avro encoded byte array from the given [record].
+    *
+    * This method is a convenience function that is useful when you want to write a single record
+    * in a single method call.
+    */
+   fun toBytes(record: GenericRecord): ByteArray {
+      return BinaryWriter(record.schema, ByteArrayOutputStream(), EncoderFactory.get())
+         .use { it.write(record) }
+         .bytes()
    }
 }
 
 /**
- * A [BinaryWriter] is a non-thread safe, one time use, writer to a given stream.
+ * A [BinaryWriter] is a non-thread safe, one time use, writer to a given stream that encodes
+ * in the avro "binary" format, which does not include the schema in the final bytes.
  *
  * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
  */
 class BinaryWriter(
-   private val datum: DatumWriter<GenericRecord>,
+   schema: Schema,
    private val output: OutputStream,
    factory: EncoderFactory,
 ) : AutoCloseable {
 
+   private val datum = GenericDatumWriter<GenericRecord>(schema)
    private val encoder = factory.binaryEncoder(output, null)
 
    fun write(record: GenericRecord): BinaryWriter {
