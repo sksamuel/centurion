@@ -1,5 +1,22 @@
 ## Changelog
 
+### 1.3.3
+
+* Added `ReflectionSerdeFactory` and `CachedReflectionSerdeFactory`.
+
+### 1.3.2
+
+* Optimized `StringEncoder` when `globalUseJavaString` is set
+* Added `LongArray` and `IntArray` support.
+
+### 1.3.1
+
+* Fixed record generators to only use schema access at creation time.
+
+### 1.3.0
+
+* Encoder and Decoder contract changed to return a function which accepts a schema, in order to pre-compute field access.
+
 ### 1.2.1
 
 * Added optimized string and primitive decoders
