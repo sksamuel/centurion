@@ -2,7 +2,9 @@
 
 ### 1.3.3
 
+* Added `SpecificSerde` and `CompressingSerde`.
 * Added `ReflectionSerdeFactory` and `CachedReflectionSerdeFactory`.
+* Added `DataReader` and `DataWriter`.
 
 ### 1.3.2
 

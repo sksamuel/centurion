@@ -9,9 +9,7 @@ import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 
 /**
- * A [SpecificSerde] provides an easy way to convert between a specific data class [T] and avro encoded bytes
- * by delegating to an [Encoder] and [Decoder] that handles that type.
- *
+ * A [SpecificSerde] is a [Serde] that delegates to an [Encoder] and [Decoder] that handles that type.
  * If you wish to create a [SpecificSerde] reflectively, see [ReflectionSerdeFactory].
  *
  * This class is thread safe once constructed.
