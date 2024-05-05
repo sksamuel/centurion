@@ -6,29 +6,29 @@ import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import kotlin.reflect.KClass
 
 /**
- * A [ReflectionSerdeFactory] will create a [Serde] for any given type using reflection based builders.
+ * A [ReflectionSerdeFactory] will create a [SpecificSerde] for any given type using reflection based builders.
  *
  * This instance is thread safe.
  */
 object ReflectionSerdeFactory {
 
    /**
-    * Creates a [Serde] reflectively from the given [kclass] using a [ReflectionSchemaBuilder].
+    * Creates a [SpecificSerde] reflectively from the given [kclass] using a [ReflectionSchemaBuilder].
     */
    fun <T : Any> create(
       kclass: KClass<T>,
       options: SerdeOptions = SerdeOptions()
-   ): Serde<T> {
+   ): SpecificSerde<T> {
       val schema = ReflectionSchemaBuilder(true).schema(kclass)
       val encoder = SpecificRecordEncoder(kclass)
       val decoder: SpecificRecordDecoder<T> = SpecificRecordDecoder(kclass)
-      return Serde(schema, encoder, decoder, options)
+      return SpecificSerde(schema, encoder, decoder, options)
    }
 
    /**
-    * Creates a [Serde] reflectively from the given type parameter [T] using a [ReflectionSchemaBuilder].
+    * Creates a [SpecificSerde] reflectively from the given type parameter [T] using a [ReflectionSchemaBuilder].
     */
-   inline fun <reified T : Any> create(options: SerdeOptions = SerdeOptions()): Serde<T> {
+   inline fun <reified T : Any> create(options: SerdeOptions = SerdeOptions()): SpecificSerde<T> {
       return create(T::class, options)
    }
 }
