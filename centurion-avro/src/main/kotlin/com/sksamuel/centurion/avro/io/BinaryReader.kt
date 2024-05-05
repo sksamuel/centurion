@@ -30,16 +30,18 @@ class BinaryReaderFactory(
    companion object {
 
       /**
-       * Reads a [GenericRecord] from the given [bytes].
+       * Reads a [GenericRecord] from the given [ByteArray].
        *
-       * This method is a convenience function that is useful when you want to read a single record.
-       * If you wish to read multiple records, create a [BinaryReader] using a [BinaryReaderFactory].
-       * This will also allow customization of the [DecoderFactory] and schema evolution.
+       * This method is a convenience function that is useful when you want to read a single record
+       * in a single method call.
+       *
+       * For better performance and customization, create a [BinaryReader] using a [BinaryReaderFactory].
+       * This will also allow customization of the [DecoderFactory], schema evolution and shares a [DatumReader].
        */
       fun fromBytes(schema: Schema, bytes: ByteArray): GenericRecord {
          val datumReader = GenericDatumReader<GenericRecord>(/* writer = */ schema, /* reader = */ schema)
          return BinaryReader(
-            datumReader = datumReader,
+            datum = datumReader,
             input = null,
             bytes = bytes,
             factory = DecoderFactory.get(),
@@ -47,11 +49,13 @@ class BinaryReaderFactory(
       }
 
       /**
-       * Reads a [GenericRecord] from the given [bytes].
+       * Reads a [GenericRecord] from the given [InputStream].
        *
-       * This method is a convenience function that is useful when you want to read a single record.
-       * If you wish to read multiple records, create a [BinaryReader] using a [BinaryReaderFactory].
-       * This will also allow customization of the [DecoderFactory] and schema evolution.
+       * This method is a convenience function that is useful when you want to read a single record
+       * in a single method call.
+       *
+       * For better performance and customization, create a [BinaryReader] using a [BinaryReaderFactory].
+       * This will also allow customization of the [DecoderFactory], schema evolution and shares a [DatumReader].
        *
        * The given [input] stream will be closed after this function returns.
        *
@@ -78,12 +82,7 @@ class BinaryReaderFactory(
     * Creates an [BinaryReader] that reads from the given [ByteArray].
     */
    fun reader(bytes: ByteArray): BinaryReader {
-      return BinaryReader(
-         datumReader = datum,
-         input = null,
-         bytes = bytes,
-         factory = factory
-      )
+      return BinaryReader(datum = datum, input = null, bytes = bytes, factory = factory)
    }
 }
 
@@ -91,7 +90,7 @@ class BinaryReaderFactory(
  * An [BinaryReader] is a non-thread safe, one time use, reader from a given stream or byte array.
  */
 class BinaryReader(
-   private val datumReader: DatumReader<GenericRecord>,
+   private val datum: DatumReader<GenericRecord>,
    private val input: InputStream?,
    bytes: ByteArray?,
    factory: DecoderFactory,
@@ -108,7 +107,7 @@ class BinaryReader(
    }
 
    fun read(): GenericRecord {
-      return datumReader.read(null, decoder)
+      return datum.read(null, decoder)
    }
 
    override fun close() {
