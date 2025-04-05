@@ -8,7 +8,7 @@ pluginManagement {
       maven("https://plugins.gradle.org/m2/")
    }
    plugins {
-      kotlin("jvm").version("1.8.21")
+      kotlin("jvm").version("1.9.23")
    }
 }
 
@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.11.3")
 
-         val kotest = "5.8.1"
+         val kotest = "5.9.1"
          library("kotest-datatest", "io.kotest:kotest-framework-datatest:$kotest")
          library("kotest-junit5", "io.kotest:kotest-runner-junit5:$kotest")
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
