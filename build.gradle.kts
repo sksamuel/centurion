@@ -12,8 +12,8 @@ allprojects {
    version = Ci.version
 
    java {
-      targetCompatibility = JavaVersion.VERSION_11
-      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_17
+      sourceCompatibility = JavaVersion.VERSION_17
       withSourcesJar()
    }
 
@@ -31,7 +31,7 @@ allprojects {
    }
 
    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-      kotlinOptions.jvmTarget = "11"
+      kotlinOptions.jvmTarget = "17"
       kotlinOptions.apiVersion = "1.8"
       kotlinOptions.languageVersion = "1.8"
    }

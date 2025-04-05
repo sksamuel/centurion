@@ -13,11 +13,10 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v2
 
-      - name: Setup JDK
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
-           java-version: '11'
-           distribution: "temurin"
+          java-version: '17'
+          distribution: "temurin"
 
       - name: Run tests
         run: ./gradlew check

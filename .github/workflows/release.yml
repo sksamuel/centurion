@@ -22,11 +22,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Setup JDK
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
-           java-version: '11'
-           distribution: "temurin"
+          java-version: '17'
+          distribution: "temurin"
 
       - name: deploy to sonatype
         run: ./gradlew publish
