@@ -40,6 +40,3 @@ jobs:
         run: |
           git tag v${{ github.event.inputs.version }}
           git push --tags
-
-env:
-  GRADLE_OPTS: -Dorg.gradle.configureondemand=true -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
