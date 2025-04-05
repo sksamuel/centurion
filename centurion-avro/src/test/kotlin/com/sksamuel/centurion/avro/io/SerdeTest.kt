@@ -11,7 +11,17 @@ import kotlin.random.Random
 class SerdeTest : FunSpec({
 
    test("round trip happy path") {
-      val user = User(Random.nextLong(), "sammy mcsamface", "sammy@mcsamface.com", Random.nextLong(), UserType.Admin)
+      val user = User(
+         Random.nextLong(),
+         "sammy mcsamface",
+         "sammy@mcsamface.com",
+         Random.nextLong(),
+         UserType.Admin,
+         "Chicago",
+         45,
+         180,
+         200
+      )
       val serde = ReflectionSerdeFactory.create<User>(Format.Binary, SerdeOptions())
       serde.deserialize(serde.serialize(user)) shouldBe user
    }
