@@ -20,8 +20,8 @@ import kotlin.reflect.KType
  * Therefore, the [Encoder<String>] typeclass instances uses the schema to select which of these
  * implementations to use.
  *
- * Other types may not require the schema at all. For example, the default [Encoder<Int>] always
- * returns a java.lang.Integer regardless of any schema input.
+ * Other types do not require the schema at all. For example, the default Int [Encoder] always
+ * returns a [java.lang.Integer] regardless of any schema input.
  */
 fun interface Encoder<T> {
 
