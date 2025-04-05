@@ -1,4 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
    kotlin("jvm")
@@ -30,9 +32,11 @@ allprojects {
       }
    }
 
-   tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-      kotlinOptions.jvmTarget = "17"
-      kotlinOptions.apiVersion = "1.8"
-      kotlinOptions.languageVersion = "1.8"
+   kotlin {
+      compilerOptions {
+         jvmTarget = JvmTarget.JVM_17
+         apiVersion = KotlinVersion.KOTLIN_2_1
+         languageVersion = KotlinVersion.KOTLIN_2_1
+      }
    }
 }
