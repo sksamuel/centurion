@@ -92,19 +92,18 @@ fun main() {
    fun createMethodHandlesEncoder() = MethodHandlesEncoder<Foo>().encode(schema)
 
    val sets = 5
-   val reps = 20_000_000
+   val reps = 30_000_000
 
-//   repeat(sets) {
-//      val mapper = jacksonObjectMapper()
-//      var size = 0
-//      val time = measureTime {
-//         repeat(reps) {
-//            size += mapper.writeValueAsBytes(foo).size
-//         }
-//      }
-//      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-//   }
-//
+   repeat(sets) {
+      val mapper = jacksonObjectMapper()
+      var size = 0
+      val time = measureTime {
+         repeat(reps) {
+            size += mapper.writeValueAsBytes(foo).size
+         }
+      }
+      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+   }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
