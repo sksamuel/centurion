@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.MethodHandlesEncoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
@@ -16,6 +17,8 @@ import kotlin.time.measureTime
 
 fun main() {
 
+   Encoder.globalUseJavaString = true
+
    val arraySchema = SchemaBuilder.array().items().longType()
    val schema: Schema =
       SchemaBuilder.record("foo").fields()
@@ -27,8 +30,9 @@ fun main() {
          .requiredString("field_f")
          .requiredString("field_g")
          .requiredInt("field_h")
-         .name("field_i")
-         .type(arraySchema).noDefault().endRecord()
+//         .name("field_i")
+//         .type(arraySchema).noDefault()
+         .endRecord()
 
    data class Foo(
       val field_a: String,
@@ -39,7 +43,7 @@ fun main() {
       val field_f: String,
       val field_g: String,
       val field_h: Int,
-      val field_i: List<Long>,
+//      val field_i: List<Long>,
    )
 
    val ids = listOf(
@@ -66,7 +70,7 @@ fun main() {
       field_f = "stringy mcstring face",
       field_g = "another string",
       field_h = 821377124,
-      field_i = ids,
+//      field_i = ids,
    )
 
    fun createRecordProgramatically(foo: Foo): GenericData.Record {
@@ -79,7 +83,7 @@ fun main() {
       record.put("field_f", foo.field_f)
       record.put("field_g", foo.field_g)
       record.put("field_h", foo.field_h)
-      record.put("field_i", foo.field_i)
+//      record.put("field_i", foo.field_i)
       return record
    }
 
@@ -101,6 +105,18 @@ fun main() {
 //      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
 //   }
 //
+
+   repeat(sets) {
+      val writer = GenericDatumWriter<GenericRecord>(schema)
+      val encoder = createMethodHandlesEncoder()
+      val time = measureTime {
+         repeat(reps) {
+            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
+         }
+      }
+      println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+   }
+
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
       val encoder = createSpecificRecordEncoder()
@@ -122,17 +138,6 @@ fun main() {
 //      }
 //      println("Serialize as Avro bytes (ReflectionRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
 //   }
-
-   repeat(sets) {
-      val writer = GenericDatumWriter<GenericRecord>(schema)
-      val encoder = createMethodHandlesEncoder()
-      val time = measureTime {
-         repeat(reps) {
-            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
-         }
-      }
-      println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)

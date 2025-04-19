@@ -90,25 +90,27 @@ class MethodHandlesEncoder<T : Any>(
          // this is the interface we're going to be implementing with the interface method type
          val factoryType = MethodType.methodType(java.util.function.Function::class.java)
 
-         // this is the method we will be implementing, it'll return the field type and accept an instance of Bar
+         // this is the method we will be implementing
          val interfaceMethodType = MethodType.methodType(getter.returnType, kclass.java)
 
          val callSite = LambdaMetafactory.metafactory(
             /* caller = */ lookup,
             /* interfaceMethodName = */ "apply", // the name of the method inside the interface
             /* factoryType = */ factoryType,
-            /* interfaceMethodType = */ MethodType.methodType(Any::class.java, Any::class.java), // erased version
+            /* interfaceMethodType = */ MethodType.methodType(Any::class.java, Any::class.java), // erased aply
             /* implementation = */ methodHandle, // this is the reflection call that will be inlined
-            /* dynamicMethodType = */ interfaceMethodType
+            /* dynamicMethodType = */ interfaceMethodType, // runtime version of apply
          )
 
-         Triple(encoder.encode(avroField.schema()), methodHandle, avroField.pos())
+         val fn = callSite.target.invoke() as java.util.function.Function<T, Any?>
+
+         Triple(encoder.encode(avroField.schema()), fn, avroField.pos())
       }
 
-      return { value ->
+      return { value: T ->
          val record = GenericData.Record(schema)
          encoders.map { (encode, getter, pos) ->
-            val v = getter.invoke(value)
+            val v = getter.apply(value)
             val encoded = encode.invoke(v)
             record.put(pos, encoded)
          }
