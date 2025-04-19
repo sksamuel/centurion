@@ -87,20 +87,20 @@ fun main() {
    fun createReflectionRecordEncoder() = ReflectionRecordEncoder().encode(schema)
    fun createMethodHandlesEncoder() = MethodHandlesEncoder<Foo>().encode(schema)
 
-   val sets = 3
+   val sets = 5
    val reps = 20_000_000
 
-   repeat(sets) {
-      val mapper = jacksonObjectMapper()
-      var size = 0
-      val time = measureTime {
-         repeat(reps) {
-            size += mapper.writeValueAsBytes(foo).size
-         }
-      }
-      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
-
+//   repeat(sets) {
+//      val mapper = jacksonObjectMapper()
+//      var size = 0
+//      val time = measureTime {
+//         repeat(reps) {
+//            size += mapper.writeValueAsBytes(foo).size
+//         }
+//      }
+//      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+//   }
+//
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
       val encoder = createSpecificRecordEncoder()
@@ -112,16 +112,16 @@ fun main() {
       println("Serialize as Avro bytes (SpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
 
-   repeat(sets) {
-      val writer = GenericDatumWriter<GenericRecord>(schema)
-      val encoder = createReflectionRecordEncoder()
-      val time = measureTime {
-         repeat(reps) {
-            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
-         }
-      }
-      println("Serialize as Avro bytes (ReflectionRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
+//   repeat(sets) {
+//      val writer = GenericDatumWriter<GenericRecord>(schema)
+//      val encoder = createReflectionRecordEncoder()
+//      val time = measureTime {
+//         repeat(reps) {
+//            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
+//         }
+//      }
+//      println("Serialize as Avro bytes (ReflectionRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+//   }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
