@@ -33,7 +33,7 @@ dependencyResolutionManagement {
          val tabby = "2.2.11"
          library("sksamuel-tabby", "com.sksamuel.tabby:tabby-fp:$tabby")
 
-         library("avro", "org.apache.avro:avro:1.11.3")
+         library("avro", "org.apache.avro:avro:1.12.0")
 
          val kotest = "5.9.1"
          library("kotest-datatest", "io.kotest:kotest-framework-datatest:$kotest")
