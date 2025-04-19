@@ -1,8 +1,9 @@
 package com.sksamuel.centurion.avro
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.sksamuel.centurion.avro.encoders.CachedSpecificRecordEncoder
+import com.sksamuel.centurion.avro.encoders.MethodHandlesEncoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
@@ -82,19 +83,11 @@ fun main() {
       return record
    }
 
-   val s = CachedSpecificRecordEncoder()
+   fun createSpecificRecordEncoder() = SpecificRecordEncoder<Foo>().encode(schema)
+   fun createReflectionRecordEncoder() = ReflectionRecordEncoder().encode(schema)
+   fun createMethodHandlesEncoder() = MethodHandlesEncoder<Foo>().encode(schema)
 
-   fun createCachedSpecificRecordEncoder(foo: Foo): GenericRecord {
-      return s.encode(schema).invoke(foo) as GenericRecord
-   }
-
-   val r = ReflectionRecordEncoder()
-
-   fun createReflectionRecordEncoder(foo: Foo): GenericRecord {
-      return r.encode(schema).invoke(foo) as GenericRecord
-   }
-
-   val sets = 5
+   val sets = 3
    val reps = 20_000_000
 
    repeat(sets) {
@@ -110,22 +103,35 @@ fun main() {
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
+      val encoder = createSpecificRecordEncoder()
       val time = measureTime {
          repeat(reps) {
-            createCachedSpecificRecordEncoder(foo).reusedEncoder(writer)
+            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
          }
       }
-      println("Serialize as Avro bytes (CachedSpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Serialize as Avro bytes (SpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
+      val encoder = createReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
-            createReflectionRecordEncoder(foo).reusedEncoder(writer)
+            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
          }
       }
       println("Serialize as Avro bytes (ReflectionRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+   }
+
+   repeat(sets) {
+      val writer = GenericDatumWriter<GenericRecord>(schema)
+      val encoder = createMethodHandlesEncoder()
+      val time = measureTime {
+         repeat(reps) {
+            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
+         }
+      }
+      println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
