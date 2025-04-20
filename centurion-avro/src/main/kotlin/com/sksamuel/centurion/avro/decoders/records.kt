@@ -10,8 +10,6 @@ class SpecificRecordDecoder<T : Any>(
    private val kclass: KClass<T>,
 ) : Decoder<T> {
 
-   private val decoders = ConcurrentHashMap<String, List<Decoding>>()
-
    init {
       require(kclass.isData) { "SpecificRecordDecoder only support data class: was $kclass" }
    }
@@ -21,10 +19,11 @@ class SpecificRecordDecoder<T : Any>(
    }
 
    private val constructor = kclass.primaryConstructor ?: error("No primary constructor")
+   private val decoders = ConcurrentHashMap<String, List<Decoding>>()
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
-      val decoders = decoders.getOrPut(value::class.java.name) { buildDecodings(schema, value::class) }
+      val decoders = decoders.getOrPut(value::class.java.name) { buildDecodings(schema) }
       val args = decoders.map { (pos, decoder, schema) ->
          val value = record.get(pos)
          decoder.decode(schema, value)
@@ -32,11 +31,11 @@ class SpecificRecordDecoder<T : Any>(
       return constructor.call(*args.toTypedArray<Any?>())
    }
 
-   private fun buildDecodings(schema: Schema, klass: KClass<out Any>): List<Decoding> {
+   private fun buildDecodings(schema: Schema): List<Decoding> {
       return constructor.parameters.map { param ->
-         val field = schema.getField(param.name)
+         val avroField = schema.getField(param.name)
          val decoder = Decoder.decoderFor(param.type)
-         Decoding(field.pos(), decoder, field.schema())
+         Decoding(avroField.pos(), decoder, avroField.schema())
       }
    }
 
