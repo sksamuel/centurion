@@ -116,16 +116,16 @@ fun main() {
       println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
 
-   repeat(sets) {
-      val writer = GenericDatumWriter<GenericRecord>(schema)
-      val encoder = createSpecificRecordEncoder()
-      val time = measureTime {
-         repeat(reps) {
-            (encoder.encode(schema, foo) as GenericRecord)//.reusedEncoder(writer)
-         }
-      }
-      println("Serialize as Avro bytes (SpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
+//   repeat(sets) {
+//      val writer = GenericDatumWriter<GenericRecord>(schema)
+//      val encoder = createSpecificRecordEncoder()
+//      val time = measureTime {
+//         repeat(reps) {
+//            (encoder.encode(schema, foo) as GenericRecord)//.reusedEncoder(writer)
+//         }
+//      }
+//      println("Serialize as Avro bytes (SpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+//   }
 
 //   repeat(sets) {
 //      val writer = GenericDatumWriter<GenericRecord>(schema)
