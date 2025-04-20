@@ -10,11 +10,9 @@ import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 
 /**
- * A [BinarySerde] reads and writes in the avro "binary" format which does not include the schema
- * in the written bytes. This results in a smaller payload, similar to protobuf, but requires
- * that the schema is provided at deserialization type.
+ * A [JsonSerde] reads and writes in json format.
  */
-class BinarySerde<T : Any>(
+class JsonSerde<T : Any>(
    private val schema: Schema,
    private val encoder: Encoder<T>,
    private val decoder: Decoder<T>,
@@ -32,10 +30,10 @@ class BinarySerde<T : Any>(
    private val readerFactory = BinaryReaderFactory(decoderFactory)
 
    override fun serialize(obj: T): ByteArray {
-      return writerFactory.toBytes(encoder.encode(schema, obj) as GenericRecord)
+      return writerFactory.writer(schema).use { it.write(encoder.encode(schema, obj) as GenericRecord).bytes() }
    }
 
    override fun deserialize(bytes: ByteArray): T {
-      return decoder.decode(schema, readerFactory.fromBytes(schema, bytes))
+      return decoder.decode(schema, readerFactory.reader(schema, bytes))
    }
 }

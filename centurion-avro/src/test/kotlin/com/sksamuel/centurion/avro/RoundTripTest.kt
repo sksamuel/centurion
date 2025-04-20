@@ -1,6 +1,6 @@
 package com.sksamuel.centurion.avro
 
-import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
+import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.Wine
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
@@ -24,7 +24,7 @@ class RoundTripTest : FunSpec() {
             maps = mapOf(),
             wine = Wine.Shiraz,
          )
-         val actual = SpecificRecordDecoder(RoundTrip::class)
+         val actual = ReflectionRecordDecoder(RoundTrip::class)
             .decode(schema, ReflectionRecordEncoder().encode(schema, rt))
          actual.s shouldBe actual.s
          actual.b shouldBe actual.b

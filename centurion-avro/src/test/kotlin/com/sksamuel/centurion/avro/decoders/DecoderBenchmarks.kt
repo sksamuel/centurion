@@ -73,7 +73,7 @@ fun main() {
       val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
       val record = GenericData.Record(schema)
       val reader = GenericDatumReader<GenericRecord>(schema)
-      val decoder = SpecificRecordDecoder<Foo>(Foo::class)
+      val decoder = ReflectionRecordDecoder<Foo>(Foo::class)
       val time = measureTime {
          repeat(reps) {
             val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, df))

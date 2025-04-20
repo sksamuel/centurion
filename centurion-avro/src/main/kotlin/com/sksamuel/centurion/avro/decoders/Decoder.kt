@@ -45,7 +45,7 @@ fun interface Decoder<T> {
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
-            is KClass<*> if classifier.isData -> SpecificRecordDecoder(classifier as KClass<Any>)
+            is KClass<*> if classifier.isData -> ReflectionRecordDecoder(classifier as KClass<Any>)
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
