@@ -15,7 +15,6 @@ pluginManagement {
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include("centurion-arrow")
 include("centurion-avro")
 include("centurion-orc")
 include("centurion-parquet")
