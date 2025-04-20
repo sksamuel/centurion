@@ -1,6 +1,6 @@
 package com.sksamuel.centurion.avro.io
 
-import com.sksamuel.centurion.avro.encoders.User
+import com.sksamuel.centurion.avro.User
 import com.sksamuel.centurion.avro.io.serde.CachedSerdeFactory
 import com.sksamuel.centurion.avro.io.serde.ReflectionSerdeFactory
 import com.sksamuel.centurion.avro.io.serde.SerdeOptions
