@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.avro
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.MethodHandlesEncoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
@@ -89,21 +88,21 @@ fun main() {
 
    fun createSpecificRecordEncoder() = SpecificRecordEncoder<Foo>()
    fun createReflectionRecordEncoder() = ReflectionRecordEncoder()
-   fun createMethodHandlesEncoder() = MethodHandlesEncoder<Foo>()
+   fun createMethodHandlesEncoder() = MethodHandlesEncoder()
 
-   val sets = 3
+   val sets = 5
    val reps = 30_000_000
 
-   repeat(sets) {
-      val mapper = jacksonObjectMapper()
-      var size = 0
-      val time = measureTime {
-         repeat(reps) {
-            size += mapper.writeValueAsBytes(foo).size
-         }
-      }
-      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
+//   repeat(sets) {
+//      val mapper = jacksonObjectMapper()
+//      var size = 0
+//      val time = measureTime {
+//         repeat(reps) {
+//            size += mapper.writeValueAsBytes(foo).size
+//         }
+//      }
+//      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+//   }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
