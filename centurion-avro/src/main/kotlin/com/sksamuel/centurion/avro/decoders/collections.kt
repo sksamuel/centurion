@@ -27,6 +27,30 @@ class LongArrayDecoder(private val decoder: Decoder<Long>) : Decoder<LongArray> 
    }
 }
 
+@Suppress("UNCHECKED_CAST")
+object LongListDecoder : Decoder<List<Long>> {
+   override fun decode(schema: Schema, value: Any?): List<Long> {
+      return when (value) {
+         is List<*> -> value as List<Long>
+         is Collection<*> -> value.toList() as List<Long>
+         is Array<*> -> value.toList() as List<Long>
+         else -> error("Unsupported list type $value")
+      }
+   }
+}
+
+@Suppress("UNCHECKED_CAST")
+object IntListDecoder : Decoder<List<Int>> {
+   override fun decode(schema: Schema, value: Any?): List<Int> {
+      return when (value) {
+         is List<*> -> value as List<Int>
+         is Collection<*> -> value.toList() as List<Int>
+         is Array<*> -> value.toList() as List<Int>
+         else -> error("Unsupported list type $value")
+      }
+   }
+}
+
 class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
    override fun decode(schema: Schema, value: Any?): List<T> {
       val elementType = schema.elementType

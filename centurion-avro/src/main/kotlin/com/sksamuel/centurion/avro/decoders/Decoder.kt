@@ -5,6 +5,7 @@ import java.time.Instant
 import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 /**
  * A [Decoder] typeclass is used to convert an Avro value, such as a [org.apache.avro.generic.GenericRecord],
@@ -32,6 +33,8 @@ fun interface Decoder<T> {
             Long::class -> LongDecoder
             Byte::class -> ByteDecoder
             Short::class -> ShortDecoder
+            List::class if type.arguments.first().type == typeOf<Long>() -> LongListDecoder
+            List::class if type.arguments.first().type == typeOf<Int>() -> IntListDecoder
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)

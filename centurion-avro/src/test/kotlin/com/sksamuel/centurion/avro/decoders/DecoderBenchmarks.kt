@@ -62,7 +62,7 @@ fun main() {
    val json =
       """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11],"field_j":[{"a":1, "b":"hello"}, {"a":2,"b":"world"}]}""".toByteArray()
 
-   val sets = 2
+   val sets = 5
    val reps = 10_000_000
 
    writeAvro()
