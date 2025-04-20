@@ -38,6 +38,8 @@ fun interface Decoder<T> {
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
+            Set::class if type.arguments.first().type == typeOf<Long>() -> LongSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Int>() -> IntSetDecoder
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeDecoder

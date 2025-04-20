@@ -62,6 +62,30 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
    }
 }
 
+@Suppress("UNCHECKED_CAST")
+object LongSetDecoder : Decoder<Set<Long>> {
+   override fun decode(schema: Schema, value: Any?): Set<Long> {
+      return when (value) {
+         is List<*> -> (value as List<Long>).toSet()
+         is Collection<*> -> (value.toList() as List<Long>).toSet()
+         is Array<*> -> (value.toList() as List<Long>).toSet()
+         else -> error("Unsupported list type $value")
+      }
+   }
+}
+
+@Suppress("UNCHECKED_CAST")
+object IntSetDecoder : Decoder<Set<Int>> {
+   override fun decode(schema: Schema, value: Any?): Set<Int> {
+      return when (value) {
+         is List<*> -> (value as List<Int>).toSet()
+         is Collection<*> -> (value.toList() as List<Int>).toSet()
+         is Array<*> -> (value.toList() as List<Int>).toSet()
+         else -> error("Unsupported list type $value")
+      }
+   }
+}
+
 class SetDecoder<T>(private val decoder: Decoder<T>) : Decoder<Set<T>> {
    override fun decode(schema: Schema, value: Any?): Set<T> {
       require(schema.type == Schema.Type.ARRAY)

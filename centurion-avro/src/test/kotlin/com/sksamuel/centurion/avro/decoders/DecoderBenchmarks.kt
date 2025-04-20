@@ -19,7 +19,6 @@ val foo2Schema = SchemaBuilder.record("foo2").fields()
    .requiredString("b")
    .endRecord()
 
-val arraySchema1 = SchemaBuilder.array().items().longType()
 val arraySchema2 = SchemaBuilder.array().items(foo2Schema)
 
 val schema: Schema =
@@ -32,8 +31,9 @@ val schema: Schema =
       .requiredString("field_f")
       .requiredString("field_g")
       .requiredInt("field_h")
-      .name("field_i").type(arraySchema1).noDefault()
+      .name("field_i").type(SchemaBuilder.array().items().longType()).noDefault()
       .name("field_j").type(arraySchema2).noDefault()
+      .name("field_k").type(SchemaBuilder.array().items().intType()).noDefault()
       .endRecord()
 
 
@@ -55,12 +55,13 @@ fun main() {
       val field_h: Int,
       val field_i: List<Long>,
       val field_j: List<Foo2>,
+      val field_k: Set<Int>,
    )
 
    val avro = Foo::class.java.getResourceAsStream("/benchmark.avro").readAllBytes()
 
    val json =
-      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11],"field_j":[{"a":1, "b":"hello"}, {"a":2,"b":"world"}]}""".toByteArray()
+      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11],"field_j":[{"a":1, "b":"hello"},{"a":2,"b":"world"}],"field_k":[55,66,88,99,77,88,99,66,55,44,33,22,11]}""".toByteArray()
 
    val sets = 5
    val reps = 10_000_000
@@ -78,7 +79,7 @@ fun main() {
             decoder.decode(schema, record)
          }
       }
-      println("Deserialize Avro bytes (SpecificRecordDecoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Deserialize Avro bytes (SpecificRecordDecoder):".padEnd(75) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
@@ -101,10 +102,11 @@ fun main() {
                record.get("field_h") as Int,
                record.get("field_i") as List<Long>,
                js2,
+               (record.get("field_k") as List<Int>).toSet(),
             )
          }
       }
-      println("Deserialize Avro bytes (Programatically):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Deserialize Avro bytes (Programatically):".padEnd(75) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
@@ -115,7 +117,7 @@ fun main() {
             size += mapper.readTree(json).size()
          }
       }
-      println("Deserialize Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Deserialize Jackson:".padEnd(75) + " ${time.inWholeMilliseconds}ms")
    }
 }
 
@@ -140,6 +142,7 @@ fun writeAvro() {
    record.put("field_h", 821377124)
    record.put("field_i", listOf(55, 66, 88, 99, 77, 88, 99, 66, 55, 44, 33, 22, 11))
    record.put("field_j", listOf(foo1, foo2))
+   record.put("field_k", listOf(55, 66, 88, 99, 77, 88, 99, 66, 55, 44, 33, 22, 11))
 
    Files.write(Paths.get("benchmark.avro"), record.toBinaryByteArrayAvro())
 }

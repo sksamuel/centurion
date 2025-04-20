@@ -23,7 +23,6 @@ object ShortDecoder : Decoder<Short> {
 
 object IntDecoder : Decoder<Int> {
    override fun decode(schema: Schema, value: Any?): Int {
-      return value as Int
       return when (value) {
          is Int -> value
          is Short -> value.toInt()
@@ -35,7 +34,6 @@ object IntDecoder : Decoder<Int> {
 
 object LongDecoder : Decoder<Long> {
    override fun decode(schema: Schema, value: Any?): Long {
-      return value as Long
       return when (value) {
          is Long -> value
          is Int -> value.toLong()
