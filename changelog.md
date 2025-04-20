@@ -1,5 +1,11 @@
 ## Changelog
 
+### 1.4.0 (April 2025)
+
+* Use LambdaMetafactory and MethodHandles for much improved reflection performance
+* Simplified the Encoder and Decoder interfaces
+* Optimized encoding and decoding for Long and Integer sets, longs and arrays.
+
 ### 1.3.3 (May 2024)
 
 * Added `SpecificSerde` and `CompressingSerde`.
