@@ -197,3 +197,5 @@ fun GenericRecord.toByteArray(writer: DatumWriter<GenericRecord>): ByteArray {
    encoder.flush()
    return baos.toByteArray()
 }
+
+
