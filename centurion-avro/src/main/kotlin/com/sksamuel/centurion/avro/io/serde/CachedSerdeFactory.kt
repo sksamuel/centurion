@@ -6,8 +6,9 @@ import kotlin.reflect.KClass
 
 /**
  * A [CachedSerdeFactory] will create a [Serde] once for a given type via delegation
- * to a [ReflectionSerdeFactory] and return that cached [Serde] upon future invocations. This allows
- * the reflection setup calls to be invoked only once per type, which gives a huge performance gain.
+ * to a [ReflectionSerdeFactory] and return that cached [Serde] upon future invocations.
+ *
+ * This allows the reflection setup calls to be invoked only once per type.
  *
  * This instance is thread safe.
  */
@@ -18,6 +19,7 @@ class CachedSerdeFactory(private val factory: SerdeFactory) : SerdeFactory() {
    /**
     * Creates or returns a [Serde] for the given [kclass].
     */
+   @Suppress("UNCHECKED_CAST")
    override fun <T : Any> create(kclass: KClass<T>, format: Format, options: SerdeOptions): Serde<T> {
       return cache.getOrPut(kclass) { factory.create(kclass, format, options) } as Serde<T>
    }

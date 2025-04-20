@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.io.serde
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.SpecificReflectionRecordEncoder
-import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import com.sksamuel.centurion.avro.io.Format
 import kotlin.reflect.KClass
 

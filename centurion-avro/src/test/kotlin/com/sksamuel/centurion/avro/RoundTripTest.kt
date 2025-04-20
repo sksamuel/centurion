@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.Wine
-import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 

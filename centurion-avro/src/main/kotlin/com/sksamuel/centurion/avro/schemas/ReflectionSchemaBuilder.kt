@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.avro.generation
+package com.sksamuel.centurion.avro.schemas
 
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
@@ -8,7 +8,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
 
 /**
- * Uses reflection to build a [Schema] from a [KClass].
+ * Uses reflection to build a [org.apache.avro.Schema] from a [kotlin.reflect.KClass].
  */
 class ReflectionSchemaBuilder(
    private val useJavaString: Boolean = false,
@@ -63,5 +63,3 @@ class ReflectionSchemaBuilder(
       return if (type.isMarkedNullable) SchemaBuilder.unionOf().nullType().and().type(schema).endUnion() else schema
    }
 }
-
-fun Schema.nullunionof() = SchemaBuilder.unionOf().nullType().and().type(this).endUnion()

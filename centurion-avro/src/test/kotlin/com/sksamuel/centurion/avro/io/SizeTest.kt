@@ -1,7 +1,7 @@
 package com.sksamuel.centurion.avro.io
 
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
-import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.file.CodecFactory
 import org.apache.avro.file.DataFileWriter
 import org.apache.avro.generic.GenericData

@@ -1,6 +1,8 @@
 package com.sksamuel.centurion.avro.generation
 
 import com.sksamuel.centurion.avro.encoders.Wine
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
+import com.sksamuel.centurion.avro.schemas.asNullUnion
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.avro.SchemaBuilder
@@ -32,7 +34,7 @@ class ReflectionSchemaBuilderTest : FunSpec({
    test("nulls") {
       val expected = SchemaBuilder.record("Foo2").namespace(Foo2::class.java.packageName)
          .fields()
-         .name("a").type(SchemaBuilder.builder().stringType().nullunionof()).noDefault()
+         .name("a").type(SchemaBuilder.builder().stringType().asNullUnion()).noDefault()
          .requiredBoolean("b")
          .requiredLong("c")
          .endRecord()
@@ -43,7 +45,7 @@ class ReflectionSchemaBuilderTest : FunSpec({
       val expected = SchemaBuilder.record("Foo3").namespace(Foo3::class.java.packageName)
          .fields()
          .name("set1").type(SchemaBuilder.array().items().intType()).noDefault()
-         .name("set2").type(SchemaBuilder.array().items(SchemaBuilder.builder().intType().nullunionof())).noDefault()
+         .name("set2").type(SchemaBuilder.array().items(SchemaBuilder.builder().intType().asNullUnion())).noDefault()
          .endRecord()
       ReflectionSchemaBuilder().schema(Foo3::class) shouldBe expected
    }
@@ -52,7 +54,7 @@ class ReflectionSchemaBuilderTest : FunSpec({
       val expected = SchemaBuilder.record("Foo4").namespace(Foo4::class.java.packageName)
          .fields()
          .name("list1").type(SchemaBuilder.array().items().intType()).noDefault()
-         .name("list2").type(SchemaBuilder.array().items(SchemaBuilder.builder().intType().nullunionof())).noDefault()
+         .name("list2").type(SchemaBuilder.array().items(SchemaBuilder.builder().intType().asNullUnion())).noDefault()
          .endRecord()
       ReflectionSchemaBuilder().schema(Foo4::class) shouldBe expected
    }
