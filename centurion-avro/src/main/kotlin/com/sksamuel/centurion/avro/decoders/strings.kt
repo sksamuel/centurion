@@ -6,24 +6,20 @@ import org.apache.avro.util.Utf8
 import java.nio.ByteBuffer
 
 /**
- * A [Decoder] for [String]s that pattern match on the incoming type to decode.
+ * A [Decoder] for [String]s that pattern matches on the incoming type to decode.
  *
- * The schema is not used, meaning this decoder is forgiving of types that do not conform to
- * the schema, but are nevertheless usable.
+ * The schema is not referenced, meaning this decoder is forgiving of types that do not conform to
+ * the schema, but are nevertheless coerable to strings.
  */
 object StringDecoder : Decoder<String> {
 
-   val STRING_SCHEMA: Schema = Schema.create(Schema.Type.STRING)
-
-   override fun decode(schema: Schema): (Any?) -> String {
-      return { value ->
-         when (value) {
-            is CharSequence -> value.toString()
-            is ByteArray -> Utf8(value).toString()
-            is ByteBuffer -> Utf8(value.array()).toString()
-            is GenericFixed -> Utf8(value.bytes()).toString()
-            else -> error("Unsupported type $value")
-         }
+   override fun decode(schema: Schema, value: Any?): String {
+      return when (value) {
+         is CharSequence -> value.toString()
+         is ByteArray -> Utf8(value).toString()
+         is ByteBuffer -> Utf8(value.array()).toString()
+         is GenericFixed -> Utf8(value.bytes()).toString()
+         else -> error("Unsupported type $value")
       }
    }
 }
@@ -32,7 +28,7 @@ object StringDecoder : Decoder<String> {
  * A [Decoder] for [CharSequence] that pattern matches on the incoming type to decode.
  *
  * The schema is not used, meaning this decoder is forgiving of types that do not conform to
- * the schema, but are nevertheless usable.
+ * the schema, but are nevertheless coerable to strings.
  */
 val CharSequenceDecoder: Decoder<CharSequence> = StringDecoder.map { it }
 
@@ -40,18 +36,16 @@ val CharSequenceDecoder: Decoder<CharSequence> = StringDecoder.map { it }
  * A [Decoder] for [Utf8] that pattern matches on the incoming type to decode.
  *
  * The schema is not used, meaning this decoder is forgiving of types that do not conform to
- * the schema, but are nevertheless usable.
+ * the schema, but are nevertheless coerable to [Utf8]s.
  */
 object UTF8Decoder : Decoder<Utf8> {
-   override fun decode(schema: Schema): (Any?) -> Utf8 {
-      return { value ->
-         when (value) {
-            is CharSequence -> Utf8(value.toString())
-            is ByteArray -> Utf8(value)
-            is ByteBuffer -> Utf8(value.array())
-            is GenericFixed -> Utf8(value.bytes())
-            else -> error("Unsupported type $value")
-         }
+   override fun decode(schema: Schema, value: Any?): Utf8 {
+      return when (value) {
+         is CharSequence -> Utf8(value.toString())
+         is ByteArray -> Utf8(value)
+         is ByteBuffer -> Utf8(value.array())
+         is GenericFixed -> Utf8(value.bytes())
+         else -> error("Unsupported type $value")
       }
    }
 }
@@ -63,19 +57,17 @@ object UTF8Decoder : Decoder<Utf8> {
  * encoding from the schema.
  */
 object StrictStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema): (Any?) -> String {
-      return { value ->
-         when (schema.type) {
-            Schema.Type.STRING -> when (value) {
-               is String -> value
-               is Utf8 -> value.toString()
-               else -> error("Unsupported type for string schema: $schema")
-            }
-
-            Schema.Type.BYTES -> ByteStringDecoder.decode(schema).invoke(value)
-            Schema.Type.FIXED -> GenericFixedStringDecoder.decode(schema).invoke(value)
+   override fun decode(schema: Schema, value: Any?): String {
+      return when (schema.type) {
+         Schema.Type.STRING -> when (value) {
+            is String -> value
+            is Utf8 -> value.toString()
             else -> error("Unsupported type for string schema: $schema")
          }
+
+         Schema.Type.BYTES -> ByteStringDecoder.decode(schema, value)
+         Schema.Type.FIXED -> GenericFixedStringDecoder.decode(schema, value)
+         else -> error("Unsupported type for string schema: $schema")
       }
    }
 }
@@ -84,14 +76,12 @@ object StrictStringDecoder : Decoder<String> {
  * A [Decoder] for Strings that decodes from [ByteBuffer]s and [ByteArray]s.
  */
 object ByteStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema): (Any?) -> String {
+   override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.BYTES)
-      return { value ->
-         when (value) {
-            is ByteArray -> Utf8(value).toString()
-            is ByteBuffer -> Utf8(value.array()).toString()
-            else -> error("This decoder expects bytes but was $value")
-         }
+      return when (value) {
+         is ByteArray -> Utf8(value).toString()
+         is ByteBuffer -> Utf8(value.array()).toString()
+         else -> error("This decoder expects bytes but was $value")
       }
    }
 }
@@ -100,13 +90,11 @@ object ByteStringDecoder : Decoder<String> {
  * A [Decoder] for Strings that decodes from [GenericFixed]s.
  */
 object GenericFixedStringDecoder : Decoder<String> {
-   override fun decode(schema: Schema): (Any?) -> String {
+   override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.FIXED)
-      return { value ->
-         when (value) {
-            is GenericFixed -> Utf8(value.bytes()).toString()
-            else -> error("This decoder expects GenericFixed but was $value")
-         }
+      return when (value) {
+         is GenericFixed -> Utf8(value.bytes()).toString()
+         else -> error("This decoder expects GenericFixed but was $value")
       }
    }
 }

@@ -7,22 +7,23 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
- * A [Decoder] typeclass is used to convert an Avro value, such as a [GenericRecord],
- * [SpecificRecord], [GenericFixed], [EnumSymbol], or a basic type, into a specified JVM type.
+ * A [Decoder] typeclass is used to convert an Avro value, such as a [org.apache.avro.generic.GenericRecord],
+ * [org.apache.avro.generic.GenericFixed], [org.apache.avro.generic.GenericData.EnumSymbol], and so on,
+ * into a specified JVM type.
  *
- * For example, a [Decoder<String>] would convert an input such as a GenericFixed, byte array, or Utf8
- * into a plain JVM [String].
+ * For example, a [Decoder[String]] would convert an input such as a [org.apache.avro.generic.GenericFixed],
+ * byte array, or [org.apache.avro.util.Utf8] into a plain JVM [String].
  *
  * Another example, a decoder for nullable types would handle null-based Unions.
  */
 fun interface Decoder<T> {
 
-   fun decode(schema: Schema): (Any?) -> T
+   fun decode(schema: Schema, value: Any?): T
 
    fun <U> map(fn: (T) -> U): Decoder<U> {
       val self = this
-      return Decoder { schema ->
-         { value -> fn(self.decode(schema).invoke(value)) }
+      return Decoder { schema, value ->
+         fn(self.decode(schema, value))
       }
    }
 

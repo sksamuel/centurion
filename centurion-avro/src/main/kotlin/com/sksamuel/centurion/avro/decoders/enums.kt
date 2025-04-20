@@ -17,17 +17,15 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<T> {
       inline operator fun <reified T : Enum<T>> invoke() = EnumDecoder(T::class)
    }
 
-   override fun decode(schema: Schema): (Any?) -> T {
+   override fun decode(schema: Schema, value: Any?): T {
       require(schema.type == Schema.Type.ENUM)
       val map = j.enumConstants.associateBy { it.name }
-      return { value ->
-         val symbol = when (value) {
-            is GenericEnumSymbol<*> -> value.toString()
-            is String -> value
-            is Utf8 -> value.toString()
-            else -> error("Unsupported enum container $value")
-         }
-         map[symbol] ?: error("Unknown symbol $value")
+      val symbol = when (value) {
+         is GenericEnumSymbol<*> -> value.toString()
+         is String -> value
+         is Utf8 -> value.toString()
+         else -> error("Unsupported enum container $value")
       }
+      return map[symbol] ?: error("Unknown symbol $value")
    }
 }

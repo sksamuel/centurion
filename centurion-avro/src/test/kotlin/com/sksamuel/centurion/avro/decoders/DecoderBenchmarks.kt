@@ -101,7 +101,7 @@ fun main() {
       val time = measureTime {
          repeat(reps) {
             val record = reader.read(record, DecoderFactory.get().binaryDecoder(bytes, null))
-            decoder.decode(schema).invoke(record) as Foo
+            decoder.decode(schema, record) as Foo
          }
       }
       println("Deserialize Avro bytes (SpecificRecordDecoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")

@@ -26,8 +26,8 @@ class RoundTripTest : FunSpec() {
             maps = mapOf(),
             wine = Wine.Shiraz,
          )
-         val actual = SpecificRecordDecoder(RoundTrip::class).decode(schema)
-            .invoke(SpecificRecordEncoder(RoundTrip::class).encode(schema, rt))
+         val actual = SpecificRecordDecoder(RoundTrip::class)
+            .decode(schema, SpecificRecordEncoder(RoundTrip::class).encode(schema, rt))
          actual.s shouldBe actual.s
          actual.b shouldBe actual.b
          actual.l shouldBe actual.l

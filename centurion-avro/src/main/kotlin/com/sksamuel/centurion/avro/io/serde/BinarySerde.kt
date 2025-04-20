@@ -33,13 +33,13 @@ class BinarySerde<T : Any>(
    private val readerFactory = BinaryReaderFactory(decoderFactory)
 
    private val encoderFn = encoder
-   private val decodeFn = decoder.decode(schema)
+   private val decodeFn = decoder
 
    override fun serialize(obj: T): ByteArray {
       return writerFactory.toBytes(encoderFn.encode(schema, obj) as GenericRecord)
    }
 
    override fun deserialize(bytes: ByteArray): T {
-      return decodeFn(readerFactory.fromBytes(schema, bytes))
+      return decodeFn.decode(schema, readerFactory.fromBytes(schema, bytes))
    }
 }

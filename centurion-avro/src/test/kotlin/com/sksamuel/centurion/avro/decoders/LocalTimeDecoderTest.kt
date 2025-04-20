@@ -13,20 +13,20 @@ class LocalTimeDecoderTest : FunSpec({
       val schema = Schema.create(Schema.Type.INT)
       LogicalTypes.timeMillis().addToSchema(schema)
       val input = LocalTime.of(2, 3, 4)
-      LocalTimeDecoder.decode(schema).invoke(LocalTimeEncoder.encode(schema, input)) shouldBe input
+      LocalTimeDecoder.decode(schema, LocalTimeEncoder.encode(schema, input)) shouldBe input
    }
 
    test("time micros") {
       val schema = Schema.create(Schema.Type.LONG)
       LogicalTypes.timeMicros().addToSchema(schema)
       val input = LocalTime.of(2, 3, 4)
-      LocalTimeDecoder.decode(schema).invoke(LocalTimeEncoder.encode(schema, input)) shouldBe input
+      LocalTimeDecoder.decode(schema, LocalTimeEncoder.encode(schema, input)) shouldBe input
    }
 
    test("longs as millis") {
       val schema = Schema.create(Schema.Type.INT)
       val input = LocalTime.of(2, 3, 4)
-      LocalTimeDecoder.decode(schema).invoke(LocalTimeEncoder.encode(schema, input)) shouldBe input
+      LocalTimeDecoder.decode(schema, LocalTimeEncoder.encode(schema, input)) shouldBe input
    }
 
 })
