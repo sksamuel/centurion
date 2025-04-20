@@ -110,7 +110,7 @@ fun main() {
       val encoder = createMethodHandlesEncoder()
       val time = measureTime {
          repeat(reps) {
-            size +=  (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size
+            size += (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size
          }
       }
       println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
@@ -182,9 +182,10 @@ fun GenericRecord.reusedEncoder(writer: DatumWriter<GenericRecord>): ByteArray {
    val encoder = EncoderFactory.get().binaryEncoder(baos, encoder)
    writer.write(this, encoder)
    encoder.flush()
-   val bytes= baos.toByteArray()
-   Files.write(Paths.get("benchmark.avro"), bytes)
-   exitProcess(1)
+   val bytes = baos.toByteArray()
+//   Files.write(Paths.get("benchmark.avro"), bytes)
+//   exitProcess(1)
+   return bytes
 }
 
 val factory: EncoderFactory = EncoderFactory().configureBufferSize(512)

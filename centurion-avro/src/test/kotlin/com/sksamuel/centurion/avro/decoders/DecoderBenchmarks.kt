@@ -3,6 +3,7 @@
 package com.sksamuel.centurion.avro.decoders
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.sksamuel.centurion.avro.encoders.toBinaryByteArrayAvro
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
@@ -63,8 +64,8 @@ fun main() {
    val json =
       """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11],"field_j":[{"a":1, "b":"hello"},{"a":2,"b":"world"}],"field_k":[55,66,88,99,77,88,99,66,55,44,33,22,11]}""".toByteArray()
 
-   val sets = 5
-   val reps = 10_000_000
+   val sets = 3
+   val reps = 4_000_000
 
    writeAvro()
 
@@ -111,10 +112,10 @@ fun main() {
 
    repeat(sets) {
       val mapper = jacksonObjectMapper()
-      var size = 0
+      var count = 0
       val time = measureTime {
          repeat(reps) {
-            size += mapper.readTree(json).size()
+            count += mapper.readValue<Foo>(json).field_c
          }
       }
       println("Deserialize Jackson:".padEnd(75) + " ${time.inWholeMilliseconds}ms")
