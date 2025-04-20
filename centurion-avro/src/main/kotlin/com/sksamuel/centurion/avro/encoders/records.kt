@@ -3,7 +3,6 @@ package com.sksamuel.centurion.avro.encoders
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -14,30 +13,11 @@ import kotlin.reflect.full.declaredMemberProperties
  *
  * The [ReflectionRecordEncoder] is generic, but slower than [SpecificRecordEncoder] which can
  * pre-create some of the reflection calls needed in advance.
- *
- * See [CachedSpecificRecordEncoder].
  */
 class ReflectionRecordEncoder : Encoder<Any> {
 
    override fun encode(schema: Schema, value: Any): Any? {
       return SpecificRecordEncoder(value::class as KClass<Any>).encode(schema, value)
-   }
-}
-
-/**
- * An [Encoder] that returns a [GenericRecord] for any data class instance at runtime, using
- * reflection to access the fields of the data class.
- *
- * This encoder maintains a map of [SpecificRecordEncoder]s which are created on demand.
- */
-class CachedSpecificRecordEncoder : Encoder<Any> {
-
-   private val encoders = ConcurrentHashMap<String, (Any) -> Any?>()
-
-   override fun encode(schema: Schema, value: Any): Any? {
-      return encoders.getOrPut(schema.fullName) {
-         { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema, value) }
-      }
    }
 }
 
@@ -48,8 +28,6 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
  * In contrast to [ReflectionRecordEncoder], this encoder requires the class in advance,
  * which it uses to pre-generate some of the reflective calls needed. This approach is faster,
  * but a new encoder must be created for each data class.
- *
- * See [CachedSpecificRecordEncoder].
  */
 class SpecificRecordEncoder<T : Any>(
    private val kclass: KClass<T>,

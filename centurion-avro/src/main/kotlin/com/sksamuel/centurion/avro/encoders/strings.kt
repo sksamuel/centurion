@@ -17,9 +17,9 @@ object StringEncoder : Encoder<String> {
          return value
 
       return when (schema.type) {
-         Schema.Type.STRING -> UTF8StringEncoder
-         Schema.Type.BYTES -> ByteStringEncoder
-         Schema.Type.FIXED -> FixedStringEncoder
+         Schema.Type.STRING -> UTF8StringEncoder.encode(schema, value)
+         Schema.Type.BYTES -> ByteStringEncoder.encode(schema, value)
+         Schema.Type.FIXED -> FixedStringEncoder.encode(schema, value)
          else -> error("Unsupported type for string schema: $schema")
       }
    }

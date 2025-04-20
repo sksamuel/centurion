@@ -6,7 +6,7 @@ import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.util.Utf8
 
-class CachedSpecificRecordEncoderTest : FunSpec({
+class SpecificRecordEncoderTest : FunSpec({
 
    test("basic test") {
       data class Foo(val a: String, val b: Boolean)
@@ -18,7 +18,7 @@ class CachedSpecificRecordEncoderTest : FunSpec({
       expected.put("b", true)
 
       repeat(10) {
-         val actual = CachedSpecificRecordEncoder().encode(schema, Foo("hello", true))
+         val actual = SpecificRecordEncoder<Foo>().encode(schema, Foo("hello", true))
          actual shouldBe expected
       }
    }

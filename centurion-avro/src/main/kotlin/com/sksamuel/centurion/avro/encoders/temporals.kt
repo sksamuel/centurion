@@ -23,17 +23,14 @@ import java.util.concurrent.TimeUnit
 object LocalDateTimeEncoder : Encoder<LocalDateTime> {
    override fun encode(schema: Schema, value: LocalDateTime): Any? {
       return when {
-         schema.logicalType is LocalTimestampMillis -> {
-            { LocalTimestampMillisConversion().toLong(value, schema, schema.logicalType) }
-         }
+         schema.logicalType is LocalTimestampMillis ->
+            LocalTimestampMillisConversion().toLong(value, schema, schema.logicalType)
 
-         schema.logicalType is LocalTimestampMicros -> {
-            { LocalTimestampMicrosConversion().toLong(value, schema, schema.logicalType) }
-         }
+         schema.logicalType is LocalTimestampMicros ->
+            LocalTimestampMicrosConversion().toLong(value, schema, schema.logicalType)
 
-         schema.type == Schema.Type.LONG -> {
-            { value.toInstant(ZoneOffset.UTC).toEpochMilli() }
-         }
+         schema.type == Schema.Type.LONG ->
+            value.toInstant(ZoneOffset.UTC).toEpochMilli()
 
          else -> error("Unsupported schema for LocalDateTime: $schema")
       }
@@ -43,17 +40,14 @@ object LocalDateTimeEncoder : Encoder<LocalDateTime> {
 object LocalTimeEncoder : Encoder<LocalTime> {
    override fun encode(schema: Schema, value: LocalTime): Any? {
       return when {
-         schema.logicalType is TimeMillis -> {
-            { TimeMillisConversion().toInt(value, schema, schema.logicalType) }
-         }
+         schema.logicalType is TimeMillis ->
+            TimeMillisConversion().toInt(value, schema, schema.logicalType)
 
-         schema.logicalType is TimeMicros -> {
-            { TimeMicrosConversion().toLong(value, schema, schema.logicalType) }
-         }
+         schema.logicalType is TimeMicros ->
+            TimeMicrosConversion().toLong(value, schema, schema.logicalType)
 
-         schema.type == Schema.Type.INT -> {
-            { TimeUnit.NANOSECONDS.toMillis(value.toNanoOfDay()) }
-         }
+         schema.type == Schema.Type.INT ->
+            TimeUnit.NANOSECONDS.toMillis(value.toNanoOfDay())
 
          else -> error("Unsupported schema for LocalDateTime: $schema")
       }
