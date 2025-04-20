@@ -2,7 +2,7 @@ package com.sksamuel.centurion.avro.io
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.decoders.schema
-import com.sksamuel.centurion.avro.encoders.MethodHandlesEncoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.reusedEncoder
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
@@ -67,7 +67,7 @@ fun main() {
    println("Encoding sizes for $objects objects")
 
    val writer = GenericDatumWriter<GenericRecord>(schema)
-   val encoder = MethodHandlesEncoder()
+   val encoder = ReflectionRecordEncoder()
    var size = 0
    repeat(objects) {
       size += (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size

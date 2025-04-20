@@ -9,9 +9,6 @@ import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
-import java.nio.file.Files
-import java.nio.file.Paths
-import kotlin.system.exitProcess
 import kotlin.time.measureTime
 
 fun main() {
@@ -86,10 +83,6 @@ fun main() {
       return record
    }
 
-   fun createSpecificRecordEncoder() = SpecificRecordEncoder<Foo>()
-   fun createReflectionRecordEncoder() = ReflectionRecordEncoder()
-   fun createMethodHandlesEncoder() = MethodHandlesEncoder()
-
    val sets = 1
    val reps = 30_000_000
 
@@ -107,7 +100,7 @@ fun main() {
    repeat(sets) {
       var size = 0
       val writer = GenericDatumWriter<GenericRecord>(schema)
-      val encoder = createMethodHandlesEncoder()
+      val encoder = ReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
             size += (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size
@@ -115,28 +108,6 @@ fun main() {
       }
       println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
-
-//   repeat(sets) {
-//      val writer = GenericDatumWriter<GenericRecord>(schema)
-//      val encoder = createSpecificRecordEncoder()
-//      val time = measureTime {
-//         repeat(reps) {
-//            (encoder.encode(schema, foo) as GenericRecord)//.reusedEncoder(writer)
-//         }
-//      }
-//      println("Serialize as Avro bytes (SpecificRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-//   }
-
-//   repeat(sets) {
-//      val writer = GenericDatumWriter<GenericRecord>(schema)
-//      val encoder = createReflectionRecordEncoder()
-//      val time = measureTime {
-//         repeat(reps) {
-//            (encoder.invoke(foo) as GenericRecord).reusedEncoder(writer)
-//         }
-//      }
-//      println("Serialize as Avro bytes (ReflectionRecordEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-//   }
 
    repeat(sets) {
       val writer = GenericDatumWriter<GenericRecord>(schema)
@@ -149,8 +120,6 @@ fun main() {
    }
 
 }
-
-//private val encoder = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
 
 /**
  * Returns a byte array that contains the avro binary only.

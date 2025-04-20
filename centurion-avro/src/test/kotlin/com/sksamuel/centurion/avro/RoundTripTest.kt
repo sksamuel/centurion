@@ -1,7 +1,7 @@
 package com.sksamuel.centurion.avro
 
 import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
-import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.Wine
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import io.kotest.core.spec.style.FunSpec
@@ -25,7 +25,7 @@ class RoundTripTest : FunSpec() {
             wine = Wine.Shiraz,
          )
          val actual = SpecificRecordDecoder(RoundTrip::class)
-            .decode(schema, SpecificRecordEncoder(RoundTrip::class).encode(schema, rt))
+            .decode(schema, ReflectionRecordEncoder().encode(schema, rt))
          actual.s shouldBe actual.s
          actual.b shouldBe actual.b
          actual.l shouldBe actual.l

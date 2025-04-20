@@ -56,7 +56,7 @@ fun interface Encoder<T> {
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
             is KClass<*> if classifier.java.isEnum -> EnumEncoder<Enum<*>>()
-            is KClass<*> if classifier.isData -> MethodHandlesEncoder()
+            is KClass<*> if classifier.isData -> ReflectionRecordEncoder()
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullEncoder(encoder) else encoder

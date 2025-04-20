@@ -1,6 +1,6 @@
 package com.sksamuel.centurion.avro.io
 
-import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import org.apache.avro.file.CodecFactory
 import org.apache.avro.file.DataFileWriter
@@ -26,7 +26,7 @@ fun main() {
    val schema = ReflectionSchemaBuilder(true).schema(User::class)
 
    GenericData.setStringType(schema, GenericData.StringType.String)
-   val encoder = SpecificRecordEncoder(User::class)
+   val encoder = ReflectionRecordEncoder()
    val record = encoder.encode(schema, user) as GenericRecord
 
    println(BinaryWriterFactory().writer(schema).write(record).bytes().size)

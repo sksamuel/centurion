@@ -1,7 +1,8 @@
 package com.sksamuel.centurion.avro.io.serde
 
 import com.sksamuel.centurion.avro.decoders.SpecificRecordDecoder
-import com.sksamuel.centurion.avro.encoders.SpecificRecordEncoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.encoders.SpecificReflectionRecordEncoder
 import com.sksamuel.centurion.avro.generation.ReflectionSchemaBuilder
 import com.sksamuel.centurion.avro.io.Format
 import kotlin.reflect.KClass
@@ -15,7 +16,7 @@ object ReflectionSerdeFactory : SerdeFactory() {
 
    /**
     * Creates a [Serde] reflectively from the given [kclass] using a [ReflectionSchemaBuilder],
-    * [SpecificRecordEncoder] and [SpecificRecordDecoder].
+    * [ReflectionRecordEncoder] and [SpecificRecordDecoder].
     *
     * @param format specify the type of output.
     */
@@ -25,7 +26,7 @@ object ReflectionSerdeFactory : SerdeFactory() {
       options: SerdeOptions
    ): Serde<T> {
       val schema = ReflectionSchemaBuilder(true).schema(kclass)
-      val encoder = SpecificRecordEncoder(kclass)
+      val encoder = SpecificReflectionRecordEncoder<T>()
       val decoder = SpecificRecordDecoder(kclass)
       return when (format) {
          Format.Binary -> BinarySerde(schema, encoder, decoder, options)

@@ -12,16 +12,25 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
- * An [Encoder] that returns a [org.apache.avro.generic.GenericRecord] for a given data class instance, using
+ * A wrapper around a [ReflectionRecordEncoder] that is specific to a type [T].
+ * All this class does is cast the value to [Any] before passing it to the [ReflectionRecordEncoder].
+ */
+internal class SpecificReflectionRecordEncoder<T> : Encoder<T> {
+   private val encoder = ReflectionRecordEncoder()
+   override fun encode(schema: Schema, value: T): Any? {
+      return encoder.encode(schema, value as Any)
+   }
+}
+
+/**
+ * An [Encoder] that returns a [org.apache.avro.generic.GenericRecord] for data classes, using
  * reflection to access the fields of the data class.
  *
- * In contrast to [ReflectionRecordEncoder], this encoder requires the class in advance,
- * which it uses to pre-generate some of the reflective calls needed. This approach is faster,
- * but a new encoder must be created for each data class.
- *
- * See [SpecificRecordEncoder].
+ * The [ReflectionRecordEncoder] is generic, and will cache the reflection calls for each data class
+ * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
+ * verus programmatically generated encoders of around 10-15%.
  */
-class MethodHandlesEncoder() : Encoder<Any> {
+class ReflectionRecordEncoder() : Encoder<Any> {
 
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
    private val lookup = MethodHandles.lookup()
