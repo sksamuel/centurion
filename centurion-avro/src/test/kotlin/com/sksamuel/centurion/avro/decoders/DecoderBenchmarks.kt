@@ -14,21 +14,35 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.time.measureTime
 
+val foo2Schema = SchemaBuilder.record("foo2").fields()
+   .requiredInt("a")
+   .requiredString("b")
+   .endRecord()
+
+val arraySchema1 = SchemaBuilder.array().items().longType()
+val arraySchema2 = SchemaBuilder.array().items(foo2Schema)
+
+val schema: Schema =
+   SchemaBuilder.record("foo").fields()
+      .requiredString("field_a")
+      .requiredBoolean("field_b")
+      .requiredInt("field_c")
+      .requiredDouble("field_d")
+      .requiredInt("field_e")
+      .requiredString("field_f")
+      .requiredString("field_g")
+      .requiredInt("field_h")
+      .name("field_i").type(arraySchema1).noDefault()
+      .name("field_j").type(arraySchema2).noDefault()
+      .endRecord()
+
+
 fun main() {
 
-   val arraySchema = SchemaBuilder.array().items().longType()
-   val schema: Schema =
-      SchemaBuilder.record("foo").fields()
-         .requiredString("field_a")
-         .requiredBoolean("field_b")
-         .requiredInt("field_c")
-         .requiredDouble("field_d")
-         .requiredInt("field_e")
-         .requiredString("field_f")
-         .requiredString("field_g")
-         .requiredInt("field_h")
-         .name("field_i").type(arraySchema).noDefault()
-         .endRecord()
+   data class Foo2(
+      val a: Int,
+      val b: String,
+   )
 
    data class Foo(
       val field_a: String,
@@ -40,17 +54,18 @@ fun main() {
       val field_g: String,
       val field_h: Int,
       val field_i: List<Long>,
+      val field_j: List<Foo2>,
    )
 
    val avro = Foo::class.java.getResourceAsStream("/benchmark.avro").readAllBytes()
 
    val json =
-      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11]}""".toByteArray()
+      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11],"field_j":[{"a":1, "b":"hello"}, {"a":2,"b":"world"}]}""".toByteArray()
 
-   val sets = 5
+   val sets = 2
    val reps = 10_000_000
 
-   writeAvro(schema)
+   writeAvro()
 
    repeat(sets) {
       val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
@@ -73,6 +88,8 @@ fun main() {
       val time = measureTime {
          repeat(reps) {
             val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, df))
+            val js = record.get("field_j") as List<GenericData.Record>
+            val js2 = js.map { Foo2(it.get("a") as Int, it.get("b").toString()) }
             Foo(
                record.get("field_a").toString(),
                record.get("field_b") as Boolean,
@@ -83,6 +100,7 @@ fun main() {
                record.get("field_g").toString(),
                record.get("field_h") as Int,
                record.get("field_i") as List<Long>,
+               js2,
             )
          }
       }
@@ -101,7 +119,16 @@ fun main() {
    }
 }
 
-fun writeAvro(schema: Schema) {
+fun writeAvro() {
+
+   val foo1 = GenericData.Record(foo2Schema)
+   foo1.put("a", 1)
+   foo1.put("b", "hello")
+
+   val foo2 = GenericData.Record(foo2Schema)
+   foo2.put("a", 2)
+   foo2.put("b", "world")
+
    val record = GenericData.Record(schema)
    record.put("field_a", "hello world")
    record.put("field_b", true)
@@ -112,5 +139,7 @@ fun writeAvro(schema: Schema) {
    record.put("field_g", "another string")
    record.put("field_h", 821377124)
    record.put("field_i", listOf(55, 66, 88, 99, 77, 88, 99, 66, 55, 44, 33, 22, 11))
+   record.put("field_j", listOf(foo1, foo2))
+
    Files.write(Paths.get("benchmark.avro"), record.toBinaryByteArrayAvro())
 }

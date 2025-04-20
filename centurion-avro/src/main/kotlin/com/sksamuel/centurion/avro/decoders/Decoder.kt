@@ -39,7 +39,8 @@ fun interface Decoder<T> {
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
-            is KClass<*> -> if (classifier.java.isEnum) EnumDecoder(classifier as KClass<out Enum<*>>) else error("Unsupported type $type")
+            is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
+            is KClass<*> if classifier.isData -> SpecificRecordDecoder(classifier as KClass<Any>)
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
