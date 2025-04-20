@@ -22,11 +22,6 @@ fun interface Decoder<T> {
 
    companion object {
 
-      /**
-       * When set to true, the encoders will not attempt to coerce values, but will simply cast.
-       */
-      var useStrictPrimitiveDecoders = false
-
       fun decoderFor(type: KType): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
             String::class -> StringDecoder

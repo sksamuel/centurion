@@ -3,12 +3,15 @@
 package com.sksamuel.centurion.avro.decoders
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.encoders.toBinaryByteArrayAvro
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.time.measureTime
 
 fun main() {
@@ -24,8 +27,7 @@ fun main() {
          .requiredString("field_f")
          .requiredString("field_g")
          .requiredInt("field_h")
-//         .name("field_i")
-//         .type(arraySchema).noDefault()
+         .name("field_i").type(arraySchema).noDefault()
          .endRecord()
 
    data class Foo(
@@ -37,33 +39,18 @@ fun main() {
       val field_f: String,
       val field_g: String,
       val field_h: Int,
-//      val field_i: List<Long>,
-   )
-
-   val ids = listOf(
-      123123123L,
-      123123124,
-      123123125,
-      123123126,
-      123123127,
-      123123128,
-      123123129,
-      123123130,
-      123123131,
-      123123132,
-      123123133,
-      123123134
+      val field_i: List<Long>,
    )
 
    val avro = Foo::class.java.getResourceAsStream("/benchmark.avro").readAllBytes()
 
    val json =
-      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124}"""
+      """{"field_a":"hello world","field_b":true,"field_c":123456,"field_d":56.331,"field_e":998876324,"field_f":"stringy mcstring face","field_g":"another string","field_h":821377124,"field_i":[55,66,88,99,77,88,99,66,55,44,33,22,11]}""".toByteArray()
 
    val sets = 5
    val reps = 10_000_000
 
-   Decoder.useStrictPrimitiveDecoders = true
+   writeAvro(schema)
 
    repeat(sets) {
       val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
@@ -95,6 +82,7 @@ fun main() {
                record.get("field_f").toString(),
                record.get("field_g").toString(),
                record.get("field_h") as Int,
+               record.get("field_i") as List<Long>,
             )
          }
       }
@@ -113,3 +101,16 @@ fun main() {
    }
 }
 
+fun writeAvro(schema: Schema) {
+   val record = GenericData.Record(schema)
+   record.put("field_a", "hello world")
+   record.put("field_b", true)
+   record.put("field_c", 123456)
+   record.put("field_d", 56.331)
+   record.put("field_e", 998876324)
+   record.put("field_f", "stringy mcstring face")
+   record.put("field_g", "another string")
+   record.put("field_h", 821377124)
+   record.put("field_i", listOf(55, 66, 88, 99, 77, 88, 99, 66, 55, 44, 33, 22, 11))
+   Files.write(Paths.get("benchmark.avro"), record.toBinaryByteArrayAvro())
+}

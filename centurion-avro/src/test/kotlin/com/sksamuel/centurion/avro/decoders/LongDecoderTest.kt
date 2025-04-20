@@ -6,10 +6,6 @@ import org.apache.avro.Schema
 
 class LongDecoderTest : FunSpec({
 
-   beforeSpec {
-      Decoder.useStrictPrimitiveDecoders = false
-   }
-
    test("bytes") {
       val schema = Schema.create(Schema.Type.LONG)
       LongDecoder.decode(schema, 1.toByte()) shouldBe 1L

@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.io
 
 import com.sksamuel.centurion.avro.User
 import com.sksamuel.centurion.avro.UserType
-import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.io.serde.ReflectionSerdeFactory
 import com.sksamuel.centurion.avro.io.serde.SerdeOptions
 import io.kotest.core.spec.style.FunSpec
@@ -10,10 +9,6 @@ import io.kotest.matchers.shouldBe
 import kotlin.random.Random
 
 class SerdeTest : FunSpec({
-
-   beforeSpec {
-      Decoder.useStrictPrimitiveDecoders = false
-   }
 
    test("round trip happy path") {
       val user = User(
