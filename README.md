@@ -7,7 +7,7 @@
 
 ## Introduction
 
-Centurion is a JVM (written in Kotlin) toolkit for columnar and streaming formats.
+Centurion is a Kotlin toolkit for columnar and streaming formats.
 
 This library provides convenient methods to read, write and convert between the following formats:
 
