@@ -23,6 +23,7 @@ fun interface Decoder<T> {
 
    companion object {
 
+      @Suppress("UNCHECKED_CAST")
       fun decoderFor(type: KType): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
             String::class -> StringDecoder
@@ -45,7 +46,7 @@ fun interface Decoder<T> {
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
-            is KClass<*> if classifier.isData -> ReflectionRecordDecoder(classifier as KClass<Any>)
+            is KClass<*> if classifier.isData -> ReflectionRecordDecoder<Any>()
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder

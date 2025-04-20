@@ -1,4 +1,4 @@
-@file:Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@file:Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "PropertyName")
 
 package com.sksamuel.centurion.avro.decoders
 
@@ -73,7 +73,7 @@ fun main() {
       val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
       val record = GenericData.Record(schema)
       val reader = GenericDatumReader<GenericRecord>(schema)
-      val decoder = ReflectionRecordDecoder<Foo>(Foo::class)
+      val decoder = ReflectionRecordDecoder<Foo>()
       val time = measureTime {
          repeat(reps) {
             val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, df))

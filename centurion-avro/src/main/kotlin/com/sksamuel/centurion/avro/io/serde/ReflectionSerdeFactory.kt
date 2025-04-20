@@ -27,11 +27,11 @@ object ReflectionSerdeFactory : SerdeFactory() {
    ): Serde<T> {
       val schema = ReflectionSchemaBuilder(true).schema(kclass)
       val encoder = SpecificReflectionRecordEncoder<T>()
-      val decoder = ReflectionRecordDecoder(kclass)
+      val decoder = ReflectionRecordDecoder<T>(kclass)
       return when (format) {
          Format.Binary -> BinarySerde(schema, encoder, decoder, options)
-         Format.Data -> TODO()
-         Format.Json -> TODO()
+         Format.Data -> DataSerde(schema, encoder, decoder, options)
+         Format.Json -> JsonSerde(schema, encoder, decoder, options)
       }
    }
 }

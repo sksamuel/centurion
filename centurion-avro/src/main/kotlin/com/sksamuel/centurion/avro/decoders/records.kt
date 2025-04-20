@@ -6,19 +6,24 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class ReflectionRecordDecoder<T : Any>(
-   private val kclass: KClass<T>,
-) : Decoder<T> {
+/**
+ * A [Decoder] that returns a Kotlin data class [T] for a given [org.apache.avro.generic.GenericRecord],
+ * using reflection to access the fields of the data class.
+ *
+ * The [ReflectionRecordDecoder] will cache the reflection calls for each data class
+ * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
+ * verus programmatically generated decoders of around 10-15%.
+ */
+class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
 
    init {
-      require(kclass.isData) { "SpecificRecordDecoder only support data classes: was $kclass" }
+      require(kclass.isData) { "ReflectionRecordDecoder can only be used with data classes: was $kclass" }
    }
 
    companion object {
-      inline operator fun <reified T : Any> invoke() = ReflectionRecordDecoder(T::class)
+      inline operator fun <reified T : Any> invoke(): ReflectionRecordDecoder<T> = ReflectionRecordDecoder(T::class)
    }
 
-   private val constructor = kclass.primaryConstructor ?: error("No primary constructor")
    private val decoders = ConcurrentHashMap<String, (GenericRecord) -> T>()
 
    override fun decode(schema: Schema, value: Any?): T {
@@ -28,6 +33,8 @@ class ReflectionRecordDecoder<T : Any>(
    }
 
    private fun decoderFn(schema: Schema): (GenericRecord) -> T {
+
+      val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
          val decoder = Decoder.decoderFor(param.type)
