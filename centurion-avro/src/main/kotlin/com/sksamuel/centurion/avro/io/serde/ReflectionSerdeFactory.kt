@@ -3,12 +3,15 @@ package com.sksamuel.centurion.avro.io.serde
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.SpecificReflectionRecordEncoder
-import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import com.sksamuel.centurion.avro.io.Format
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import kotlin.reflect.KClass
 
 /**
  * A [ReflectionSerdeFactory] will create a [Serde] for a given type using reflection based builders.
+ *
+ * The underlying reflection based builders will cache reflection information for the given type
+ * so the serde should be reused for performance.
  *
  * This instance is thread safe.
  */

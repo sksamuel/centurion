@@ -8,8 +8,14 @@ import java.nio.ByteBuffer
  * and applying decompression before deserialization.
  *
  * Note: Compression is not super effective on objects with low repeatabilty of strings.
+ *
+ * @param codec the Avro [Codec] to use for compression.
+ * @param serde the [Serde] to delegate to for serialization and deserialization.
  */
-class CompressingSerde<T : Any>(private val codec: Codec, private val serde: Serde<T>) : Serde<T> {
+class CompressingSerde<T : Any>(
+   private val codec: Codec,
+   private val serde: Serde<T>,
+) : Serde<T> {
 
    override fun serialize(obj: T): ByteArray {
       val bytes = serde.serialize(obj)

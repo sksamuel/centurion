@@ -5,10 +5,8 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 /**
- * A [CachedSerdeFactory] will create a [Serde] once for a given type via delegation
- * to a [ReflectionSerdeFactory] and return that cached [Serde] upon future invocations.
- *
- * This allows the reflection setup calls to be invoked only once per type.
+ * A [CachedSerdeFactory] will create a [Serde] once per type by delegating to a provided [SerdeFactory].
+ * Upon subsequent requests for the same type, it will return the cached instance.
  *
  * This instance is thread safe.
  */
