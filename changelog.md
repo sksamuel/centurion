@@ -2,9 +2,11 @@
 
 ### 1.4.0 (April 2025)
 
-* Use LambdaMetafactory and MethodHandles for much improved reflection performance
+* Use LambdaMetafactory and MethodHandles for much improved reflection performance in encoding and decoding records.
 * Simplified the Encoder and Decoder interfaces
 * Optimized encoding and decoding for Long and Integer sets, longs and arrays.
+* Removed obsolete strict decoding option
+* Decoder.map changed to be an extension function.
 
 ### 1.3.3 (May 2024)
 
@@ -36,8 +38,8 @@
 
 ### 1.2.0 (April 2024)
 
-* Renamed AvroBinaryWriter to BinaryWriter, and AvroBinaryReader to BinaryReader
-* Added convenience functions to BinaryWriter and BinaryReader for single object operations.
+* Renamed `AvroBinaryWriter to `BinaryWriter`, and `AvroBinaryReader` to `BinaryReader`
+* Added convenience functions to `BinaryWriter and `BinaryReader` for single object operations.
 * Added `Serde` class for convenient reflection based serialization and deserialization
 * Added `CachedSpecificRecordEncoder` to cache lazily created [SpecificRecordEncoder] instances.
 * Support strings and utf8 when decoding enums
