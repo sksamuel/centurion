@@ -11,7 +11,7 @@ class SpecificRecordDecoder<T : Any>(
 ) : Decoder<T> {
 
    init {
-      require(kclass.isData) { "SpecificRecordDecoder only support data class: was $kclass" }
+      require(kclass.isData) { "SpecificRecordDecoder only support data classes: was $kclass" }
    }
 
    companion object {

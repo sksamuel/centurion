@@ -20,13 +20,6 @@ fun interface Decoder<T> {
 
    fun decode(schema: Schema, value: Any?): T
 
-   fun <U> map(fn: (T) -> U): Decoder<U> {
-      val self = this
-      return Decoder { schema, value ->
-         fn(self.decode(schema, value))
-      }
-   }
-
    companion object {
 
       /**
@@ -56,5 +49,12 @@ fun interface Decoder<T> {
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
       }
+   }
+}
+
+fun <T, U> Decoder<T>.map(fn: (T) -> U): Decoder<U> {
+   val self = this
+   return Decoder { schema, value ->
+      fn(self.decode(schema, value))
    }
 }

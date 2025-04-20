@@ -2,6 +2,7 @@
 
 package com.sksamuel.centurion.avro.decoders
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
@@ -62,24 +63,16 @@ fun main() {
    val sets = 5
    val reps = 10_000_000
 
-//   repeat(sets) {
-//      val mapper = jacksonObjectMapper()
-//      var size = 0
-//      val time = measureTime {
-//         repeat(reps) {
-//            size += mapper.readTree(json).size()
-//         }
-//      }
-//      println("Deserialize Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-//   }
+   Decoder.useStrictPrimitiveDecoders = true
 
    repeat(sets) {
+      val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
       val record = GenericData.Record(schema)
       val reader = GenericDatumReader<GenericRecord>(schema)
       val decoder = SpecificRecordDecoder<Foo>(Foo::class)
       val time = measureTime {
          repeat(reps) {
-            val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, null))
+            val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, df))
             decoder.decode(schema, record)
          }
       }
@@ -87,11 +80,12 @@ fun main() {
    }
 
    repeat(sets) {
+      val df = DecoderFactory.get().binaryDecoder(emptyArray<Byte>().toByteArray(), null)
       val record = GenericData.Record(schema)
       val reader = GenericDatumReader<GenericRecord>(schema)
       val time = measureTime {
          repeat(reps) {
-            val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, null))
+            val record = reader.read(record, DecoderFactory.get().binaryDecoder(avro, df))
             Foo(
                record.get("field_a").toString(),
                record.get("field_b") as Boolean,
@@ -107,5 +101,15 @@ fun main() {
       println("Deserialize Avro bytes (Programatically):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
    }
 
+   repeat(sets) {
+      val mapper = jacksonObjectMapper()
+      var size = 0
+      val time = measureTime {
+         repeat(reps) {
+            size += mapper.readTree(json).size()
+         }
+      }
+      println("Deserialize Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+   }
 }
 
