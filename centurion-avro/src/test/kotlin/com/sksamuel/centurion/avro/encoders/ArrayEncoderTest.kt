@@ -9,7 +9,7 @@ class ArrayEncoderTest : FunSpec({
 
    test("encoding list of strings") {
       val schema = Schema.createArray(Schema.create(Schema.Type.STRING))
-      ArrayEncoder(StringEncoder).encode(schema).invoke(arrayOf("foo", "bar")) shouldBe listOf(Utf8("foo"), Utf8("bar"))
+      ArrayEncoder(StringEncoder).encode(schema, arrayOf("foo", "bar")) shouldBe listOf(Utf8("foo"), Utf8("bar"))
    }
 
 })

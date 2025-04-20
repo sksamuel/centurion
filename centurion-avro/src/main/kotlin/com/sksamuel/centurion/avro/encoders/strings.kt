@@ -11,14 +11,15 @@ import java.util.UUID
  * bytes, fixed, utf8 or a java String type.
  */
 object StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema): (String) -> Any? {
+   override fun encode(schema: Schema, value: String): Any? {
+
       if (Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String")
-         return JavaStringEncoder.encode(schema)
+         return value
 
       return when (schema.type) {
-         Schema.Type.STRING -> UTF8StringEncoder.encode(schema)
-         Schema.Type.BYTES -> ByteStringEncoder.encode(schema)
-         Schema.Type.FIXED -> FixedStringEncoder.encode(schema)
+         Schema.Type.STRING -> UTF8StringEncoder
+         Schema.Type.BYTES -> ByteStringEncoder
+         Schema.Type.FIXED -> FixedStringEncoder
          else -> error("Unsupported type for string schema: $schema")
       }
    }
@@ -29,49 +30,47 @@ object StringEncoder : Encoder<String> {
  * of any [GenericData.STRING_PROP] settings on the schema.
  */
 object JavaStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema): (String) -> Any? = { it }
+   override fun encode(schema: Schema, value: String): Any? = value
 }
 
 /**
  * An [Encoder] for UUID that encodes as avro [Utf8]s.
  */
 object Utf8UUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema): (UUID) -> Any? = { Utf8(it.toString()) }
+   override fun encode(schema: Schema, value: UUID): Any? = Utf8(value.toString())
 }
 
 /**
  * An [Encoder] for UUID that encodes as JVM Strings.
  */
 object JavaStringUUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema): (UUID) -> Any? = { it.toString() }
+   override fun encode(schema: Schema, value: UUID): Any? = value.toString()
 }
 
 /**
  * An [Encoder] for Strings that encodes as avro [Utf8]s.
  */
 object UTF8StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema): (String) -> Any? = { Utf8(it) }
+   override fun encode(schema: Schema, value: String): Any? = Utf8(value)
 }
 
 /**
  * An [Encoder] for Strings that encodes as [ByteBuffer]s.
  */
 object ByteStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema): (String) -> Any? {
-      return { ByteBuffer.wrap(it.encodeToByteArray()) }
+   override fun encode(schema: Schema, value: String): Any? {
+      return { ByteBuffer.wrap(value.encodeToByteArray()) }
    }
 }
 
 /**
- * An [Encoder] for Strings that encodes as [GenericFixed]s.
+ * An [Encoder] for Strings that encodes as [org.apache.avro.generic.GenericFixed]s.
  */
 object FixedStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema): (String) -> Any? {
-      return { value ->
-         val bytes = value.encodeToByteArray()
-         if (bytes.size > schema.fixedSize)
-            error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
-         GenericData.get().createFixed(null, bytes, schema)
-      }
+   override fun encode(schema: Schema, value: String): Any? {
+      val bytes = value.encodeToByteArray()
+      if (bytes.size > schema.fixedSize)
+         error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
+      return GenericData.get().createFixed(null, bytes, schema)
    }
 }

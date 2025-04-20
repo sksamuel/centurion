@@ -5,6 +5,8 @@ import org.apache.avro.generic.GenericData
 import java.lang.invoke.LambdaMetafactory
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
+import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -72,12 +74,14 @@ class MethodHandlesEncoder<T : Any>(
       require(kclass.isData) { "Can only encode data classes: $kclass" }
    }
 
-   override fun encode(schema: Schema): (T) -> Any? {
+   private val encoders = ConcurrentHashMap<Int, List<Params>>()
+
+   private fun generateEncoders(schema: Schema): List<Params> {
       require(schema.type == Schema.Type.RECORD) { "Provided schema must be a RECORD" }
 
       val lookup = MethodHandles.lookup()
 
-      val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
+      return kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
 
          val avroField = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
 
@@ -97,25 +101,27 @@ class MethodHandlesEncoder<T : Any>(
             /* caller = */ lookup,
             /* interfaceMethodName = */ "apply", // the name of the method inside the interface
             /* factoryType = */ factoryType,
-            /* interfaceMethodType = */ MethodType.methodType(Any::class.java, Any::class.java), // erased aply
+            /* interfaceMethodType = */ MethodType.methodType(Any::class.java, Any::class.java), // erased apply
             /* implementation = */ methodHandle, // this is the reflection call that will be inlined
             /* dynamicMethodType = */ interfaceMethodType, // runtime version of apply
          )
 
-         val fn = callSite.target.invoke() as java.util.function.Function<T, Any?>
+         val fn = callSite.target.invokeExact() as java.util.function.Function<Any?, Any?>
 
-         Triple(encoder.encode(avroField.schema()), fn, avroField.pos())
+         Params(encoder, fn, avroField.pos(), avroField.schema())
       }
+   }
 
-      return { value: T ->
-         val record = GenericData.Record(schema)
-         encoders.map { (encode, getter, pos) ->
-            val v = getter.apply(value)
-            val encoded = encode.invoke(v)
-            record.put(pos, encoded)
-         }
-         record
+   override fun encode(schema: Schema, value: T): Any? {
+      val encoders = encoders.getOrPut(0) { generateEncoders(schema) }
+      val record = GenericData.Record(schema)
+      encoders.map { (encode, getter, pos, schema) ->
+         val value = getter.apply(value)
+         val encoded = encode.encode(schema, value)
+         record.put(pos, encoded)
       }
+      return record
    }
 }
 
+private data class Params(val encoder: Encoder<Any?>, val fn: Function<Any?, Any?>, val pos: Int, val schema: Schema)

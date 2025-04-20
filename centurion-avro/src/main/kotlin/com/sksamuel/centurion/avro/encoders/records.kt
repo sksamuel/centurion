@@ -19,8 +19,8 @@ import kotlin.reflect.full.declaredMemberProperties
  */
 class ReflectionRecordEncoder : Encoder<Any> {
 
-   override fun encode(schema: Schema): (Any) -> Any? {
-      return { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema).invoke(value) }
+   override fun encode(schema: Schema, value: Any): Any? {
+      return SpecificRecordEncoder(value::class as KClass<Any>).encode(schema, value)
    }
 }
 
@@ -34,9 +34,9 @@ class CachedSpecificRecordEncoder : Encoder<Any> {
 
    private val encoders = ConcurrentHashMap<String, (Any) -> Any?>()
 
-   override fun encode(schema: Schema): (Any) -> Any? {
+   override fun encode(schema: Schema, value: Any): Any? {
       return encoders.getOrPut(schema.fullName) {
-         { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema) }
+         { value -> SpecificRecordEncoder(value::class as KClass<Any>).encode(schema, value) }
       }
    }
 }
@@ -63,24 +63,23 @@ class SpecificRecordEncoder<T : Any>(
       require(kclass.isData) { "Can only encode data classes: $kclass" }
    }
 
-   override fun encode(schema: Schema): (T) -> Any? {
+   override fun encode(schema: Schema, value: T): Any? {
       require(schema.type == Schema.Type.RECORD) { "Provided schema must be a RECORD" }
 
       val encoders = kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
          val field = schema.getField(member.name) ?: error("Could not find field ${member.name} in schema")
          val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
-         Triple(encoder.encode(field.schema()), member.getter, field.pos())
+         Triple(encoder, member.getter, field.pos())
       }
 
-      return { value ->
-         val record = GenericData.Record(schema)
-         encoders.map { (encode, getter, pos) ->
-            val v = getter.call(value)
-            val encoded = encode.invoke(v)
-            record.put(pos, encoded)
-         }
-         record
+      val record = GenericData.Record(schema)
+      encoders.map { (encoder, getter, pos) ->
+         val fieldSchema = schema.fields[pos].schema()
+         val value = getter.call(value)
+         val encoded = encoder.encode(fieldSchema, value)
+         record.put(pos, encoded)
       }
+      return record
    }
 }
 

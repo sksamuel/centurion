@@ -13,20 +13,20 @@ class InstantDecoderTest : FunSpec({
       val schema = Schema.create(Schema.Type.LONG)
       LogicalTypes.timestampMillis().addToSchema(schema)
       val input = Instant.ofEpochMilli(12345)
-      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema).invoke(input)) shouldBe input
+      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema, input)) shouldBe input
    }
 
    test("timestamp micros") {
       val schema = Schema.create(Schema.Type.LONG)
       LogicalTypes.timestampMicros().addToSchema(schema)
       val input = Instant.ofEpochMilli(12345)
-      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema).invoke(input)) shouldBe input
+      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema, input)) shouldBe input
    }
 
    test("instant as longs") {
       val schema = Schema.create(Schema.Type.LONG)
       val input = Instant.ofEpochMilli(12345)
-      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema).invoke(input)) shouldBe input
+      InstantDecoder.decode(schema).invoke(InstantEncoder.encode(schema, input)) shouldBe input
    }
 
 })

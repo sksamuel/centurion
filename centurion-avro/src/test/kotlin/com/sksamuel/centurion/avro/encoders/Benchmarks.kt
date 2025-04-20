@@ -44,7 +44,7 @@ fun main() {
       val encoder = ReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
-            encoder.encode(schema).invoke(user)
+            encoder.encode(schema, user)
          }
       }
       println("ReflectionRecordEncoder: $time")
@@ -54,7 +54,7 @@ fun main() {
       val encoder = SpecificRecordEncoder(User::class)
       val time = measureTime {
          repeat(reps) {
-            encoder.encode(schema).invoke(user)
+            encoder.encode(schema, user)
          }
       }
       println("SpecificRecordEncoder globalUseJavaString=false: $time")
@@ -65,7 +65,7 @@ fun main() {
       val encoder = SpecificRecordEncoder(User::class)
       val time = measureTime {
          repeat(reps) {
-            encoder.encode(schema).invoke(user)
+            encoder.encode(schema, user)
          }
       }
       println("SpecificRecordEncoder globalUseJavaString=true: $time")
@@ -73,25 +73,23 @@ fun main() {
 
    repeat(sets) {
 
-      val encoder = Encoder<User> { schema ->
-         {
-            val record = GenericData.Record(schema)
-            record.put("userId", it.userId)
-            record.put("name", Utf8(it.name))
-            record.put("email", Utf8(it.email))
-            record.put("lastActiveTimestamp", it.lastActiveTimestamp)
-            record.put("type", GenericData.get().createEnum("Admin", schema.getField("type").schema()))
-            record.put("location", Utf8(it.location))
-            record.put("age", it.age)
-            record.put("height", it.height)
-            record.put("weight", it.weight)
-            record
-         }
+      val encoder = Encoder<User> { schema, value ->
+         val record = GenericData.Record(schema)
+         record.put("userId", value.userId)
+         record.put("name", Utf8(value.name))
+         record.put("email", Utf8(value.email))
+         record.put("lastActiveTimestamp", value.lastActiveTimestamp)
+         record.put("type", GenericData.get().createEnum("Admin", schema.getField("type").schema()))
+         record.put("location", Utf8(value.location))
+         record.put("age", value.age)
+         record.put("height", value.height)
+         record.put("weight", value.weight)
+         record
       }
 
       val time = measureTime {
          repeat(reps) {
-            encoder.encode(schema).invoke(user)
+            encoder.encode(schema, user)
          }
       }
       println("CustomEncoder: $time")

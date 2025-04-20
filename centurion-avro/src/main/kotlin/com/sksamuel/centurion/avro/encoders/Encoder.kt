@@ -12,13 +12,13 @@ import kotlin.reflect.KType
  * An [Encoder] typeclass encodes a JVM value of type T into a value suitable
  * for use with Avro.
  *
- * For example, an encoder could encode a String as an instance of [Utf8],
- * or it could encode it as an instance of [GenericFixed].
+ * For example, an encoder could encode a String as an instance of [org.apache.avro.util.Utf8],
+ * or it could encode it as an instance of [org.apache.avro.generic.GenericFixed].
  *
- * Some encoders use the schema to determine the encoding function to return. For example, strings
- * can be encoded as [UTF8]s, [GenericFixed]s, [ByteBuffers] or [java.lang.String]s.
- * Therefore, the [Encoder<String>] typeclass instances uses the schema to select which of these
- * implementations to use.
+ * Some encoders use the schema to determine the encoding function to return. For example, Strings
+ * can be encoded as [org.apache.avro.util.Utf8]s, [org.apache.avro.generic.GenericFixed]s,
+ * [java.nio.ByteBuffer] or [java.lang.String]. Therefore, the [Encoder[String]] typeclass instance
+ * uses the schema to select which of these implementations to use.
  *
  * Other types do not require the schema at all. For example, the default Int [Encoder] always
  * returns a [java.lang.Integer] regardless of any schema input.
@@ -32,7 +32,9 @@ fun interface Encoder<T> {
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
-      fun <T : Any> identity(): Encoder<T> = Encoder { _ -> { it } }
+      fun <T : Any> identity(): Encoder<T> = object : Encoder<T> {
+         override fun encode(schema: Schema, value: T): Any? = value
+      }
 
       fun encoderFor(type: KType): Encoder<*> {
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
@@ -47,13 +49,9 @@ fun interface Encoder<T> {
             BigDecimal::class -> BigDecimalStringEncoder
             Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
             List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
-            LongArray::class -> LongArrayEncoder(LongEncoder)
-            IntArray::class -> IntArrayEncoder(IntEncoder)
-            Map::class -> MapEncoder(
-               if (globalUseJavaString) JavaStringEncoder else StringEncoder,
-               encoderFor(type.arguments[1].type!!)
-            )
-
+            LongArray::class -> LongArrayEncoder()
+            IntArray::class -> IntArrayEncoder()
+            Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
@@ -64,7 +62,7 @@ fun interface Encoder<T> {
       }
    }
 
-   fun encode(schema: Schema): (T) -> Any?
+   fun encode(schema: Schema, value: T): Any?
 
    /**
     * Returns an [Encoder<U>] by applying a function [fn] that maps a [U]
@@ -72,10 +70,8 @@ fun interface Encoder<T> {
     */
    fun <U> contraMap(fn: (U) -> T): Encoder<U> {
       val self = this
-      return Encoder { schema ->
-         val e: (T) -> Any? = self.encode(schema)
-         val f: (U) -> Any? = { value: U -> e.invoke(fn(value)) }
-         f
+      return Encoder { schema, value ->
+         self.encode(schema, fn(value))
       }
    }
 }

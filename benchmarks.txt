@@ -1,0 +1,39 @@
+with encoder returning a lambda,
+30,000,000 encodings
+
+Serialize with Jackson:                                                                              6580ms
+Serialize with Jackson:                                                                              6377ms
+Serialize with Jackson:                                                                              6404ms
+Serialize with Jackson:                                                                              6482ms
+Serialize with Jackson:                                                                              6390ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      4126ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      4072ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      4068ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      4077ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      4066ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     5119ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     5086ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     5108ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     5084ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     5082ms
+Serialize as Avro bytes:                                                                             3420ms
+Serialize as Avro bytes:                                                                             3416ms
+Serialize as Avro bytes:                                                                             3416ms
+Serialize as Avro bytes:                                                                             3417ms
+Serialize as Avro bytes:                                                                             3428ms
+
+without writing the bytes
+
+30,000,000 encodings
+Serialize with Jackson:                                                                              6867ms
+Serialize with Jackson:                                                                              6457ms
+Serialize with Jackson:                                                                              6428ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      1380ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      1380ms
+Serialize as Avro bytes (MethodHandlesEncoder):                                                      1378ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     2346ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     2323ms
+Serialize as Avro bytes (SpecificRecordEncoder):                                                     2328ms
+Serialize as Avro bytes:                                                                             687ms
+Serialize as Avro bytes:                                                                             682ms
+Serialize as Avro bytes:                                                                             687ms
