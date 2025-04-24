@@ -23,6 +23,8 @@ fun interface Decoder<T> {
 
    companion object {
 
+      var assumeJavaStrings: Boolean = false
+
       @Suppress("UNCHECKED_CAST")
       fun decoderFor(type: KType): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
@@ -34,19 +36,27 @@ fun interface Decoder<T> {
             Long::class -> LongDecoder
             Byte::class -> ByteDecoder
             Short::class -> ShortDecoder
-            List::class if type.arguments.first().type == typeOf<Long>() -> LongListDecoder
-            List::class if type.arguments.first().type == typeOf<Int>() -> IntListDecoder
+            List::class if type.arguments.first().type == typeOf<Long>() -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<Int>() -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<Short>() -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<String>() && assumeJavaStrings -> PassthroughListDecoder
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
-            Set::class if type.arguments.first().type == typeOf<Long>() -> LongSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Int>() -> IntSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Int>() -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Short>() -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<String>() && assumeJavaStrings -> PassthroughSetDecoder
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
-            is KClass<*> if classifier.isData -> ReflectionRecordDecoder<Any>()
+            is KClass<*> if classifier.isData -> ReflectionRecordDecoder(classifier as KClass<*>)
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
