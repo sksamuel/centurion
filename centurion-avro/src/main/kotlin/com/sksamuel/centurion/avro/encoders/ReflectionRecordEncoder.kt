@@ -33,7 +33,7 @@ internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
 class ReflectionRecordEncoder : Encoder<Any> {
 
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
-   private val lookup = MethodHandles.lookup()
+   private val lookup = MethodHandles.publicLookup()
 
    override fun encode(schema: Schema, value: Any): Any? {
       val encoders = encoders.getOrPut(value::class.java.name) { buildEncodings(schema, value::class) }
@@ -45,8 +45,6 @@ class ReflectionRecordEncoder : Encoder<Any> {
       }
       return record
    }
-
-   private fun fieldGetterName(name: String) = "get${name.replaceFirstChar { it.uppercase() }}"
 
    @Suppress("UNCHECKED_CAST")
    private fun buildEncodings(schema: Schema, kclass: KClass<out Any>): List<Encoding> {
@@ -81,6 +79,8 @@ class ReflectionRecordEncoder : Encoder<Any> {
          Encoding(encoder, fn, avroField.pos(), avroField.schema())
       }
    }
+
+   private fun fieldGetterName(name: String) = "get${name.replaceFirstChar { it.uppercase() }}"
 
    private data class Encoding(
       val encoder: Encoder<Any?>,

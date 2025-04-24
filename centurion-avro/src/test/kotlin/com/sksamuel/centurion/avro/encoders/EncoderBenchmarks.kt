@@ -1,12 +1,12 @@
 package com.sksamuel.centurion.avro.encoders
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.io.BinaryWriter
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
-import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import kotlin.time.measureTime
@@ -40,6 +40,7 @@ fun main() {
       val field_g: String,
       val field_h: Int,
 //      val field_i: List<Long>,
+//      val field_j: Set<Long>,
    )
 
    val ids = listOf(
@@ -67,6 +68,7 @@ fun main() {
       field_g = "another string",
       field_h = 821377124,
 //      field_i = ids,
+//      field_j = ids.toSet()
    )
 
    fun createRecordProgramatically(foo: Foo): GenericData.Record {
@@ -80,10 +82,11 @@ fun main() {
       record.put("field_g", foo.field_g)
       record.put("field_h", foo.field_h)
 //      record.put("field_i", foo.field_i)
+//      record.put("field_j", foo.field_j)
       return record
    }
 
-   val sets = 1
+   val sets = 5
    val reps = 30_000_000
 
    repeat(sets) {
@@ -94,80 +97,52 @@ fun main() {
             size += mapper.writeValueAsBytes(foo).size
          }
       }
-      println("Serialize with Jackson:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Serialize as Json (Jackson):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+   }
+
+   repeat(sets) {
+      var size = 0
+      val encoder = ReflectionRecordEncoder()
+      val time = measureTime {
+         repeat(reps) {
+            val baos = ByteArrayOutputStream()
+            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), null)
+            writer.use { it.write(foo) }
+            size += baos.toByteArray().size
+         }
+      }
+      println("Serialize as Avro bytes (BinaryWriter):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+   }
+
+   repeat(sets) {
+      var size = 0
+      val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
+      val encoder = ReflectionRecordEncoder()
+      val time = measureTime {
+         repeat(reps) {
+            val baos = ByteArrayOutputStream()
+            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), reuse)
+            writer.use { it.write(foo) }
+            size += baos.toByteArray().size
+         }
+      }
+      println("Serialize as Avro bytes (BinaryWriter;reused encoder):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
       var size = 0
       val writer = GenericDatumWriter<GenericRecord>(schema)
-      val encoder = ReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
-            size += (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size
+            val baos = ByteArrayOutputStream()
+            val encoder = EncoderFactory.get().binaryEncoder(baos, null)
+            val record = createRecordProgramatically(foo)
+            writer.write(record, encoder)
+            encoder.flush()
+            size += baos.toByteArray().size
          }
       }
-      println("Serialize as Avro bytes (MethodHandlesEncoder):".padEnd(100) + " ${time.inWholeMilliseconds}ms")
-   }
-
-   repeat(sets) {
-      val writer = GenericDatumWriter<GenericRecord>(schema)
-      val time = measureTime {
-         repeat(reps) {
-            createRecordProgramatically(foo).reusedEncoder(writer)
-         }
-      }
-      println("Serialize as Avro bytes:".padEnd(100) + " ${time.inWholeMilliseconds}ms")
+      println("Serialize as Avro bytes (Programatically):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
 }
-
-/**
- * Returns a byte array that contains the avro binary only.
- */
-fun GenericRecord.toBinaryByteArrayAvro(): ByteArray {
-   val baos = ByteArrayOutputStream()
-   val writer = GenericDatumWriter<GenericRecord>(schema)
-   val encoder = EncoderFactory.get().binaryEncoder(baos, null)
-   writer.write(this, encoder)
-   encoder.flush()
-   return baos.toByteArray()
-}
-
-/**
- * Returns a byte array that contains the avro binary only.
- */
-fun GenericRecord.toBinaryByteArrayAvro(writer: DatumWriter<GenericRecord>): ByteArray {
-   val baos = ByteArrayOutputStream()
-   val encoder = EncoderFactory.get().binaryEncoder(baos, null)
-   writer.write(this, encoder)
-   encoder.flush()
-   return baos.toByteArray()
-}
-
-private val encoder = EncoderFactory().binaryEncoder(ByteArrayOutputStream(), null)
-
-fun GenericRecord.reusedEncoder(writer: DatumWriter<GenericRecord>): ByteArray {
-   val baos = ByteArrayOutputStream()
-   val encoder = EncoderFactory.get().binaryEncoder(baos, encoder)
-   writer.write(this, encoder)
-   encoder.flush()
-   val bytes = baos.toByteArray()
-//   Files.write(Paths.get("benchmark.avro"), bytes)
-//   exitProcess(1)
-   return bytes
-}
-
-val factory: EncoderFactory = EncoderFactory().configureBufferSize(512)
-
-/**
- * Returns a byte array that contains the avro binary only.
- */
-fun GenericRecord.toByteArray(writer: DatumWriter<GenericRecord>): ByteArray {
-   val baos = ByteArrayOutputStream()
-   val encoder = factory.binaryEncoder(baos, null)
-   writer.write(this, encoder)
-   encoder.flush()
-   return baos.toByteArray()
-}
-
-

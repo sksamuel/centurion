@@ -4,15 +4,12 @@ package com.sksamuel.centurion.avro.decoders
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.sksamuel.centurion.avro.encoders.toBinaryByteArrayAvro
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.time.measureTime
 
 val foo2Schema = SchemaBuilder.record("foo2").fields()
@@ -145,5 +142,5 @@ fun writeAvro() {
    record.put("field_j", listOf(foo1, foo2))
    record.put("field_k", listOf(55, 66, 88, 99, 77, 88, 99, 66, 55, 44, 33, 22, 11))
 
-   Files.write(Paths.get("benchmark.avro"), record.toBinaryByteArrayAvro())
+//   Files.write(Paths.get("benchmark.avro"), record.toBinaryByteArrayAvro())
 }

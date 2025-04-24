@@ -3,9 +3,6 @@ package com.sksamuel.centurion.avro.io
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.decoders.schema
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
-import com.sksamuel.centurion.avro.encoders.reusedEncoder
-import org.apache.avro.generic.GenericDatumWriter
-import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
@@ -63,14 +60,16 @@ fun main() {
       field_k = ids.map { it.toInt() }.toSet(),
    )
 
-   val writer1 = GenericDatumWriter<GenericRecord>(schema)
-   val encoder = ReflectionRecordEncoder()
-   var size = (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer1).size
+   val baos = ByteArrayOutputStream()
+   val writer1 = BinaryWriter(schema, baos, ReflectionRecordEncoder(), EncoderFactory.get(), null)
+   writer1.write(foo)
+   writer1.close()
+   var size = baos.toByteArray().size
    println("Size Avro:".padEnd(50) + " ${size}b")
 
    val baos2 = ByteArrayOutputStream()
    val output2 = GZIPOutputStream(baos2)
-   val writer2 = BinaryWriter(schema, output2, encoder, EncoderFactory.get(), null)
+   val writer2 = BinaryWriter(schema, output2, ReflectionRecordEncoder(), EncoderFactory.get(), null)
    writer2.write(foo)
    writer2.close()
    size = baos2.toByteArray().size
