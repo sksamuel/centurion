@@ -6,6 +6,7 @@ import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.encoders.reusedEncoder
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
+import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
@@ -62,43 +63,28 @@ fun main() {
       field_k = ids.map { it.toInt() }.toSet(),
    )
 
-   val objects = 1_000_000
-
-   println("Encoding sizes for $objects objects")
-
-   val writer = GenericDatumWriter<GenericRecord>(schema)
+   val writer1 = GenericDatumWriter<GenericRecord>(schema)
    val encoder = ReflectionRecordEncoder()
-   var size = 0
-   repeat(objects) {
-      size += (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer).size
-   }
-   println("Size Avro:".padEnd(50) + " ${size / 1000000}Mb")
+   var size = (encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer1).size
+   println("Size Avro:".padEnd(50) + " ${size}b")
 
-   size = 0
-   repeat(objects) {
-      val baos = ByteArrayOutputStream()
-      val outputStream = GZIPOutputStream(baos)
-      outputStream.write((encoder.encode(schema, foo) as GenericRecord).reusedEncoder(writer))
-      outputStream.close()
-      size += baos.toByteArray().size
-   }
-   println("Size Avro Gzipped:".padEnd(50) + " ${size / 1000000}Mb")
+   val baos2 = ByteArrayOutputStream()
+   val output2 = GZIPOutputStream(baos2)
+   val writer2 = BinaryWriter(schema, output2, encoder, EncoderFactory.get(), null)
+   writer2.write(foo)
+   writer2.close()
+   size = baos2.toByteArray().size
+   println("Size Avro GZIPOutputStream:".padEnd(50) + " ${size}b")
 
    val mapper = jacksonObjectMapper()
-   size = 0
-   repeat(objects) {
-      size += mapper.writeValueAsBytes(foo).size
-   }
-   println("Size Jackson:".padEnd(50) + " ${size / 1000000}Mb")
+   size = mapper.writeValueAsBytes(foo).size
+   println("Size Jackson:".padEnd(50) + " ${size}b")
 
-   size = 0
-   repeat(objects) {
-      val baos = ByteArrayOutputStream()
-      val outputStream = GZIPOutputStream(baos)
-      outputStream.write(mapper.writeValueAsBytes(foo))
-      outputStream.close()
-      size += baos.toByteArray().size
-   }
-   println("Size Jackson Gzipped:".padEnd(50) + " ${size / 1000000}Mb")
+   val baos3 = ByteArrayOutputStream()
+   val output3 = GZIPOutputStream(baos3)
+   output3.write(mapper.writeValueAsBytes(foo))
+   output3.close()
+   size = baos3.toByteArray().size
+   println("Size Jackson Gzipped:".padEnd(50) + " ${size}b")
 
 }

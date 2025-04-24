@@ -15,10 +15,10 @@ import kotlin.reflect.full.declaredMemberProperties
  * A wrapper around a [ReflectionRecordEncoder] that is specific to a type [T].
  * All this class does is cast the value to [Any] before passing it to the [ReflectionRecordEncoder].
  */
-internal class SpecificReflectionRecordEncoder<T> : Encoder<T> {
+internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
    private val encoder = ReflectionRecordEncoder()
    override fun encode(schema: Schema, value: T): Any? {
-      return encoder.encode(schema, value as Any)
+      return encoder.encode(schema, value)
    }
 }
 
@@ -30,7 +30,7 @@ internal class SpecificReflectionRecordEncoder<T> : Encoder<T> {
  * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
  * verus programmatically generated encoders of around 10-15%.
  */
-class ReflectionRecordEncoder() : Encoder<Any> {
+class ReflectionRecordEncoder : Encoder<Any> {
 
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
    private val lookup = MethodHandles.lookup()

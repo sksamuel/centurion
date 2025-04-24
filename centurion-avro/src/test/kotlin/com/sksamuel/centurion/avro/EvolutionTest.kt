@@ -1,42 +1,54 @@
 package com.sksamuel.centurion.avro
 
-import com.sksamuel.centurion.avro.io.BinaryReaderFactory
-import com.sksamuel.centurion.avro.io.BinaryWriterFactory
+import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.io.BinaryReader
+import com.sksamuel.centurion.avro.io.BinaryWriter
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
-import org.apache.avro.generic.GenericData
-import org.apache.avro.util.Utf8
+import org.apache.avro.io.DecoderFactory
+import org.apache.avro.io.EncoderFactory
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 class EvolutionTest : FunSpec() {
 
    init {
       test("evolve schema by adding a nullable field") {
 
-         val schema1 = SchemaBuilder.record("foo").fields()
+         val writer = SchemaBuilder.record("foo").fields()
             .requiredString("a")
             .requiredBoolean("b")
             .endRecord()
 
-         val schema2 = SchemaBuilder.record("foo").fields()
+         val reader = SchemaBuilder.record("foo").fields()
             .requiredString("a")
             .requiredBoolean("b")
-            .optionalString("c")
+            .name("c").type(Schema.create(Schema.Type.STRING)).withDefault("foo")
             .endRecord()
 
-         val record1 = GenericData.Record(schema1)
-         record1.put("a", "hello")
-         record1.put("b", true)
+         data class Foo1(val a: String, val b: Boolean)
+         data class Foo2(val a: String, val b: Boolean, val c: String)
 
-         val bytes = BinaryWriterFactory().toBytes(record1)
-         val record2 = BinaryReaderFactory().reader(schema2, schema1, bytes).read()
+         val baos = ByteArrayOutputStream()
+         BinaryWriter(
+            schema = writer,
+            output = baos,
+            factory = EncoderFactory.get(),
+            encoder = ReflectionRecordEncoder(),
+            reuse = null,
+         ).use { it.write(Foo1("a", true)) }
 
-         record2["a"] shouldBe Utf8("hello")
-         record2["b"] shouldBe true
-         record2["c"] shouldBe null
-
+         BinaryReader(
+            writerSchema = writer,
+            readerSchema = reader,
+            input = ByteArrayInputStream(baos.toByteArray()),
+            factory = DecoderFactory.get(),
+            reuse = null,
+            decoder = ReflectionRecordDecoder<Foo2>()
+         ).read() shouldBe Foo2("a", true, "foo")
       }
    }
-
-
 }

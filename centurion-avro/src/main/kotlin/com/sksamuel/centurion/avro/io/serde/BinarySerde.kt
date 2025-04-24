@@ -1,13 +1,18 @@
 package com.sksamuel.centurion.avro.io.serde
 
 import com.sksamuel.centurion.avro.decoders.Decoder
+import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
-import com.sksamuel.centurion.avro.io.BinaryReaderFactory
-import com.sksamuel.centurion.avro.io.BinaryWriterFactory
+import com.sksamuel.centurion.avro.encoders.SpecificReflectionRecordEncoder
+import com.sksamuel.centurion.avro.io.BinaryReader
+import com.sksamuel.centurion.avro.io.BinaryWriter
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import kotlin.reflect.KClass
 
 /**
  * A [BinarySerde] reads and writes in the avro "binary" format which does not include the schema
@@ -15,27 +20,41 @@ import org.apache.avro.io.EncoderFactory
  * that the schema is provided at deserialization type.
  */
 class BinarySerde<T : Any>(
-   private val schema: Schema,
-   private val encoder: Encoder<T>,
-   private val decoder: Decoder<T>,
-   options: SerdeOptions,
+  private val schema: Schema,
+  private val encoder: Encoder<T>,
+  private val decoder: Decoder<T>,
+  private val encoderFactory: EncoderFactory,
+  private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
-   private val encoderFactory = EncoderFactory()
-      .configureBufferSize(options.encoderBufferSize)
-      .configureBlockSize(options.blockBufferSize)
+  companion object {
+    inline operator fun <reified T : Any> invoke(
+      encoderFactory: EncoderFactory,
+      decoderFactory: DecoderFactory,
+    ): BinarySerde<T> {
+      return invoke(T::class, encoderFactory, decoderFactory)
+    }
 
-   private val decoderFactory = DecoderFactory()
-      .configureDecoderBufferSize(options.decoderBufferSize)
+    operator fun <T : Any> invoke(
+      kclass: KClass<T>,
+      encoderFactory: EncoderFactory,
+      decoderFactory: DecoderFactory,
+    ): BinarySerde<T> {
+      val schema = ReflectionSchemaBuilder(true).schema(kclass)
+      val encoder = SpecificReflectionRecordEncoder<T>()
+      val decoder = ReflectionRecordDecoder<T>(kclass)
+      return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
+    }
+  }
 
-   private val writerFactory = BinaryWriterFactory(encoderFactory)
-   private val readerFactory = BinaryReaderFactory(decoderFactory)
+  override fun serialize(obj: T): ByteArray {
+    val baos = ByteArrayOutputStream()
+    val writer = BinaryWriter(schema, baos, encoder, encoderFactory, null)
+    writer.use { writer.write(obj) }
+    return baos.toByteArray()
+  }
 
-   override fun serialize(obj: T): ByteArray {
-      return writerFactory.toBytes(encoder.encode(schema, obj) as GenericRecord)
-   }
-
-   override fun deserialize(bytes: ByteArray): T {
-      return decoder.decode(schema, readerFactory.fromBytes(schema, bytes))
-   }
+  override fun deserialize(bytes: ByteArray): T {
+    return BinaryReader(schema, ByteArrayInputStream(bytes), decoderFactory, decoder, null).use { it.read() }
+  }
 }

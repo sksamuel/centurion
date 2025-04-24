@@ -1,49 +1,38 @@
 package com.sksamuel.centurion.avro.io
 
+import com.sksamuel.centurion.avro.decoders.Decoder
 import org.apache.avro.Schema
-import org.apache.avro.file.CodecFactory
 import org.apache.avro.file.DataFileReader
 import org.apache.avro.file.SeekableByteArrayInput
 import org.apache.avro.file.SeekableInput
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
-import org.apache.avro.io.DatumReader
-import org.apache.avro.io.DecoderFactory
 
 /**
- * Creates a [DataReaderFactory] for a given schema which can then be used to create [DataReader]s.
- *
- * All readers created from this factory share a thread safe [DatumReader] for efficiency.
- *
- * Pass in a pre-created [DecoderFactory] if you wish to configure buffer size.
+ * Creates a reader for a given schema which can then be used to read data classes of type [T]
  */
-class DataReaderFactory(
-   reader: Schema,
-   writer: Schema,
-   private val factory: DecoderFactory,
-   private val codecFactory: CodecFactory,
-) {
+class DataReader<T>(
+   private val input: SeekableInput,
+   private val schema: Schema,
+   private val decoder: Decoder<T>,
+) : AutoCloseable {
 
-   private val datum = GenericDatumReader<GenericRecord>(reader, writer)
+   constructor(
+      bytes: ByteArray,
+      schema: Schema,
+      decoder: Decoder<T>
+   ) : this(SeekableByteArrayInput(bytes), schema, decoder)
 
-   /**
-    * Creates a [DataReader] that reads from the given [ByteArray].
-    */
-   fun reader(bytes: ByteArray): DataReader {
-      return DataReader(SeekableByteArrayInput(bytes), datum)
-   }
-}
-
-class DataReader(private val input: SeekableInput, datum: DatumReader<GenericRecord>) : AutoCloseable {
-
+   private val datum = GenericDatumReader<GenericRecord>(schema)
    private val reader = DataFileReader.openReader(input, datum)
 
-   fun hasNext() = reader.hasNext()
-   fun read(): GenericRecord = reader.next()
-   fun iterator() = reader.iterator()
+   fun hasNext(): Boolean = reader.hasNext()
+   fun next(): T = decoder.decode(schema, reader.next())
+   fun sequence(): Sequence<T> = reader.asIterable().asSequence().map { decoder.decode(schema, it) }
 
    override fun close() {
       reader.close()
       input.close()
    }
 }
+
