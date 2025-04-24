@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
@@ -16,7 +15,8 @@ import kotlin.reflect.full.primaryConstructor
  * ensure that you create a reflection based decoder once and re-use it throughout your project.
  *
  * Instances of this class are thread safe.
- */class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
+ */
+class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
 
    init {
       require(kclass.isData) { "ReflectionRecordDecoder can only be used with data classes: was $kclass" }
@@ -26,12 +26,16 @@ import kotlin.reflect.full.primaryConstructor
       inline operator fun <reified T : Any> invoke(): ReflectionRecordDecoder<T> = ReflectionRecordDecoder(T::class)
    }
 
-   private val decoders = ConcurrentHashMap<String, (GenericRecord) -> T>()
+   // this isn't thread safe, but worst case is we generate the same encoders more than once
+   // in which case we will have a tiny performance hit initially, but the idea is this class is
+   // created once and re-used throughout the service's lifetime
+   private var decodeFn: ((GenericRecord) -> T)? = null
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
-      val decodeFn = decoders.getOrPut(value::class.java.name) { decoderFn(schema) }
-      return decodeFn(record)
+      if (decodeFn == null)
+         decodeFn = decoderFn(schema)
+      return decodeFn!!(record)
    }
 
    private fun decoderFn(schema: Schema): (GenericRecord) -> T {

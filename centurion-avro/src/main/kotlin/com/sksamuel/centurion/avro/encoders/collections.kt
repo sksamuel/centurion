@@ -1,7 +1,6 @@
 package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericArray
 
 /**
  * An [Encoder] for Arrays of [T].
@@ -35,7 +34,7 @@ class IntArrayEncoder : Encoder<IntArray> {
 }
 
 /**
- * An [Encoder] for Lists of [T] that encodes into an Avro [GenericArray].
+ * An [Encoder] for Lists of [T] that encodes each element using a delegated [encoder].
  */
 class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
    override fun encode(schema: Schema, value: List<T>): List<Any?> {
@@ -61,7 +60,7 @@ object PassThroughListEncoder : Encoder<List<Any?>> {
 }
 
 /**
- * An [Encoder] for Sets of [T] that encodes into an Avro [GenericArray].
+ * An [Encoder] for Sets of [T] that returns a list and encodes each element using a delegated [encoder].
  */
 class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
    override fun encode(schema: Schema, value: Set<T>): List<Any?> {

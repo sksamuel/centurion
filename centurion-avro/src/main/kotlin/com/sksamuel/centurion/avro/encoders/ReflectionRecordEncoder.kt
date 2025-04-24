@@ -5,7 +5,6 @@ import org.apache.avro.generic.GenericData
 import java.lang.invoke.LambdaMetafactory
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
-import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -35,12 +34,18 @@ internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
  */
 class ReflectionRecordEncoder<T : Any> : Encoder<T> {
 
-   private val encoders = ConcurrentHashMap<String, List<Encoding>>()
+   // this isn't thread safe, but worst case is we generate the same encoders more than once
+   // in which case we will have a tiny performance hit initially, but the idea is this class is
+   // created once and re-used throughout the service's lifetime
+   private var encoders: List<Encoding>? = null
 
    override fun encode(schema: Schema, value: T): Any? {
-      val encoders = encoders.getOrPut(value::class.java.name) { buildEncodings(schema, value::class) }
+
+      if (encoders == null)
+         encoders = buildEncodings(schema, value::class)
+
       val record = GenericData.Record(schema)
-      encoders.map { (encoder, getter, pos, schema) ->
+      encoders!!.map { (encoder, getter, pos, schema) ->
          val value = getter.apply(value)
          val encoded = encoder.encode(schema, value)
          record.put(pos, encoded)
