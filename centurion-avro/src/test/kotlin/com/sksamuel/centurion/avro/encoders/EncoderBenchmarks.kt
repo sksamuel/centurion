@@ -86,8 +86,8 @@ fun main() {
       return record
    }
 
-   val sets = 5
-   val reps = 30_000_000
+   val sets = 3
+   val reps = 20_000_000
 
    repeat(sets) {
       val mapper = jacksonObjectMapper()

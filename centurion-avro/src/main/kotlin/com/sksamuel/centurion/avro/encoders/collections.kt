@@ -46,6 +46,21 @@ class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
 }
 
 /**
+ * PassThroughListEncoder is an implementation of the [Encoder] interface specifically designed for encoding
+ * a list of values ([List<Any?>]) without any transformation. It is primarily used for cases where the input
+ * list should be passed through as-is and no additional encoding logic is required.
+ *
+ * This encoder ensures the schema type is [Schema.Type.ARRAY]. If the schema type does not match, an
+ * exception is thrown.
+ */
+object PassThroughListEncoder : Encoder<List<Any?>> {
+   override fun encode(schema: Schema, value: List<Any?>): List<Any?> {
+      require(schema.type == Schema.Type.ARRAY)
+      return value
+   }
+}
+
+/**
  * An [Encoder] for Sets of [T] that encodes into an Avro [GenericArray].
  */
 class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
@@ -53,6 +68,13 @@ class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
       require(schema.type == Schema.Type.ARRAY)
       return if (value.isEmpty()) emptyList()
       else value.map { encoder.encode(schema.elementType, it) }
+   }
+}
+
+object PassThroughSetEncoder : Encoder<Set<Any?>> {
+   override fun encode(schema: Schema, value: Set<Any?>): List<Any?> {
+      require(schema.type == Schema.Type.ARRAY)
+      return value.toList()
    }
 }
 

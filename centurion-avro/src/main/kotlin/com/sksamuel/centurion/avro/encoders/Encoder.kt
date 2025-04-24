@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 /**
  * An [Encoder] typeclass encodes a JVM value of type T into a value suitable
@@ -47,10 +48,20 @@ fun interface Encoder<T> {
             Short::class -> ShortEncoder
             Byte::class -> ByteEncoder
             BigDecimal::class -> BigDecimalStringEncoder
-            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
+            List::class if type.arguments.first().type == typeOf<Long>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Int>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Short>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughListEncoder
             List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
             LongArray::class -> LongArrayEncoder()
             IntArray::class -> IntArrayEncoder()
+            Set::class if type.arguments.first().type == typeOf<Long>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Int>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Short>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
+            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
             Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder

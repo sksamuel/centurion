@@ -36,7 +36,7 @@ internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
 class ReflectionRecordEncoder : Encoder<Any> {
 
    companion object {
-      val INSTANCE: ReflectionRecordEncoder = ReflectionRecordEncoder()
+      val INSTANCE = ReflectionRecordEncoder()
    }
 
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
