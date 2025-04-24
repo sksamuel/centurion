@@ -13,7 +13,7 @@ import java.io.InputStream
  */
 class BinaryReader<T>(
    writerSchema: Schema,
-   readerSchema: Schema,
+   private val readerSchema: Schema,
    private val input: InputStream,
    factory: DecoderFactory,
    val decoder: Decoder<T>,
@@ -33,7 +33,7 @@ class BinaryReader<T>(
 
    fun read(): T {
       val record = datum.read(null, binaryDecoder)
-      return decoder.decode(record.schema, record)
+      return decoder.decode(readerSchema, record)
    }
 
    override fun close() {

@@ -4,7 +4,6 @@ package com.sksamuel.centurion.avro.decoders
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
@@ -64,9 +63,8 @@ data class Foo(
 
 fun main() {
 
-   Decoder.assumeJavaStrings = true
-   Encoder.globalUseJavaString = true
    GenericData.get().setFastReaderEnabled(true)
+   GenericData.setStringType(schema, GenericData.StringType.String)
 
    val avro = createAvroBytes()
    val json = createJson()

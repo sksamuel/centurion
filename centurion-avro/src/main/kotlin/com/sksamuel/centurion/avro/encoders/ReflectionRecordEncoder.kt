@@ -54,7 +54,7 @@ class ReflectionRecordEncoder<T : Any> : Encoder<T> {
             ?: error("Could not find Java getter method for ${member.name}")
 
          val methodHandle = lookup.unreflect(getter)
-         val encoder = Encoder.encoderFor(member.returnType) as Encoder<Any?>
+         val encoder = Encoder.encoderFor(member.returnType, schema.getProp(GenericData.STRING_PROP)) as Encoder<Any?>
 
          // this is the interface we're going to be implementing with the interface method type
          val factoryType = MethodType.methodType(Function::class.java)

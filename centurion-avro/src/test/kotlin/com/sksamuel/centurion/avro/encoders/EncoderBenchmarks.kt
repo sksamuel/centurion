@@ -13,8 +13,6 @@ import kotlin.time.measureTime
 
 fun main() {
 
-   Encoder.globalUseJavaString = true
-
    val arraySchema = SchemaBuilder.array().items().longType()
    val stringArrays = SchemaBuilder.array().items().stringType()
    val schema: Schema =

@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -11,7 +12,7 @@ import kotlin.reflect.full.primaryConstructor
  *
  * The [ReflectionRecordDecoder] will cache the reflection calls upon first use.
  * This encoder requires a small overhead in CPU time to build the reflection calls,
- * verus programmatically generated decoders of around 10-15%. To benefit from the cached encodings,
+ * verus programmatically generated decoders of around 15-20%. To benefit from the cached encodings,
  * ensure that you create a reflection based decoder once and re-use it throughout your project.
  *
  * Instances of this class are thread safe.
@@ -43,7 +44,7 @@ class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<
       val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
-         val decoder = Decoder.decoderFor(param.type)
+         val decoder = Decoder.decoderFor(param.type, schema.getProp(GenericData.STRING_PROP))
          Decoding(avroField.pos(), decoder, avroField.schema())
       }
 

@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.decoders
 
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import java.time.Instant
 import java.time.LocalTime
 import kotlin.reflect.KClass
@@ -23,11 +24,11 @@ fun interface Decoder<T> {
 
    companion object {
 
-      var assumeJavaStrings: Boolean = false
-
       @Suppress("UNCHECKED_CAST")
-      fun decoderFor(type: KType): Decoder<*> {
+      fun decoderFor(type: KType, stringType: String?): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
+            // this prop seems to be ignored by the fast reader implementation
+            String::class if GenericData.StringType.String.name == stringType -> StringTypeDecoder
             String::class -> StringDecoder
             Boolean::class -> BooleanDecoder
             Float::class -> FloatDecoder
@@ -41,8 +42,8 @@ fun interface Decoder<T> {
             List::class if type.arguments.first().type == typeOf<Short>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<String>() && assumeJavaStrings -> PassthroughListDecoder
-            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!))
+            List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughListDecoder
+            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
@@ -50,9 +51,9 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Short>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<String>() && assumeJavaStrings -> PassthroughSetDecoder
-            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!))
-            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!))
+            Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughSetDecoder
+            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType))
+            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)

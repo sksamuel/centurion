@@ -12,10 +12,6 @@ import java.util.UUID
  */
 object StringEncoder : Encoder<String> {
    override fun encode(schema: Schema, value: String): Any? {
-
-      if (Encoder.globalUseJavaString || schema.getProp(GenericData.STRING_PROP) == "String")
-         return value
-
       return when (schema.type) {
          Schema.Type.STRING -> UTF8StringEncoder.encode(schema, value)
          Schema.Type.BYTES -> ByteStringEncoder.encode(schema, value)

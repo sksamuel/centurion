@@ -112,7 +112,6 @@ class ReflectionRecordEncoderTest : FunSpec({
       data class Foo(val map: Map<String, Map<String, Int>>)
 
       val maps = mapOf("a" to mapOf("a" to 1, "b" to 2), "b" to mapOf("a" to 3, "b" to 4))
-      Encoder.globalUseJavaString = true
 
       val schema = SchemaBuilder.record("Foo").namespace(Foo::class.java.packageName)
          .fields()
@@ -125,7 +124,6 @@ class ReflectionRecordEncoderTest : FunSpec({
       ReflectionRecordEncoder<Foo>().encode(
          schema, Foo(maps)
       ) shouldBe record
-      Encoder.globalUseJavaString = false
    }
 })
 

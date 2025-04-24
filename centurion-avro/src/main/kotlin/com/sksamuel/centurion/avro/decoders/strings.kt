@@ -25,6 +25,16 @@ object StringDecoder : Decoder<String> {
 }
 
 /**
+ * A [Decoder] for [String]s that assumes the incoming type is a Java compatible String.
+ * Ie, it's already a UTF8 or CharSequence
+ */
+object StringTypeDecoder : Decoder<String> {
+   override fun decode(schema: Schema, value: Any?): String {
+      return value.toString()
+   }
+}
+
+/**
  * A [Decoder] for [CharSequence] that pattern matches on the incoming type to decode.
  *
  * The schema is not used, meaning this decoder is forgiving of types that do not conform to

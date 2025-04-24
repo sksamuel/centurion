@@ -1,6 +1,7 @@
 package com.sksamuel.centurion.avro.encoders
 
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
@@ -28,8 +29,6 @@ fun interface Encoder<T> {
 
    companion object {
 
-      var globalUseJavaString: Boolean = false
-
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
@@ -37,9 +36,10 @@ fun interface Encoder<T> {
          override fun encode(schema: Schema, value: T): Any? = value
       }
 
-      fun encoderFor(type: KType): Encoder<*> {
+      fun encoderFor(type: KType, stringType: String?): Encoder<*> {
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
-            String::class -> if (globalUseJavaString) JavaStringEncoder else StringEncoder
+            String::class if GenericData.StringType.String.name == stringType -> JavaStringEncoder
+            String::class -> StringEncoder
             Boolean::class -> BooleanEncoder
             Float::class -> FloatEncoder
             Double::class -> DoubleEncoder
@@ -53,8 +53,8 @@ fun interface Encoder<T> {
             List::class if type.arguments.first().type == typeOf<Short>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughListEncoder
-            List::class if type.arguments.first().type == typeOf<String>() && globalUseJavaString -> PassThroughListEncoder
-            List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
+            List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughListEncoder
+            List::class -> ListEncoder(encoderFor(type.arguments.first().type!!, stringType))
             LongArray::class -> LongArrayEncoder()
             IntArray::class -> IntArrayEncoder()
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassThroughSetEncoder
@@ -62,9 +62,9 @@ fun interface Encoder<T> {
             Set::class if type.arguments.first().type == typeOf<Short>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
-            Set::class if type.arguments.first().type == typeOf<String>() && globalUseJavaString -> PassThroughSetEncoder
-            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
-            Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!))
+            Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughSetEncoder
+            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!, stringType))
+            Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!, stringType))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
