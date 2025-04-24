@@ -11,8 +11,9 @@ import java.io.ByteArrayOutputStream
 /**
  * A [DataSerde] reads and writes in the avro "data" format which includes the schema in the written bytes.
  *
- * This format results in larger sizes than [BinarySerde], clearly as the schema takes up space, but supports
- * schema evolution, as the deserializers can compare expected schema with the written schema.
+ * This format results in larger sizes than [BinarySerde], as clearly including the schema requires
+ * more bytes, but supports schema evolution, as the deserializers can compare the expected schema
+ * with the written schema.
  */
 class DataSerde<T : Any>(
   private val schema: Schema,

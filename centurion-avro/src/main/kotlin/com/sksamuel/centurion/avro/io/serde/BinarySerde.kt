@@ -16,8 +16,11 @@ import kotlin.reflect.KClass
 
 /**
  * A [BinarySerde] reads and writes in the avro "binary" format which does not include the schema
- * in the written bytes. This results in a smaller payload, similar to protobuf, but requires
- * that the schema is provided at deserialization type.
+ * in the written bytes.
+ *
+ * This results in a smaller payload compared to [DataSerde], similar to protobuf,
+ * but requires that the schema is provided at deserialization type. This format is especially
+ * effective when the consumers and producers can agree on the schema used, for instance in RPC style services.
  */
 class BinarySerde<T : Any>(
   private val schema: Schema,

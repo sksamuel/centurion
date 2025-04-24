@@ -5,12 +5,12 @@ import java.nio.ByteBuffer
 
 /**
  * A [CompressingSerde] wraps another [Serde] applying compression after serialization,
- * and applying decompression before deserialization.
+ * and applying decompression before deserialization, using avro [Codec]s.
  *
  * Note: Compression is not super effective on objects with low repeatabilty of strings.
  *
  * @param codec the Avro [Codec] to use for compression.
- * @param serde the [Serde] to delegate to for serialization and deserialization.
+ * @param serde the delegate [Serde].
  */
 class CompressingSerde<T : Any>(
    private val codec: Codec,
