@@ -29,11 +29,18 @@ internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
  * The [ReflectionRecordEncoder] is generic, and will cache the reflection calls for each data class
  * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
  * verus programmatically generated encoders of around 10-15%.
+ *
+ * Note: This encoder uses a MethodHandles lookup to find the getter methods for each field in the data class.
+ * This class is expensive, so a reflection record encoder should be created once and reused. It is thread safe.
  */
 class ReflectionRecordEncoder : Encoder<Any> {
 
+   companion object {
+      val INSTANCE: ReflectionRecordEncoder = ReflectionRecordEncoder()
+   }
+
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
-   private val lookup = MethodHandles.publicLookup()
+   private val lookup = MethodHandles.lookup()
 
    override fun encode(schema: Schema, value: Any): Any? {
       val encoders = encoders.getOrPut(value::class.java.name) { buildEncodings(schema, value::class) }

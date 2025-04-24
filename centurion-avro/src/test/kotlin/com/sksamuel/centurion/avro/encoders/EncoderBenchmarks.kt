@@ -26,8 +26,8 @@ fun main() {
          .requiredString("field_f")
          .requiredString("field_g")
          .requiredInt("field_h")
-//         .name("field_i")
-//         .type(arraySchema).noDefault()
+         .name("field_i").type(arraySchema).noDefault()
+         .name("field_j").type(arraySchema).noDefault()
          .endRecord()
 
    data class Foo(
@@ -39,8 +39,8 @@ fun main() {
       val field_f: String,
       val field_g: String,
       val field_h: Int,
-//      val field_i: List<Long>,
-//      val field_j: Set<Long>,
+      val field_i: List<Long>,
+      val field_j: Set<Long>,
    )
 
    val ids = listOf(
@@ -67,8 +67,8 @@ fun main() {
       field_f = "stringy mcstring face",
       field_g = "another string",
       field_h = 821377124,
-//      field_i = ids,
-//      field_j = ids.toSet()
+      field_i = ids,
+      field_j = ids.toSet()
    )
 
    fun createRecordProgramatically(foo: Foo): GenericData.Record {
@@ -81,8 +81,8 @@ fun main() {
       record.put("field_f", foo.field_f)
       record.put("field_g", foo.field_g)
       record.put("field_h", foo.field_h)
-//      record.put("field_i", foo.field_i)
-//      record.put("field_j", foo.field_j)
+      record.put("field_i", foo.field_i)
+      record.put("field_j", foo.field_j)
       return record
    }
 
@@ -102,11 +102,10 @@ fun main() {
 
    repeat(sets) {
       var size = 0
-      val encoder = ReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), null)
+            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), null)
             writer.use { it.write(foo) }
             size += baos.toByteArray().size
          }
@@ -117,11 +116,10 @@ fun main() {
    repeat(sets) {
       var size = 0
       val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
-      val encoder = ReflectionRecordEncoder()
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), reuse)
+            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), reuse)
             writer.use { it.write(foo) }
             size += baos.toByteArray().size
          }
