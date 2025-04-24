@@ -34,8 +34,7 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.12.0")
 
-         val kotest = "5.9.1"
-         library("kotest-datatest", "io.kotest:kotest-framework-datatest:$kotest")
+         val kotest = "6.0.0.M3"
          library("kotest-junit5", "io.kotest:kotest-runner-junit5:$kotest")
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
@@ -44,7 +43,6 @@ dependencyResolutionManagement {
          bundle(
             "testing",
             listOf(
-               "kotest-datatest",
                "kotest-junit5",
                "kotest-core",
                "kotest-json",
