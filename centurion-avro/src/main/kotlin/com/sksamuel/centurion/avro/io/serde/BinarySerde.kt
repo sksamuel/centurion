@@ -3,7 +3,7 @@ package com.sksamuel.centurion.avro.io.serde
 import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
-import com.sksamuel.centurion.avro.encoders.SpecificReflectionRecordEncoder
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
@@ -20,7 +20,8 @@ import kotlin.reflect.KClass
  *
  * This results in a smaller payload compared to [DataSerde], similar to protobuf,
  * but requires that the schema is provided at deserialization type. This format is especially
- * effective when the consumers and producers can agree on the schema used, for instance in RPC style services.
+ * effective when the consumers and producers can agree on the schema used, for instance in RPC
+ * style endpoints, or when the same application is used to read and write the data.
  */
 class BinarySerde<T : Any>(
   private val schema: Schema,
@@ -44,7 +45,7 @@ class BinarySerde<T : Any>(
       decoderFactory: DecoderFactory,
     ): BinarySerde<T> {
       val schema = ReflectionSchemaBuilder(true).schema(kclass)
-      val encoder = SpecificReflectionRecordEncoder<T>()
+      val encoder = ReflectionRecordEncoder<T>()
       val decoder = ReflectionRecordDecoder<T>(kclass)
       return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
     }

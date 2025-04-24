@@ -11,17 +11,6 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
- * A wrapper around a [ReflectionRecordEncoder] that is specific to a type [T].
- * All this class does is cast the value to [Any] before passing it to the [ReflectionRecordEncoder].
- */
-internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
-   private val encoder = ReflectionRecordEncoder<T>()
-   override fun encode(schema: Schema, value: T): Any? {
-      return encoder.encode(schema, value)
-   }
-}
-
-/**
  * An [Encoder] that returns a [org.apache.avro.generic.GenericRecord] for data classes, using
  * reflection to access the fields of the data class.
  *
