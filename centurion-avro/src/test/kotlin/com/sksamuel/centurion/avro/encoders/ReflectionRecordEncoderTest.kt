@@ -13,7 +13,7 @@ class ReflectionRecordEncoderTest : FunSpec({
       data class Foo(val a: String, val b: Boolean)
 
       val schema = SchemaBuilder.record("Foo").fields().requiredString("a").requiredBoolean("b").endRecord()
-      val actual = ReflectionRecordEncoder().encode(schema, Foo("hello", true))
+      val actual = ReflectionRecordEncoder<Foo>().encode(schema, Foo("hello", true))
 
       val expected = GenericData.Record(schema)
       expected.put("a", Utf8("hello"))
@@ -30,7 +30,7 @@ class ReflectionRecordEncoderTest : FunSpec({
          .name("wine").type(wineSchema).noDefault()
          .endRecord()
 
-      val actual = ReflectionRecordEncoder().encode(schema, Foo(Wine.Malbec))
+      val actual = ReflectionRecordEncoder<Foo>().encode(schema, Foo(Wine.Malbec))
 
       val expected = GenericData.Record(schema)
       expected.put("wine", GenericData.get().createEnum("Malbec", wineSchema))
@@ -59,7 +59,7 @@ class ReflectionRecordEncoderTest : FunSpec({
          )
       )
 
-      ReflectionRecordEncoder().encode(
+      ReflectionRecordEncoder<Foo>().encode(
          schema,
          Foo(setOf(1, 2), setOf(1L, null, 2L), setOf(Wine.Shiraz, Wine.Malbec))
       ) shouldBe expected
@@ -86,7 +86,7 @@ class ReflectionRecordEncoderTest : FunSpec({
          )
       )
 
-      ReflectionRecordEncoder().encode(
+      ReflectionRecordEncoder<Foo>().encode(
          schema,
          Foo(listOf(1, 2), listOf(1L, null, 2L), listOf(Wine.Shiraz, Wine.Malbec))
       ) shouldBe expected
@@ -105,7 +105,7 @@ class ReflectionRecordEncoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("map", map)
 
-      ReflectionRecordEncoder().encode(schema, Foo(map)) shouldBe record
+      ReflectionRecordEncoder<Foo>().encode(schema, Foo(map)) shouldBe record
    }
 
    test("maps of maps") {
@@ -122,7 +122,7 @@ class ReflectionRecordEncoderTest : FunSpec({
       val record = GenericData.Record(schema)
       record.put("map", maps)
 
-      ReflectionRecordEncoder().encode(
+      ReflectionRecordEncoder<Foo>().encode(
          schema, Foo(maps)
       ) shouldBe record
       Encoder.globalUseJavaString = false

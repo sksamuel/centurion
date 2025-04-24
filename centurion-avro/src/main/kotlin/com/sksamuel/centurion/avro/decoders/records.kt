@@ -10,11 +10,13 @@ import kotlin.reflect.full.primaryConstructor
  * A [Decoder] that returns a Kotlin data class [T] for a given [org.apache.avro.generic.GenericRecord],
  * using reflection to access the fields of the data class.
  *
- * The [ReflectionRecordDecoder] will cache the reflection calls for each data class
- * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
- * verus programmatically generated decoders of around 10-15%.
- */
-class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
+ * The [ReflectionRecordDecoder] will cache the reflection calls upon first use.
+ * This encoder requires a small overhead in CPU time to build the reflection calls,
+ * verus programmatically generated decoders of around 10-15%. To benefit from the cached encodings,
+ * ensure that you create a reflection based decoder once and re-use it throughout your project.
+ *
+ * Instances of this class are thread safe.
+ */class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
 
    init {
       require(kclass.isData) { "ReflectionRecordDecoder can only be used with data classes: was $kclass" }

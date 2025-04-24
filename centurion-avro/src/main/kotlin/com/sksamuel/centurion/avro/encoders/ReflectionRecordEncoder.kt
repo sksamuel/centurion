@@ -16,7 +16,7 @@ import kotlin.reflect.full.declaredMemberProperties
  * All this class does is cast the value to [Any] before passing it to the [ReflectionRecordEncoder].
  */
 internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
-   private val encoder = ReflectionRecordEncoder()
+   private val encoder = ReflectionRecordEncoder<T>()
    override fun encode(schema: Schema, value: T): Any? {
       return encoder.encode(schema, value)
    }
@@ -26,23 +26,18 @@ internal class SpecificReflectionRecordEncoder<T : Any> : Encoder<T> {
  * An [Encoder] that returns a [org.apache.avro.generic.GenericRecord] for data classes, using
  * reflection to access the fields of the data class.
  *
- * The [ReflectionRecordEncoder] is generic, and will cache the reflection calls for each data class
- * upon first use. This encoder requires a small overhead in CPU time to build the reflection calls,
- * verus programmatically generated encoders of around 10-15%.
+ * The [ReflectionRecordEncoder] will cache the reflection calls for each data class upon first use.
+ * This encoder requires a small overhead in CPU time to build the reflection calls,
+ * verus programmatically generated encoders of around 10-15%. To benefit from the cached encodings,
+ * ensure that you create a reflection based encoder once and re-use it throughout your project.
  *
- * Note: This encoder uses a MethodHandles lookup to find the getter methods for each field in the data class.
- * This class is expensive, so a reflection record encoder should be created once and reused. It is thread safe.
+ * Instances of this class are thread safe.
  */
-class ReflectionRecordEncoder : Encoder<Any> {
-
-   companion object {
-      val INSTANCE = ReflectionRecordEncoder()
-   }
+class ReflectionRecordEncoder<T : Any> : Encoder<T> {
 
    private val encoders = ConcurrentHashMap<String, List<Encoding>>()
-   private val lookup = MethodHandles.lookup()
 
-   override fun encode(schema: Schema, value: Any): Any? {
+   override fun encode(schema: Schema, value: T): Any? {
       val encoders = encoders.getOrPut(value::class.java.name) { buildEncodings(schema, value::class) }
       val record = GenericData.Record(schema)
       encoders.map { (encoder, getter, pos, schema) ->
@@ -55,6 +50,7 @@ class ReflectionRecordEncoder : Encoder<Any> {
 
    @Suppress("UNCHECKED_CAST")
    private fun buildEncodings(schema: Schema, kclass: KClass<out Any>): List<Encoding> {
+      val lookup = MethodHandles.lookup()
       return kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
 
          val avroField = schema.getField(member.name)

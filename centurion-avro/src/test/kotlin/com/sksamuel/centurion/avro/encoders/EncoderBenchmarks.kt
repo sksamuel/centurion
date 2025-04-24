@@ -16,6 +16,7 @@ fun main() {
    Encoder.globalUseJavaString = true
 
    val arraySchema = SchemaBuilder.array().items().longType()
+   val stringArrays = SchemaBuilder.array().items().stringType()
    val schema: Schema =
       SchemaBuilder.record("foo").fields()
          .requiredString("field_a")
@@ -28,6 +29,7 @@ fun main() {
          .requiredInt("field_h")
          .name("field_i").type(arraySchema).noDefault()
          .name("field_j").type(arraySchema).noDefault()
+         .name("field_k").type(stringArrays).noDefault()
          .endRecord()
 
    data class Foo(
@@ -41,6 +43,7 @@ fun main() {
       val field_h: Int,
       val field_i: List<Long>,
       val field_j: Set<Long>,
+      val field_k: Set<String>,
    )
 
    val ids = listOf(
@@ -58,6 +61,8 @@ fun main() {
       123123134
    )
 
+   val stringIds = ids.map { it.toString() }
+
    val foo = Foo(
       field_a = "hello world",
       field_b = true,
@@ -68,7 +73,8 @@ fun main() {
       field_g = "another string",
       field_h = 821377124,
       field_i = ids,
-      field_j = ids.toSet()
+      field_j = ids.toSet(),
+      field_k = stringIds.toSet(),
    )
 
    fun createRecordProgramatically(foo: Foo): GenericData.Record {
@@ -83,11 +89,12 @@ fun main() {
       record.put("field_h", foo.field_h)
       record.put("field_i", foo.field_i)
       record.put("field_j", foo.field_j)
+      record.put("field_k", foo.field_k)
       return record
    }
 
-   val sets = 3
-   val reps = 20_000_000
+   val sets = 5
+   val reps = 10_000_000
 
    repeat(sets) {
       val mapper = jacksonObjectMapper()
@@ -100,26 +107,27 @@ fun main() {
       println("Serialize as Json (Jackson):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
-   repeat(sets) {
-      var size = 0
-      val time = measureTime {
-         repeat(reps) {
-            val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), null)
-            writer.use { it.write(foo) }
-            size += baos.toByteArray().size
-         }
-      }
-      println("Serialize as Avro bytes (BinaryWriter):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
-   }
+//   repeat(sets) {
+//      var size = 0
+//      val time = measureTime {
+//         repeat(reps) {
+//            val baos = ByteArrayOutputStream()
+//            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), null)
+//            writer.use { it.write(foo) }
+//            size += baos.toByteArray().size
+//         }
+//      }
+//      println("Serialize as Avro bytes (BinaryWriter):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+//   }
 
    repeat(sets) {
       var size = 0
       val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
+      val encoder = ReflectionRecordEncoder<Foo>()
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), reuse)
+            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), reuse)
             writer.use { it.write(foo) }
             size += baos.toByteArray().size
          }

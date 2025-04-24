@@ -53,6 +53,7 @@ fun interface Encoder<T> {
             List::class if type.arguments.first().type == typeOf<Short>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<String>() && globalUseJavaString -> PassThroughListEncoder
             List::class -> ListEncoder(encoderFor(type.arguments.first().type!!))
             LongArray::class -> LongArrayEncoder()
             IntArray::class -> IntArrayEncoder()
@@ -61,13 +62,14 @@ fun interface Encoder<T> {
             Set::class if type.arguments.first().type == typeOf<Short>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<String>() && globalUseJavaString -> PassThroughSetEncoder
             Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!))
             Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
             is KClass<*> if classifier.java.isEnum -> EnumEncoder<Enum<*>>()
-            is KClass<*> if classifier.isData -> ReflectionRecordEncoder()
+            is KClass<*> if classifier.isData -> ReflectionRecordEncoder<Any>()
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
