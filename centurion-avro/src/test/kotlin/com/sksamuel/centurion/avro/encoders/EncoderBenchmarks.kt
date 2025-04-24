@@ -126,23 +126,24 @@ fun main() {
             size += baos.toByteArray().size
          }
       }
-      println("Serialize as Avro bytes (BinaryWriter;reused encoder):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+      println("Serialize as Avro bytes (BinaryWriter;reuse encoder):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
    repeat(sets) {
       var size = 0
       val writer = GenericDatumWriter<GenericRecord>(schema)
+      val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val encoder = EncoderFactory.get().binaryEncoder(baos, null)
+            val encoder = EncoderFactory.get().binaryEncoder(baos, reuse)
             val record = createRecordProgramatically(foo)
             writer.write(record, encoder)
             encoder.flush()
             size += baos.toByteArray().size
          }
       }
-      println("Serialize as Avro bytes (Programatically):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+      println("Serialize as Avro bytes (Programatically;reuse encoder):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
 }
