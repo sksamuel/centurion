@@ -13,15 +13,17 @@ import kotlin.reflect.full.primaryConstructor
  * The [ReflectionRecordDecoder] will cache the reflection calls upon first use.
  * This encoder requires a small overhead in CPU time to build the reflection calls,
  * verus programmatically generated decoders of around 15-20%. To benefit from the cached encodings,
- * ensure that you create a reflection based decoder once and re-use it throughout your project.
+ * ensure that you create a reflection-based decoder once and re-use it throughout your project.
  *
- * Instances of this class are thread safe.
+ * Instances of this class are thread-safe.
  */
 class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
 
    init {
       require(kclass.isData) { "ReflectionRecordDecoder can only be used with data classes: was $kclass" }
    }
+
+   private val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
 
    companion object {
       inline operator fun <reified T : Any> invoke(): ReflectionRecordDecoder<T> = ReflectionRecordDecoder(T::class)
@@ -41,7 +43,6 @@ class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<
 
    private fun decoderFn(schema: Schema): (GenericRecord) -> T {
 
-      val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
          val decoder = Decoder.decoderFor(param.type, schema.getProp(GenericData.STRING_PROP))
