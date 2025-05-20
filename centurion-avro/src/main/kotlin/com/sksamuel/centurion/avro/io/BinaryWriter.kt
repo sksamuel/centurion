@@ -10,7 +10,12 @@ import java.io.OutputStream
 
 /**
  * A [BinaryWriter] is a non-thread safe, writer to a given stream, that encodes Avro [GenericRecord]s
- * as binary-encoded bytes (that is, the schema is not included in the output).
+ * in the 'binary' format (that is, the schema is not included in the output).
+ *
+ * This results in a smaller payload, similar to protobuf, but requires that the schema is provided at
+ * deserialization time. This format is especially effective when the consumers and producers both know the
+ * schema that was used, for instance, in versioned endpoints, or when the same application is used to read
+ * and write the data.
  *
  * If you want to include the schema, see [DataWriter].
  *
