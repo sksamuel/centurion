@@ -19,8 +19,8 @@ import kotlin.reflect.KClass
  * in the written bytes.
  *
  * This results in a smaller payload compared to [DataSerde], similar to protobuf,
- * but requires that the schema is provided at deserialization type. This format is especially
- * effective when the consumers and producers can agree on the schema used, for instance in RPC
+ * but requires that the schema is provided at deserialization time. This format is especially
+ * effective when the consumers and producers can agree on the schema used, for instance, in RPC
  * style endpoints, or when the same application is used to read and write the data.
  */
 class BinarySerde<T : Any>(

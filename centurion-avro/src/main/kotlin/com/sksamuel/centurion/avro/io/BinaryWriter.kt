@@ -9,7 +9,10 @@ import org.apache.avro.io.EncoderFactory
 import java.io.OutputStream
 
 /**
- * A [BinaryWriter]
+ * A [BinaryWriter] is a non-thread safe, writer to a given stream, that encodes Avro [GenericRecord]s
+ * as binary-encoded bytes (that is, the schema is not included in the output).
+ *
+ * If you want to include the schema, see [DataWriter].
  *
  * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
  */

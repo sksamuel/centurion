@@ -9,12 +9,12 @@ import org.apache.avro.generic.GenericRecord
 import java.io.OutputStream
 
 /**
- * A [DataWriter] is a non-thread safe, one time use, writer to a given stream, that encodes
- * Avro [org.apache.avro.generic.GenericRecord]s as data-encoded bytes (that is, includes the schema along with the binary).
- *
- * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
+ * A [DataWriter] is a non-thread safe, writer to a given stream, that encodes Avro [GenericRecord]s
+ * as data-encoded bytes (that is, the schema is included in the output along with the data).
  *
  * If you do not want to include the schema, see [BinaryWriter].
+ *
+ * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
  */
 class DataWriter<T>(
   private val schema: Schema,

@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.schemas
 
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
-import org.apache.avro.generic.GenericData
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
@@ -13,11 +12,6 @@ import kotlin.reflect.full.memberProperties
 class ReflectionSchemaBuilder(
    private val useJavaString: Boolean = false,
 ) {
-
-   private val utf8String = SchemaBuilder.builder().stringType()
-   private val javaString = SchemaBuilder.builder().stringType().also {
-      GenericData.setStringType(it, GenericData.StringType.String)
-   }
 
    fun schema(kclass: KClass<*>): Schema {
 
@@ -34,7 +28,7 @@ class ReflectionSchemaBuilder(
       val builder = SchemaBuilder.builder()
 
       val schema: Schema = when (val classifier = type.classifier) {
-         String::class -> if (useJavaString) javaString else utf8String
+         String::class -> if (useJavaString) STRING_SCHEMA_JAVA else STRING_SCHEMA
          Boolean::class -> builder.booleanType()
          Int::class -> builder.intType()
          Long::class -> builder.longType()
