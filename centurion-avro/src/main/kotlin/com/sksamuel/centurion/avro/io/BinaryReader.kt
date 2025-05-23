@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.io
 
 import com.sksamuel.centurion.avro.decoders.Decoder
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.BinaryDecoder
@@ -30,6 +31,10 @@ class BinaryReader<T>(
 
    private val datum = GenericDatumReader<GenericRecord>(/* writer = */ writerSchema, /* reader = */ readerSchema)
    private val binaryDecoder = factory.binaryDecoder(input, reuse)
+
+   init {
+      GenericData.get().setFastReaderEnabled(true)
+   }
 
    fun read(): T {
       val record = datum.read(null, binaryDecoder)
