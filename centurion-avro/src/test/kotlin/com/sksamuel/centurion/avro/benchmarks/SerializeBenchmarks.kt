@@ -1,9 +1,13 @@
-package com.sksamuel.centurion.avro
+package com.sksamuel.centurion.avro.benchmarks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.Foo
+import com.sksamuel.centurion.avro.createFoo
+import com.sksamuel.centurion.avro.createRecordProgramatically
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryEncoderPool
 import com.sksamuel.centurion.avro.io.BinaryWriter
+import com.sksamuel.centurion.avro.schema
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory

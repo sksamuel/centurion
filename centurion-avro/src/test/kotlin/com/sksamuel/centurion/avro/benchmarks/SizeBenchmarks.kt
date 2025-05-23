@@ -1,4 +1,4 @@
-package com.sksamuel.centurion.avro.io
+package com.sksamuel.centurion.avro.benchmarks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.luben.zstd.ZstdOutputStream
