@@ -8,7 +8,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
-import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayInputStream
@@ -36,9 +35,13 @@ class EvolutionTest : FunSpec() {
          val encoder = ReflectionRecordEncoder<Foo1>(reader)
 
          val baos = ByteArrayOutputStream()
-         BinaryWriter(schema = writer, out = baos, binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null)).use {
-            val record = encoder.encode(writer, Foo1("a", true)) as GenericRecord
-            it.write(record)
+         BinaryWriter(
+            schema = writer,
+            out = baos,
+            binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
+            encoder = encoder
+         ).use {
+            it.write(Foo1("a", true))
          }
 
          BinaryReader(

@@ -57,10 +57,9 @@ class BinarySerde<T : Any>(
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
       binaryEncoderPool.use(baos) {
-         val writer = BinaryWriter(schema, baos, it)
+         val writer = BinaryWriter(schema, baos, it, encoder)
          writer.use {
-            val record = encoder.encode(schema, obj) as GenericRecord
-            writer.write(record)
+            writer.write(obj)
             writer.close()
          }
       }

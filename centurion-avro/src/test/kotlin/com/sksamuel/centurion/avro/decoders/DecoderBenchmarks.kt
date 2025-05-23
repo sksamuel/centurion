@@ -171,7 +171,8 @@ fun createAvroBytes(): ByteArray {
       schema = schema,
       out = baos,
       binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
-   ).use { it.write(encoder.encode(schema, foo) as GenericRecord) }
+      encoder = encoder,
+   ).use { it.write(foo) }
 
    return baos.toByteArray()
 }
