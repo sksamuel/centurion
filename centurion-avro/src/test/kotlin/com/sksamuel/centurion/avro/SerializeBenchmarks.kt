@@ -1,6 +1,8 @@
-package com.sksamuel.centurion.avro.encoders
+package com.sksamuel.centurion.avro
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.io.BinaryEncoderPool
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
@@ -91,7 +93,7 @@ fun main() {
       return record
    }
 
-   val sets = 5
+   val sets = 3
    val reps = 10_000_000
 
    repeat(sets) {
@@ -105,28 +107,31 @@ fun main() {
       println("Serialize as Json (Jackson):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
    }
 
-//   repeat(sets) {
-//      var size = 0
-//      val time = measureTime {
-//         repeat(reps) {
-//            val baos = ByteArrayOutputStream()
-//            val writer = BinaryWriter(schema, baos, ReflectionRecordEncoder.INSTANCE, EncoderFactory.get(), null)
-//            writer.use { it.write(foo) }
-//            size += baos.toByteArray().size
-//         }
-//      }
-//      println("Serialize as Avro bytes (BinaryWriter):".padEnd(60) + " ${time.inWholeMilliseconds}ms")
-//   }
-
    repeat(sets) {
       var size = 0
-      val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
-      val encoder = ReflectionRecordEncoder<Foo>(schema)
+      val encoder = ReflectionRecordEncoder.Companion<Foo>(schema)
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, EncoderFactory.get(), reuse)
+            val writer = BinaryWriter(schema, baos, EncoderFactory.get().binaryEncoder(baos, null))
             writer.use { it.write(encoder.encode(schema, foo) as GenericRecord) }
+            size += baos.toByteArray().size
+         }
+      }
+      println("Serialize as Avro bytes (BinaryWriter;no reuse)".padEnd(60) + " ${time.inWholeMilliseconds}ms")
+   }
+
+   repeat(sets) {
+      var size = 0
+      val encoder = ReflectionRecordEncoder.Companion<Foo>(schema)
+      val pool = BinaryEncoderPool(Int.MAX_VALUE, EncoderFactory.get())
+      val time = measureTime {
+         repeat(reps) {
+            val baos = ByteArrayOutputStream()
+            pool.use(baos) { binaryEncoder ->
+               val writer = BinaryWriter(schema, baos, binaryEncoder)
+               writer.use { it.write(encoder.encode(schema, foo) as GenericRecord) }
+            }
             size += baos.toByteArray().size
          }
       }

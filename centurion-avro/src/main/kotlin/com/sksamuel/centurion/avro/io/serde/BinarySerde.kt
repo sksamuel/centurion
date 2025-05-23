@@ -4,6 +4,7 @@ import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.io.BinaryEncoderPool
 import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
@@ -28,7 +29,7 @@ class BinarySerde<T : Any>(
    private val schema: Schema,
    private val encoder: Encoder<T>,
    private val decoder: Decoder<T>,
-   private val encoderFactory: EncoderFactory,
+   private val binaryEncoderPool: BinaryEncoderPool,
    private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
@@ -48,16 +49,20 @@ class BinarySerde<T : Any>(
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
          val encoder = ReflectionRecordEncoder<T>(schema, kclass)
          val decoder = ReflectionRecordDecoder<T>(kclass)
-         return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
+         val pool = BinaryEncoderPool(Int.MAX_VALUE, encoderFactory)
+         return BinarySerde(schema, encoder, decoder, pool, decoderFactory)
       }
    }
 
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
-      val writer = BinaryWriter(schema, baos, encoderFactory, null)
-      writer.use {
-         val record = encoder.encode(schema, obj) as GenericRecord
-         writer.write(record)
+      binaryEncoderPool.use(baos) {
+         val writer = BinaryWriter(schema, baos, it)
+         writer.use {
+            val record = encoder.encode(schema, obj) as GenericRecord
+            writer.write(record)
+            writer.close()
+         }
       }
       return baos.toByteArray()
    }

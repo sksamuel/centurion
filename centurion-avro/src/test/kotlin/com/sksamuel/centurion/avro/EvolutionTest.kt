@@ -36,12 +36,7 @@ class EvolutionTest : FunSpec() {
          val encoder = ReflectionRecordEncoder<Foo1>(reader)
 
          val baos = ByteArrayOutputStream()
-         BinaryWriter(
-            schema = writer,
-            output = baos,
-            factory = EncoderFactory.get(),
-            reuse = null,
-         ).use {
+         BinaryWriter(schema = writer, out = baos, binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null)).use {
             val record = encoder.encode(writer, Foo1("a", true)) as GenericRecord
             it.write(record)
          }

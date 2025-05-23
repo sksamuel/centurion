@@ -169,9 +169,8 @@ fun createAvroBytes(): ByteArray {
    val encoder = ReflectionRecordEncoder<Foo>(schema)
    BinaryWriter(
       schema = schema,
-      output = baos,
-      factory = EncoderFactory.get(),
-      reuse = null
+      out = baos,
+      binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
    ).use { it.write(encoder.encode(schema, foo) as GenericRecord) }
 
    return baos.toByteArray()
