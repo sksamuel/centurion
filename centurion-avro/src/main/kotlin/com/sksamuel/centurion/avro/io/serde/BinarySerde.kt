@@ -24,41 +24,41 @@ import kotlin.reflect.KClass
  * and write the data.
  */
 class BinarySerde<T : Any>(
-  private val schema: Schema,
-  private val encoder: Encoder<T>,
-  private val decoder: Decoder<T>,
-  private val encoderFactory: EncoderFactory,
-  private val decoderFactory: DecoderFactory,
+   private val schema: Schema,
+   private val encoder: Encoder<T>,
+   private val decoder: Decoder<T>,
+   private val encoderFactory: EncoderFactory,
+   private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
-  companion object {
-    inline operator fun <reified T : Any> invoke(
-      encoderFactory: EncoderFactory,
-      decoderFactory: DecoderFactory,
-    ): BinarySerde<T> {
-      return invoke(T::class, encoderFactory, decoderFactory)
-    }
+   companion object {
+      inline operator fun <reified T : Any> invoke(
+         encoderFactory: EncoderFactory,
+         decoderFactory: DecoderFactory,
+      ): BinarySerde<T> {
+         return invoke(T::class, encoderFactory, decoderFactory)
+      }
 
-    operator fun <T : Any> invoke(
-      kclass: KClass<T>,
-      encoderFactory: EncoderFactory,
-      decoderFactory: DecoderFactory,
-    ): BinarySerde<T> {
-      val schema = ReflectionSchemaBuilder(true).schema(kclass)
-      val encoder = ReflectionRecordEncoder<T>()
-      val decoder = ReflectionRecordDecoder<T>(kclass)
-      return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
-    }
-  }
+      operator fun <T : Any> invoke(
+         kclass: KClass<T>,
+         encoderFactory: EncoderFactory,
+         decoderFactory: DecoderFactory,
+      ): BinarySerde<T> {
+         val schema = ReflectionSchemaBuilder(true).schema(kclass)
+         val encoder = ReflectionRecordEncoder<T>(schema, kclass)
+         val decoder = ReflectionRecordDecoder<T>(kclass)
+         return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
+      }
+   }
 
-  override fun serialize(obj: T): ByteArray {
-    val baos = ByteArrayOutputStream()
-    val writer = BinaryWriter(schema, baos, encoder, encoderFactory, null)
-    writer.use { writer.write(obj) }
-    return baos.toByteArray()
-  }
+   override fun serialize(obj: T): ByteArray {
+      val baos = ByteArrayOutputStream()
+      val writer = BinaryWriter(schema, baos, encoder, encoderFactory, null)
+      writer.use { writer.write(obj) }
+      return baos.toByteArray()
+   }
 
-  override fun deserialize(bytes: ByteArray): T {
-    return BinaryReader(schema, ByteArrayInputStream(bytes), decoderFactory, decoder, null).use { it.read() }
-  }
+   override fun deserialize(bytes: ByteArray): T {
+      return BinaryReader(schema, ByteArrayInputStream(bytes), decoderFactory, decoder, null).use { it.read() }
+   }
 }

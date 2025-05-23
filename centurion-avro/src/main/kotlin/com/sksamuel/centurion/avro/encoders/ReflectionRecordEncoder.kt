@@ -14,27 +14,28 @@ import kotlin.reflect.full.declaredMemberProperties
  * An [Encoder] that returns a [org.apache.avro.generic.GenericRecord] for data classes, using
  * reflection to access the fields of the data class.
  *
- * The [ReflectionRecordEncoder] will cache the reflection calls for each data class upon first use.
- * This encoder requires a small overhead in CPU time to build the reflection calls,
- * verus programmatically generated encoders of around 10-15%. To benefit from the cached encodings,
- * ensure that you create a reflection based encoder once and re-use it throughout your project.
+ * The [ReflectionRecordEncoder] will build and cache the reflection calls once the encoder is created
+ * from the given schema.
  *
- * Instances of this class are thread safe.
+ * This encoder requires a small overhead in CPU time verus programmatically generated encoders of around 10-15%.
+ * To benefit from the cached encodings ensure that you create a reflection-based encoder
+ * once per schema and re-use it throughout your project.
+ *
+ * Instances of this class are thread-safe.
  */
-class ReflectionRecordEncoder<T : Any> : Encoder<T> {
+class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Encoder<T> {
 
-   // this isn't thread safe, but worst case is we generate the same encoders more than once
-   // in which case we will have a tiny performance hit initially, but the idea is this class is
-   // created once and re-used throughout the service's lifetime
-   private var encoders: List<Encoding>? = null
+   companion object {
+      inline operator fun <reified T : Any> invoke(schema: Schema): ReflectionRecordEncoder<T> {
+         return ReflectionRecordEncoder(schema, T::class)
+      }
+   }
+
+   private val encoders: List<Encoding> = buildEncodings(schema, kclass)
 
    override fun encode(schema: Schema, value: T): Any? {
-
-      if (encoders == null)
-         encoders = buildEncodings(schema, value::class)
-
       val record = GenericData.Record(schema)
-      encoders!!.map { (encoder, getter, pos, schema) ->
+      encoders.map { (encoder, getter, pos, schema) ->
          val value = getter.apply(value)
          val encoded = encoder.encode(schema, value)
          record.put(pos, encoded)
@@ -54,7 +55,11 @@ class ReflectionRecordEncoder<T : Any> : Encoder<T> {
             ?: error("Could not find Java getter method for ${member.name}")
 
          val methodHandle = lookup.unreflect(getter)
-         val encoder = Encoder.encoderFor(member.returnType, schema.getProp(GenericData.STRING_PROP)) as Encoder<Any?>
+         val encoder = Encoder.encoderFor(
+            type = member.returnType,
+            stringType = schema.getProp(GenericData.STRING_PROP),
+            schema = avroField.schema()
+         ) as Encoder<Any?>
 
          // this is the interface we're going to be implementing with the interface method type
          val factoryType = MethodType.methodType(Function::class.java)

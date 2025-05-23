@@ -15,7 +15,7 @@ class StringEncoderTest : FunSpec({
 
       val schema = SchemaBuilder.builder().record("foo").fields().name("a").type().stringType().noDefault().endRecord()
       GenericData.setStringType(schema, GenericData.StringType.String)
-      val record = ReflectionRecordEncoder<Foo>().encode(schema, Foo("boo")) as GenericRecord
+      val record = ReflectionRecordEncoder<Foo>(schema).encode(schema, Foo("boo")) as GenericRecord
       record["a"] shouldBe "boo"
    }
 

@@ -121,7 +121,7 @@ fun main() {
    repeat(sets) {
       var size = 0
       val reuse = EncoderFactory.get().binaryEncoder(ByteArrayOutputStream(), null)
-      val encoder = ReflectionRecordEncoder<Foo>()
+      val encoder = ReflectionRecordEncoder<Foo>(schema)
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()

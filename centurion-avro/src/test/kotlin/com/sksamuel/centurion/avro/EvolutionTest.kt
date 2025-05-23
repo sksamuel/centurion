@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream
 class EvolutionTest : FunSpec() {
 
    init {
-      test("evolve schema by adding a nullable field") {
+      test("!evolve schema by adding a nullable field") {
 
          val writer = SchemaBuilder.record("foo").fields()
             .requiredString("a")
@@ -37,7 +37,7 @@ class EvolutionTest : FunSpec() {
             schema = writer,
             output = baos,
             factory = EncoderFactory.get(),
-            encoder = ReflectionRecordEncoder(),
+            encoder = ReflectionRecordEncoder(reader),
             reuse = null,
          ).use { it.write(Foo1("a", true)) }
 

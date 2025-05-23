@@ -36,7 +36,7 @@ fun main() {
    )
 
    val baos = ByteArrayOutputStream()
-   val writer1 = BinaryWriter(schema, baos, ReflectionRecordEncoder(), EncoderFactory.get(), null)
+   val writer1 = BinaryWriter(schema, baos, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
    writer1.write(foo)
    writer1.close()
    var size = baos.toByteArray().size
@@ -44,7 +44,7 @@ fun main() {
 
    val baos2 = ByteArrayOutputStream()
    val output2 = GZIPOutputStream(baos2)
-   val writer2 = BinaryWriter(schema, output2, ReflectionRecordEncoder(), EncoderFactory.get(), null)
+   val writer2 = BinaryWriter(schema, output2, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
    writer2.write(foo)
    writer2.close()
    size = baos2.toByteArray().size
@@ -52,7 +52,7 @@ fun main() {
 
    val baos4 = ByteArrayOutputStream()
    val output4 = DeflaterOutputStream(baos4)
-   val writer4 = BinaryWriter(schema, output4, ReflectionRecordEncoder(), EncoderFactory.get(), null)
+   val writer4 = BinaryWriter(schema, output4, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
    writer4.write(foo)
    writer4.close()
    size = baos4.toByteArray().size

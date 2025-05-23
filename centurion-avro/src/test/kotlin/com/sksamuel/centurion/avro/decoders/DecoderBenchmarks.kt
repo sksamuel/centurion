@@ -169,7 +169,7 @@ fun createAvroBytes(): ByteArray {
    BinaryWriter(
       schema = schema,
       output = baos,
-      encoder = ReflectionRecordEncoder<Foo>(),
+      encoder = ReflectionRecordEncoder<Foo>(schema),
       factory = EncoderFactory.get(),
       reuse = null
    ).use { it.write(foo) }

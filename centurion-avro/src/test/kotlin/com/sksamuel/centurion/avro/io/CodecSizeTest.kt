@@ -26,7 +26,7 @@ fun main() {
    val schema = ReflectionSchemaBuilder(true).schema(User::class)
 
    GenericData.setStringType(schema, GenericData.StringType.String)
-   val encoder = ReflectionRecordEncoder<User>()
+   val encoder = ReflectionRecordEncoder<User>(schema)
    val record = encoder.encode(schema, user) as GenericRecord
 
    val baos1 = ByteArrayOutputStream()
