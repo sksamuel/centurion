@@ -18,7 +18,7 @@ import kotlin.reflect.full.primaryConstructor
  * Instances of this class are thread-safe.
  */
 class ReflectionRecordDecoder<T : Any>(
-   private val schema: Schema,
+   schema: Schema,
    private val kclass: KClass<T>
 ) : Decoder<T> {
 
@@ -33,14 +33,14 @@ class ReflectionRecordDecoder<T : Any>(
          ReflectionRecordDecoder(schema, T::class)
    }
 
-   private val decodeFn: ((GenericRecord) -> T) = buildDecodersFn(schema)
+   private val decodeFn: ((GenericRecord) -> T) = buildDecodeFn(schema)
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
       return decodeFn(record)
    }
 
-   private fun buildDecodersFn(schema: Schema): (GenericRecord) -> T {
+   private fun buildDecodeFn(schema: Schema): (GenericRecord) -> T {
 
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)

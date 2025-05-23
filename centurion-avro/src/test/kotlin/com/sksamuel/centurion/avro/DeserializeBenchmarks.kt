@@ -26,7 +26,7 @@ fun main() {
    val json = createJson()
 
    val sets = 3
-   val reps = 1_000_000
+   val reps = 100_000
 
    createAvroBytes()
 

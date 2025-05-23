@@ -3,9 +3,11 @@ package com.sksamuel.centurion.avro
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
+import kotlin.random.Random
 
-val arraySchema = SchemaBuilder.array().items().longType()
-val stringArrays = SchemaBuilder.array().items().stringType()
+val longArraySchema = SchemaBuilder.array().items().longType()
+val stringArraySchema = SchemaBuilder.array().items().stringType()
+
 val schema: Schema =
    SchemaBuilder.record("foo").fields()
       .requiredString("field_a")
@@ -16,9 +18,9 @@ val schema: Schema =
       .requiredString("field_f")
       .requiredString("field_g")
       .requiredInt("field_h")
-      .name("field_i").type(arraySchema).noDefault()
-      .name("field_j").type(arraySchema).noDefault()
-      .name("field_k").type(stringArrays).noDefault()
+      .name("field_i").type(longArraySchema).noDefault()
+      .name("field_j").type(longArraySchema).noDefault()
+      .name("field_k").type(stringArraySchema).noDefault()
       .endRecord()
 
 data class Foo(
@@ -35,20 +37,7 @@ data class Foo(
    val field_k: Set<String>,
 )
 
-val ids = listOf(
-   123123123L,
-   123123124,
-   123123125,
-   123123126,
-   123123127,
-   123123128,
-   123123129,
-   123123130,
-   123123131,
-   123123132,
-   123123133,
-   123123134
-)
+val ids = List(600) { Random.nextLong(0, 750_000_000L) }
 
 val stringIds = ids.map { it.toString() }
 
