@@ -166,13 +166,13 @@ fun createJson(): ByteArray {
 fun createAvroBytes(): ByteArray {
 
    val baos = ByteArrayOutputStream()
+   val encoder = ReflectionRecordEncoder<Foo>(schema)
    BinaryWriter(
       schema = schema,
       output = baos,
-      encoder = ReflectionRecordEncoder<Foo>(schema),
       factory = EncoderFactory.get(),
       reuse = null
-   ).use { it.write(foo) }
+   ).use { it.write(encoder.encode(schema, foo) as GenericRecord) }
 
    return baos.toByteArray()
 }

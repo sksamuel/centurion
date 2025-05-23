@@ -35,25 +35,27 @@ fun main() {
       field_l = setOf("hello", "world"),
    )
 
+   val encoder = ReflectionRecordEncoder<Foo>(schema)
+
    val baos = ByteArrayOutputStream()
-   val writer1 = BinaryWriter(schema, baos, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
-   writer1.write(foo)
+   val writer1 = BinaryWriter(schema, baos, EncoderFactory.get(), null)
+   writer1.write(encoder.encode(schema, foo) as GenericData.Record)
    writer1.close()
    var size = baos.toByteArray().size
    println("Size Avro:".padEnd(50) + " ${size}b")
 
    val baos2 = ByteArrayOutputStream()
    val output2 = GZIPOutputStream(baos2)
-   val writer2 = BinaryWriter(schema, output2, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
-   writer2.write(foo)
+   val writer2 = BinaryWriter(schema, output2, EncoderFactory.get(), null)
+   writer2.write(encoder.encode(schema, foo) as GenericData.Record)
    writer2.close()
    size = baos2.toByteArray().size
    println("Size Avro GZIPOutputStream:".padEnd(50) + " ${size}b")
 
    val baos4 = ByteArrayOutputStream()
    val output4 = DeflaterOutputStream(baos4)
-   val writer4 = BinaryWriter(schema, output4, ReflectionRecordEncoder(schema), EncoderFactory.get(), null)
-   writer4.write(foo)
+   val writer4 = BinaryWriter(schema, output4, EncoderFactory.get(), null)
+   writer4.write(encoder.encode(schema, foo) as GenericData.Record)
    writer4.close()
    size = baos4.toByteArray().size
    println("Size Avro DeflaterOutputStream:".padEnd(50) + " ${size}b")

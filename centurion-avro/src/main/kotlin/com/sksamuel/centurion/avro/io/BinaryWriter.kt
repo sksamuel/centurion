@@ -1,6 +1,5 @@
 package com.sksamuel.centurion.avro.io
 
-import com.sksamuel.centurion.avro.encoders.Encoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
@@ -21,10 +20,9 @@ import java.io.OutputStream
  *
  * Call [close] when all records have been written to ensure data is flushed to the underlying stream.
  */
-class BinaryWriter<T>(
+class BinaryWriter(
    private val schema: Schema,
    private val output: OutputStream,
-   private val encoder: Encoder<T>,
    factory: EncoderFactory,
    reuse: BinaryEncoder?,
 ) : AutoCloseable {
@@ -32,8 +30,10 @@ class BinaryWriter<T>(
    private val datum = GenericDatumWriter<GenericRecord>(schema)
    private val binaryEncoder = factory.binaryEncoder(output, reuse)
 
-   fun write(obj: T) {
-      val record = encoder.encode(schema, obj) as GenericRecord
+   fun write(record: GenericRecord) {
+      require(record.schema.fullName == schema.fullName) {
+         "Record schema ${record.schema.fullName} does not match writer schema ${schema.fullName}"
+      }
       datum.write(record, binaryEncoder)
    }
 

@@ -125,8 +125,8 @@ fun main() {
       val time = measureTime {
          repeat(reps) {
             val baos = ByteArrayOutputStream()
-            val writer = BinaryWriter(schema, baos, encoder, EncoderFactory.get(), reuse)
-            writer.use { it.write(foo) }
+            val writer = BinaryWriter(schema, baos, EncoderFactory.get(), reuse)
+            writer.use { it.write(encoder.encode(schema, foo) as GenericRecord) }
             size += baos.toByteArray().size
          }
       }

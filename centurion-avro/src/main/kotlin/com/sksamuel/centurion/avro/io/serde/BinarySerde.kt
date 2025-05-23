@@ -8,6 +8,7 @@ import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayInputStream
@@ -53,8 +54,11 @@ class BinarySerde<T : Any>(
 
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
-      val writer = BinaryWriter(schema, baos, encoder, encoderFactory, null)
-      writer.use { writer.write(obj) }
+      val writer = BinaryWriter(schema, baos, encoderFactory, null)
+      writer.use {
+         val record = encoder.encode(schema, obj) as GenericRecord
+         writer.write(record)
+      }
       return baos.toByteArray()
    }
 
