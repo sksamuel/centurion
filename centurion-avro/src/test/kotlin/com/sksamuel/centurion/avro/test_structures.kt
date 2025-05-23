@@ -37,22 +37,6 @@ data class Foo(
    val field_k: Set<String>,
 )
 
-val stringIds = createIds().map { it.toString() }
-
-val foo = Foo(
-   field_a = "hello world",
-   field_b = true,
-   field_c = 123456,
-   field_d = 56.331,
-   field_e = 998876324,
-   field_f = "stringy mcstring face",
-   field_g = "another string",
-   field_h = 821377124,
-   field_i = createIds(),
-   field_j = createIds().toSet(),
-   field_k = stringIds.toSet(),
-)
-
 fun createIds(): List<Long> {
    return List(600) { Random.nextLong(0, 750_000_000L) }
 }

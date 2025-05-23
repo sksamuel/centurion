@@ -22,13 +22,12 @@ fun main() {
    GenericData.get().setFastReaderEnabled(true)
    GenericData.setStringType(schema, GenericData.StringType.String)
 
-   val avro = createAvroBytes()
-   val json = createJson()
+   val foo = createFoo()
+   val avro = createAvroBytes(foo)
+   val json = createJson(foo)
 
    val sets = 3
    val reps = 100_000
-
-   createAvroBytes()
 
    repeat(sets) {
       val mapper = jacksonObjectMapper()
@@ -77,7 +76,7 @@ fun main() {
       val time = measureTime {
          repeat(reps) {
             val record = reader.read(null, DecoderFactory.get().binaryDecoder(avro, reuse))
-            Foo(
+            val foo = Foo(
                record.get("field_a").toString(),
                record.get("field_b") as Boolean,
                record.get("field_c") as Int,
@@ -97,13 +96,13 @@ fun main() {
    }
 }
 
-fun createJson(): ByteArray {
+fun createJson(foo: Foo): ByteArray {
    val mapper = jacksonObjectMapper()
    val json = mapper.writeValueAsBytes(foo)
    return json
 }
 
-fun createAvroBytes(): ByteArray {
+fun createAvroBytes(foo: Foo): ByteArray {
 
    val baos = ByteArrayOutputStream()
    val encoder = ReflectionRecordEncoder<Foo>(schema)
