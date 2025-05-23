@@ -1,47 +1,21 @@
 package com.sksamuel.centurion.avro.io
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.sksamuel.centurion.avro.decoders.Foo
+import com.sksamuel.centurion.avro.decoders.Foo2
 import com.sksamuel.centurion.avro.decoders.schema
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import org.apache.avro.generic.GenericData
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
+import java.util.zip.DeflaterOutputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.random.Random
 
 fun main() {
+   GenericData.setStringType(schema, GenericData.StringType.String)
 
-   val ids = listOf(
-      123123123L,
-      123123124,
-      123123125,
-      123123126,
-      123123127,
-      123123128,
-      123123129,
-      123123130,
-      123123131,
-      123123132,
-      123123133,
-      123123134
-   )
-
-   data class Foo2(
-      val a: Int,
-      val b: String,
-   )
-
-   data class Foo(
-      val field_a: String,
-      val field_b: Boolean,
-      val field_c: Int,
-      val field_d: Double,
-      val field_e: Int,
-      val field_f: String,
-      val field_g: String,
-      val field_h: Int,
-      val field_i: List<Long>,
-      val field_j: List<Foo2>,
-      val field_k: Set<Int>,
-   )
+   val ids = List(600) { Random.nextLong(1, 750_000_000) }
 
    val foo = Foo(
       field_a = "hello world",
@@ -57,7 +31,8 @@ fun main() {
          Foo2(1, "hello"),
          Foo2(2, "world"),
       ),
-      field_k = ids.map { it.toInt() }.toSet(),
+      field_k = ids.map { it.toInt() },
+      field_l = setOf("hello", "world"),
    )
 
    val baos = ByteArrayOutputStream()
@@ -75,6 +50,14 @@ fun main() {
    size = baos2.toByteArray().size
    println("Size Avro GZIPOutputStream:".padEnd(50) + " ${size}b")
 
+   val baos4 = ByteArrayOutputStream()
+   val output4 = DeflaterOutputStream(baos4)
+   val writer4 = BinaryWriter(schema, output4, ReflectionRecordEncoder(), EncoderFactory.get(), null)
+   writer4.write(foo)
+   writer4.close()
+   size = baos4.toByteArray().size
+   println("Size Avro DeflaterOutputStream:".padEnd(50) + " ${size}b")
+
    val mapper = jacksonObjectMapper()
    size = mapper.writeValueAsBytes(foo).size
    println("Size Jackson:".padEnd(50) + " ${size}b")
@@ -84,6 +67,6 @@ fun main() {
    output3.write(mapper.writeValueAsBytes(foo))
    output3.close()
    size = baos3.toByteArray().size
-   println("Size Jackson Gzipped:".padEnd(50) + " ${size}b")
+   println("Size Jackson GZIPOutputStream:".padEnd(50) + " ${size}b")
 
 }
