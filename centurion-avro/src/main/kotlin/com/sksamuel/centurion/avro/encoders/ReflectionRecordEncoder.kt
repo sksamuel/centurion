@@ -17,7 +17,7 @@ import kotlin.reflect.full.declaredMemberProperties
  * The [ReflectionRecordEncoder] will build and cache the reflection calls once the encoder is created
  * from the given schema.
  *
- * This encoder requires a small overhead in CPU time verus programmatically generated encoders of around 10-15%.
+ * This encoder requires a small overhead in CPU time verus programmatically generated encoders of around 10%.
  * To benefit from the cached encodings ensure that you create a reflection-based encoder
  * once per schema and re-use it throughout your project.
  *

@@ -32,6 +32,8 @@ fun main() {
          .name("field_k").type(stringArrays).noDefault()
          .endRecord()
 
+   GenericData.setStringType(schema, GenericData.StringType.String)
+
    data class Foo(
       val field_a: String,
       val field_b: Boolean,
@@ -123,7 +125,7 @@ fun main() {
 
    repeat(sets) {
       var size = 0
-      val encoder = ReflectionRecordEncoder.Companion<Foo>(schema)
+      val encoder = ReflectionRecordEncoder<Foo>(schema)
       val pool = BinaryEncoderPool(Int.MAX_VALUE, EncoderFactory.get())
       val time = measureTime {
          repeat(reps) {
