@@ -2,9 +2,8 @@ package com.sksamuel.centurion.avro.io
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.Foo
-import com.sksamuel.centurion.avro.Foo2
-import com.sksamuel.centurion.avro.schema
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
+import com.sksamuel.centurion.avro.schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
@@ -27,12 +26,8 @@ fun main() {
       field_g = "another string",
       field_h = 821377124,
       field_i = ids,
-      field_j = listOf(
-         Foo2(1, "hello"),
-         Foo2(2, "world"),
-      ),
-      field_k = ids.map { it.toInt() },
-      field_l = setOf("hello", "world"),
+      field_j = ids.toSet(),
+      field_k = ids.map { it.toString() }.toSet(),
    )
 
    val encoder = ReflectionRecordEncoder<Foo>(schema)

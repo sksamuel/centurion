@@ -10,7 +10,7 @@ import kotlin.reflect.full.primaryConstructor
  * A [Decoder] that returns a Kotlin data class [T] for a given [org.apache.avro.generic.GenericRecord],
  * using reflection to access the fields of the data class.
  *
- * The [ReflectionRecordDecoder] will cache the reflection calls upon first use.
+ * The [ReflectionRecordDecoder] will cache the reflective calls upon creation.
  * This encoder requires a small overhead in CPU time to build the reflection calls,
  * verus programmatically generated decoders of around 15-20%. To benefit from the cached encodings,
  * ensure that you create a reflection-based decoder once and re-use it throughout your project.
@@ -33,9 +33,6 @@ class ReflectionRecordDecoder<T : Any>(
          ReflectionRecordDecoder(schema, T::class)
    }
 
-   // this isn't thread safe, but the worst case is we generate the same encoders more than once
-   // in which case we will have a tiny performance hit initially, but the idea is this class is
-   // created once and re-used throughout the service's lifetime
    private val decodeFn: ((GenericRecord) -> T) = buildDecodersFn(schema)
 
    override fun decode(schema: Schema, value: Any?): T {
