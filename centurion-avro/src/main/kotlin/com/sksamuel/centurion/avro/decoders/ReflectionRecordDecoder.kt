@@ -33,17 +33,17 @@ class ReflectionRecordDecoder<T : Any>(
          ReflectionRecordDecoder(schema, T::class)
    }
 
-   // this isn't thread safe, but worst case is we generate the same encoders more than once
+   // this isn't thread safe, but the worst case is we generate the same encoders more than once
    // in which case we will have a tiny performance hit initially, but the idea is this class is
    // created once and re-used throughout the service's lifetime
-   private val decodeFn: ((GenericRecord) -> T) =decoderFn(schema)
+   private val decodeFn: ((GenericRecord) -> T) = buildDecodersFn(schema)
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
-      return decodeFn!!(record)
+      return decodeFn(record)
    }
 
-   private fun decoderFn(schema: Schema): (GenericRecord) -> T {
+   private fun buildDecodersFn(schema: Schema): (GenericRecord) -> T {
 
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)

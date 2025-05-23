@@ -1,9 +1,9 @@
 package com.sksamuel.centurion.avro.io
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.sksamuel.centurion.avro.decoders.Foo
-import com.sksamuel.centurion.avro.decoders.Foo2
-import com.sksamuel.centurion.avro.decoders.schema
+import com.sksamuel.centurion.avro.Foo
+import com.sksamuel.centurion.avro.Foo2
+import com.sksamuel.centurion.avro.schema
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.io.EncoderFactory
