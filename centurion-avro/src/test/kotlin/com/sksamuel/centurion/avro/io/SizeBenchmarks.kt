@@ -2,68 +2,68 @@ package com.sksamuel.centurion.avro.io
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.Foo
+import com.sksamuel.centurion.avro.createFoo
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.schema
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericDatumWriter
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
 import java.util.zip.DeflaterOutputStream
 import java.util.zip.GZIPOutputStream
-import kotlin.random.Random
 
 fun main() {
    GenericData.setStringType(schema, GenericData.StringType.String)
 
-   val ids = List(600) { Random.nextLong(1, 750_000_000) }
+   val foo = createFoo()
+   val mapper = jacksonObjectMapper()
 
-   val foo = Foo(
-      field_a = "hello world",
-      field_b = true,
-      field_c = 123456,
-      field_d = 56.331,
-      field_e = 998876324,
-      field_f = "stringy mcstring face",
-      field_g = "another string",
-      field_h = 821377124,
-      field_i = ids,
-      field_j = ids.toSet(),
-      field_k = ids.map { it.toString() }.toSet(),
-   )
+   uncompressed("Jackson") { mapper.writeValueAsBytes(foo) }
+   runGzip("Jackson") { mapper.writeValueAsBytes(foo) }
+   runDeflate("Jackson") { mapper.writeValueAsBytes(foo) }
+
+   uncompressed("Avro") { toAvroByteArray(foo) }
+   runGzip("Avro") { toAvroByteArray(foo) }
+   runDeflate("Avro") { toAvroByteArray(foo) }
+}
+
+fun toAvroByteArray(foo: Foo): ByteArray {
 
    val encoder = ReflectionRecordEncoder<Foo>(schema)
+   val record = encoder.encode(schema, foo) as GenericRecord
 
    val baos = ByteArrayOutputStream()
-   val writer1 = BinaryWriter(schema, baos, EncoderFactory.get().binaryEncoder(baos, null), encoder)
-   writer1.write(foo)
-   writer1.close()
-   var size = baos.toByteArray().size
-   println("Size Avro:".padEnd(50) + " ${size}b")
+   val binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null)
 
-   val baos2 = ByteArrayOutputStream()
-   val output2 = GZIPOutputStream(baos2)
-   val writer2 = BinaryWriter(schema, output2, EncoderFactory.get().binaryEncoder(baos2, null), encoder)
-   writer2.write(foo)
-   writer2.close()
-   size = baos2.toByteArray().size
-   println("Size Avro GZIPOutputStream:".padEnd(50) + " ${size}b")
+   val datum = GenericDatumWriter<GenericRecord>(schema)
+   datum.write(record, binaryEncoder)
+   binaryEncoder.flush()
+   return baos.toByteArray()
+}
 
-   val baos4 = ByteArrayOutputStream()
-   val output4 = DeflaterOutputStream(baos4)
-   val writer4 = BinaryWriter(schema, output4, EncoderFactory.get().binaryEncoder(baos4, null), encoder)
-   writer4.write(foo)
-   writer4.close()
-   size = baos4.toByteArray().size
-   println("Size Avro DeflaterOutputStream:".padEnd(50) + " ${size}b")
+fun runGzip(name: String, f: () -> ByteArray) {
+   val baos = ByteArrayOutputStream()
+   val output = GZIPOutputStream(baos)
+   output.write(f())
+   output.close()
+   val size = baos.toByteArray().size
+   println("$name (GZIPOutputStream)".padEnd(50) + " ${size}b")
+}
 
-   val mapper = jacksonObjectMapper()
-   size = mapper.writeValueAsBytes(foo).size
-   println("Size Jackson:".padEnd(50) + " ${size}b")
+fun runDeflate(name: String, f: () -> ByteArray) {
+   val baos = ByteArrayOutputStream()
+   val output = DeflaterOutputStream(baos)
+   output.write(f())
+   output.close()
+   val size = baos.toByteArray().size
+   println("$name (DeflaterOutputStream)".padEnd(50) + " ${size}b")
+}
 
-   val baos3 = ByteArrayOutputStream()
-   val output3 = GZIPOutputStream(baos3)
-   output3.write(mapper.writeValueAsBytes(foo))
-   output3.close()
-   size = baos3.toByteArray().size
-   println("Size Jackson GZIPOutputStream:".padEnd(50) + " ${size}b")
-
+fun uncompressed(name: String, f: () -> ByteArray) {
+   val baos = ByteArrayOutputStream()
+   baos.write(f())
+   baos.close()
+   val size = baos.toByteArray().size
+   println("$name (Uncompressed)".padEnd(50) + " ${size}b")
 }

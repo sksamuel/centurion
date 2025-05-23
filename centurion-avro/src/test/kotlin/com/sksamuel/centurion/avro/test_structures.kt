@@ -55,6 +55,24 @@ val foo = Foo(
    field_k = stringIds.toSet(),
 )
 
+fun createFoo(): Foo {
+   val ids = List(600) { Random.nextLong(1, 750_000_000) }
+   val foo = Foo(
+      field_a = "hello world",
+      field_b = true,
+      field_c = 123456,
+      field_d = 56.331,
+      field_e = 998876324,
+      field_f = "stringy mcstring face",
+      field_g = "another string",
+      field_h = 821377124,
+      field_i = ids,
+      field_j = ids.toSet(),
+      field_k = ids.map { it.toString() }.toSet(),
+   )
+   return foo
+}
+
 fun createRecordProgramatically(foo: Foo): GenericData.Record {
    val record = GenericData.Record(schema)
    record.put("field_a", foo.field_a)
