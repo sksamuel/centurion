@@ -47,8 +47,8 @@ class BinarySerde<T : Any>(
          decoderFactory: DecoderFactory,
       ): BinarySerde<T> {
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
-         val encoder = ReflectionRecordEncoder<T>(schema, kclass)
-         val decoder = ReflectionRecordDecoder<T>(kclass)
+         val encoder = ReflectionRecordEncoder(schema, kclass)
+         val decoder = ReflectionRecordDecoder(schema, kclass)
          val pool = BinaryEncoderPool(Int.MAX_VALUE, encoderFactory)
          return BinarySerde(schema, encoder, decoder, pool, decoderFactory)
       }

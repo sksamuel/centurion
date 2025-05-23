@@ -89,7 +89,7 @@ fun main() {
       var count = 0
       val df = DecoderFactory.get()
       val reuse = df.binaryDecoder(emptyArray<Byte>().toByteArray(), null)
-      val decoder = ReflectionRecordDecoder<Foo>()
+      val decoder = ReflectionRecordDecoder<Foo>(schema)
       val time = measureTime {
          repeat(reps) {
             val reader = BinaryReader(schema, ByteArrayInputStream(avro), df, decoder, reuse)

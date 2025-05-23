@@ -17,7 +17,10 @@ import kotlin.reflect.full.primaryConstructor
  *
  * Instances of this class are thread-safe.
  */
-class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<T> {
+class ReflectionRecordDecoder<T : Any>(
+   private val schema: Schema,
+   private val kclass: KClass<T>
+) : Decoder<T> {
 
    init {
       require(kclass.isData) { "ReflectionRecordDecoder can only be used with data classes: was $kclass" }
@@ -26,18 +29,17 @@ class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<
    private val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
 
    companion object {
-      inline operator fun <reified T : Any> invoke(): ReflectionRecordDecoder<T> = ReflectionRecordDecoder(T::class)
+      inline operator fun <reified T : Any> invoke(schema: Schema): ReflectionRecordDecoder<T> =
+         ReflectionRecordDecoder(schema, T::class)
    }
 
    // this isn't thread safe, but worst case is we generate the same encoders more than once
    // in which case we will have a tiny performance hit initially, but the idea is this class is
    // created once and re-used throughout the service's lifetime
-   private var decodeFn: ((GenericRecord) -> T)? = null
+   private val decodeFn: ((GenericRecord) -> T) =decoderFn(schema)
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
-      if (decodeFn == null)
-         decodeFn = decoderFn(schema)
       return decodeFn!!(record)
    }
 
@@ -45,7 +47,7 @@ class ReflectionRecordDecoder<T : Any>(private val kclass: KClass<T>) : Decoder<
 
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
-         val decoder = Decoder.decoderFor(param.type, schema.getProp(GenericData.STRING_PROP))
+         val decoder = Decoder.decoderFor(param.type, schema.getProp(GenericData.STRING_PROP), avroField.schema())
          Decoding(avroField.pos(), decoder, avroField.schema())
       }
 

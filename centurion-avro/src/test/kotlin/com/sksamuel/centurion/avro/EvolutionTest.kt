@@ -50,7 +50,7 @@ class EvolutionTest : FunSpec() {
             input = ByteArrayInputStream(baos.toByteArray()),
             factory = DecoderFactory.get(),
             reuse = null,
-            decoder = ReflectionRecordDecoder<Foo2>()
+            decoder = ReflectionRecordDecoder<Foo2>(writer)
          ).read() shouldBe Foo2("a", true, "foo")
       }
    }

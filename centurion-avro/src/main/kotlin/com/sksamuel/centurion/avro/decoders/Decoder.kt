@@ -25,7 +25,7 @@ fun interface Decoder<T> {
    companion object {
 
       @Suppress("UNCHECKED_CAST")
-      fun decoderFor(type: KType, stringType: String?): Decoder<*> {
+      fun decoderFor(type: KType, stringType: String?, schema: Schema): Decoder<*> {
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
             // this prop seems to be ignored by the fast reader implementation
             String::class if GenericData.StringType.String.name == stringType -> StringTypeDecoder
@@ -43,7 +43,7 @@ fun interface Decoder<T> {
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughListDecoder
-            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType))
+            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType, schema))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
@@ -52,12 +52,12 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughSetDecoder
-            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType))
-            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType))
+            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType, schema))
+            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType, schema))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
-            is KClass<*> if classifier.isData -> ReflectionRecordDecoder(classifier as KClass<*>)
+            is KClass<*> if classifier.isData -> ReflectionRecordDecoder(schema, classifier as KClass<*>)
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
