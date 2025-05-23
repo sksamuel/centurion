@@ -89,8 +89,7 @@ fun main() {
                record.get("field_g").toString(),
                record.get("field_h") as Int,
                record.get("field_i") as List<Long>,
-               (record.get("field_j") as List<Long>).toSet(),
-               (record.get("field_k") as List<String>).toSet(),
+               (record.get("field_j") as List<String>).toSet(),
             )
             count += foo.field_c
          }

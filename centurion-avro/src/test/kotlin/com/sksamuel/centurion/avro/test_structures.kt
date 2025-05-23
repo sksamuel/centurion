@@ -19,8 +19,7 @@ val schema: Schema =
       .requiredString("field_g")
       .requiredInt("field_h")
       .name("field_i").type(longArraySchema).noDefault()
-      .name("field_j").type(longArraySchema).noDefault()
-      .name("field_k").type(stringArraySchema).noDefault()
+      .name("field_j").type(stringArraySchema).noDefault()
       .endRecord()
 
 data class Foo(
@@ -33,8 +32,7 @@ data class Foo(
    val field_g: String,
    val field_h: Int,
    val field_i: List<Long>,
-   val field_j: Set<Long>,
-   val field_k: Set<String>,
+   val field_j: Set<String>,
 )
 
 fun createIds(): List<Long> {
@@ -52,8 +50,7 @@ fun createFoo(): Foo {
       field_g = "another string",
       field_h = 821377124,
       field_i = createIds(),
-      field_j = createIds().toSet(),
-      field_k = createIds().map { it.toString() }.toSet(),
+      field_j = createIds().map { it.toString() }.toSet(),
    )
    return foo
 }
@@ -70,6 +67,5 @@ fun createRecordProgramatically(foo: Foo): GenericData.Record {
    record.put("field_h", foo.field_h)
    record.put("field_i", foo.field_i)
    record.put("field_j", foo.field_j)
-   record.put("field_k", foo.field_k)
    return record
 }
