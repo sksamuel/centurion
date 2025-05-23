@@ -5,8 +5,8 @@ import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import kotlin.random.Random
 
-val longArraySchema = SchemaBuilder.array().items().longType()
-val stringArraySchema = SchemaBuilder.array().items().stringType()
+val longArraySchema: Schema = SchemaBuilder.array().items().longType()
+val stringArraySchema: Schema = SchemaBuilder.array().items().stringType()
 
 val schema: Schema =
    SchemaBuilder.record("foo").fields()
@@ -37,9 +37,7 @@ data class Foo(
    val field_k: Set<String>,
 )
 
-val ids = List(600) { Random.nextLong(0, 750_000_000L) }
-
-val stringIds = ids.map { it.toString() }
+val stringIds = createIds().map { it.toString() }
 
 val foo = Foo(
    field_a = "hello world",
@@ -50,13 +48,16 @@ val foo = Foo(
    field_f = "stringy mcstring face",
    field_g = "another string",
    field_h = 821377124,
-   field_i = ids,
-   field_j = ids.toSet(),
+   field_i = createIds(),
+   field_j = createIds().toSet(),
    field_k = stringIds.toSet(),
 )
 
+fun createIds(): List<Long> {
+   return List(600) { Random.nextLong(0, 750_000_000L) }
+}
+
 fun createFoo(): Foo {
-   val ids = List(600) { Random.nextLong(1, 750_000_000) }
    val foo = Foo(
       field_a = "hello world",
       field_b = true,
@@ -66,9 +67,9 @@ fun createFoo(): Foo {
       field_f = "stringy mcstring face",
       field_g = "another string",
       field_h = 821377124,
-      field_i = ids,
-      field_j = ids.toSet(),
-      field_k = ids.map { it.toString() }.toSet(),
+      field_i = createIds(),
+      field_j = createIds().toSet(),
+      field_k = createIds().map { it.toString() }.toSet(),
    )
    return foo
 }
