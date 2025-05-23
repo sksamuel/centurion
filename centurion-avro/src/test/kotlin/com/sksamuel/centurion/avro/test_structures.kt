@@ -50,9 +50,20 @@ fun createFoo(): Foo {
       field_g = "another string",
       field_h = 821377124,
       field_i = createIds(),
-      field_j = createIds().map { it.toString() }.toSet(),
+      field_j = createRandomStrings().toSet(),
    )
    return foo
+}
+
+fun createRandomStrings(): List<String> {
+   val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+   return List(100) {
+      val length = Random.nextInt(10, 31) // Between 10 and 30 characters
+      (1..length)
+         .map { Random.nextInt(0, charPool.size) }
+         .map(charPool::get)
+         .joinToString("")
+   }
 }
 
 fun createRecordProgramatically(foo: Foo): GenericData.Record {
