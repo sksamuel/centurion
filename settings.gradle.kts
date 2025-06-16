@@ -35,17 +35,22 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.12.0")
 
-         val kotest = "6.0.0.M3"
+         val kotest = "6.0.0.M4"
          library("kotest-junit5", "io.kotest:kotest-runner-junit5:$kotest")
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
          library("kotest-property", "io.kotest:kotest-property:$kotest")
+         library("kotest-testcontainers", "io.kotest:kotest-extensions-testcontainers:$kotest")
 
          library("kotlinx-coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
          library("jackson-module-kotlin", "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
-         library("lettuce-core", "io.lettuce:lettuce-core:6.3.1.RELEASE")
+         library("lettuce-core", "io.lettuce:lettuce-core:6.7.1.RELEASE")
+
+         val testcontainers = "1.21.1"
+         library("testcontainers", "org.testcontainers:testcontainers:$testcontainers")
+         library("testcontainers-redis", "com.redis:testcontainers-redis:2.2.4")
 
          bundle(
             "testing",
@@ -54,6 +59,7 @@ dependencyResolutionManagement {
                "kotest-core",
                "kotest-json",
                "kotest-property",
+               "kotest-testcontainers",
             )
          )
       }
