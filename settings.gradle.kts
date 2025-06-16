@@ -16,6 +16,7 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("centurion-avro")
+include("centurion-avro-lettuce")
 include("centurion-orc")
 include("centurion-parquet")
 include("centurion-schemas")
@@ -43,6 +44,8 @@ dependencyResolutionManagement {
          library("kotlinx-coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
          library("jackson-module-kotlin", "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+
+         library("lettuce-core", "io.lettuce:lettuce-core:6.3.1.RELEASE")
 
          bundle(
             "testing",

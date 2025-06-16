@@ -3,10 +3,9 @@ package com.sksamuel.centurion.avro.benchmarks
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.luben.zstd.ZstdOutputStream
 import com.ning.compress.lzf.LZFOutputStream
-import com.sksamuel.centurion.avro.Foo
-import com.sksamuel.centurion.avro.createFoo
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.schema
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
@@ -16,10 +15,18 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.DeflaterOutputStream
 import java.util.zip.GZIPOutputStream
 
+data class DeviceLocation(
+   val timestamp: Long,
+   val geohash: String,
+)
+
 fun main() {
    GenericData.setStringType(schema, GenericData.StringType.String)
 
-   val foo = createFoo()
+   val foo = DeviceLocation(
+      timestamp = 1234567890L,
+      geohash = "u4pruyd",
+   )
    val mapper = jacksonObjectMapper()
 
    uncompressed("Jackson") { mapper.writeValueAsBytes(foo) }
@@ -37,15 +44,15 @@ fun main() {
    zstd("Avro") { toAvroByteArray(foo) }
 }
 
-fun toAvroByteArray(foo: Foo): ByteArray {
+fun toAvroByteArray(foo: DeviceLocation): ByteArray {
 
-   val encoder = ReflectionRecordEncoder<Foo>(schema)
-   val record = encoder.encode(schema, foo) as GenericRecord
+   val encoder = ReflectionRecordEncoder<DeviceLocation>(ReflectionSchemaBuilder().schema(DeviceLocation::class))
+   val record = encoder.encode(ReflectionSchemaBuilder().schema(DeviceLocation::class), foo) as GenericRecord
 
    val baos = ByteArrayOutputStream()
    val binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null)
 
-   val datum = GenericDatumWriter<GenericRecord>(schema)
+   val datum = GenericDatumWriter<GenericRecord>(ReflectionSchemaBuilder().schema(DeviceLocation::class))
    datum.write(record, binaryEncoder)
    binaryEncoder.flush()
    return baos.toByteArray()
