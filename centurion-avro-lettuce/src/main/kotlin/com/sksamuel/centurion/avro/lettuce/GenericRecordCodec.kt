@@ -47,10 +47,9 @@ class GenericRecordCodec(
    private fun encode(record: GenericRecord): ByteBuffer {
       val datum = GenericDatumWriter<GenericRecord>(record.schema)
       val baos = ByteArrayOutputStream()
-      val binaryEncoder = encoderFactory.binaryEncoder(baos, null)
-      datum.write(record, binaryEncoder)
+      val encoder = encoderFactory.binaryEncoder(baos, null)
+      datum.write(record, encoder)
+      encoder.flush()
       return ByteBuffer.wrap(baos.toByteArray())
    }
-
-
 }
