@@ -89,4 +89,3 @@ fun interface Encoder<T> {
       }
    }
 }
-
