@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.4.4 (June 2025)
+
+* Fix for encoding lists of records
+
 ### 1.4.3 (June 2025)
 
 * Added GenericRecordEncoder
