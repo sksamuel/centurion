@@ -37,7 +37,6 @@ fun interface Encoder<T> {
       }
 
       fun encoderFor(type: KType, stringType: String?, schema: Schema): Encoder<*> {
-         println("encoderFor: $type, stringType=$stringType, schema=$schema")
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
             String::class if GenericData.StringType.String.name == stringType -> JavaStringEncoder
             String::class -> StringEncoder
