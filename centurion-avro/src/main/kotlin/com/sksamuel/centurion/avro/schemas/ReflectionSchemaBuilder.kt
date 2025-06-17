@@ -42,15 +42,13 @@ class ReflectionSchemaBuilder(
          LongArray::class -> builder.array().items(Schema.create(Schema.Type.LONG))
          IntArray::class -> builder.array().items(Schema.create(Schema.Type.INT))
          Map::class -> builder.map().values(schemaFor(type.arguments[1].type!!))
-         is KClass<*> -> if (classifier.java.isEnum)
-            builder
-               .enumeration(classifier.java.name)
-               .namespace(classifier.java.packageName)
-               .symbols(*classifier.java.enumConstants.map { (it as Enum<*>).name }
-                  .toTypedArray())
-         else
-            error("Unsupported type $classifier")
+         is KClass<*> if classifier.java.isEnum -> builder
+            .enumeration(classifier.java.name)
+            .namespace(classifier.java.packageName)
+            .symbols(*classifier.java.enumConstants.map { (it as Enum<*>).name }
+               .toTypedArray())
 
+         is KClass<*> if classifier.isData -> schema(classifier)
          else -> error("Unsupported type $classifier")
       }
 

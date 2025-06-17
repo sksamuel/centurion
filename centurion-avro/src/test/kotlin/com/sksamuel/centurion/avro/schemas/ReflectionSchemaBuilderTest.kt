@@ -1,23 +1,10 @@
-package com.sksamuel.centurion.avro.generation
+package com.sksamuel.centurion.avro.schemas
 
 import com.sksamuel.centurion.avro.encoders.Wine
-import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
-import com.sksamuel.centurion.avro.schemas.asNullUnion
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
-
-
-data class Foo1(val a: String, val b: Boolean, val c: Long)
-data class Foo2(val a: String?, val b: Boolean, val c: Long)
-data class Foo3(val set1: Set<Int>, val set2: Set<Int?>)
-data class Foo4(val list1: List<Int>, val list2: List<Int?>)
-data class Foo5(val wine: Wine)
-data class Foo6(val map: Map<String, Boolean>)
-data class Foo7(val map: Map<String, Map<String, String>>)
-data class Foo8(val a: String)
-data class Foo9(val a: String?)
 
 class ReflectionSchemaBuilderTest : FunSpec({
 
@@ -103,4 +90,32 @@ class ReflectionSchemaBuilderTest : FunSpec({
          .endRecord()
       ReflectionSchemaBuilder(useJavaString = true).schema(Foo9::class) shouldBe expected
    }
+
+   test("records of records") {
+
+      val foo11 = SchemaBuilder.record("Foo11").namespace(Foo10::class.java.packageName)
+         .fields()
+         .requiredBoolean("b")
+         .endRecord()
+
+      val foo10 = SchemaBuilder.record("Foo10").namespace(Foo10::class.java.packageName)
+         .fields()
+         .requiredString("a")
+         .name("b").type( SchemaBuilder.array().items(foo11)).noDefault()
+         .endRecord()
+
+      ReflectionSchemaBuilder().schema(Foo10::class) shouldBe foo10
+   }
 })
+
+data class Foo1(val a: String, val b: Boolean, val c: Long)
+data class Foo2(val a: String?, val b: Boolean, val c: Long)
+data class Foo3(val set1: Set<Int>, val set2: Set<Int?>)
+data class Foo4(val list1: List<Int>, val list2: List<Int?>)
+data class Foo5(val wine: Wine)
+data class Foo6(val map: Map<String, Boolean>)
+data class Foo7(val map: Map<String, Map<String, String>>)
+data class Foo8(val a: String)
+data class Foo9(val a: String?)
+data class Foo10(val a: String, val b: List<Foo11>)
+data class Foo11(val b: Boolean)
