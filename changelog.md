@@ -1,5 +1,14 @@
 ## Changelog
 
+### 1.4.3 (June 2025)
+
+* Added GenericRecordEncoder
+* Fix for nested records in ReflectionSchemaBuilder
+
+### 1.4.2 (June 2025)
+
+* Added Lettuce `GenericRecordCodec` for Redis use.
+
 ### 1.4.0 (April 2025)
 
 * Use LambdaMetafactory and MethodHandles for much improved reflection performance in encoding and decoding records.
