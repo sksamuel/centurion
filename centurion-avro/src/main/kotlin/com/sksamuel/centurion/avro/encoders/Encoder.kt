@@ -37,6 +37,7 @@ fun interface Encoder<T> {
       }
 
       fun encoderFor(type: KType, stringType: String?, schema: Schema): Encoder<*> {
+         println("encoderFor: $type, stringType=$stringType, schema=$schema")
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
             String::class if GenericData.StringType.String.name == stringType -> JavaStringEncoder
             String::class -> StringEncoder
@@ -54,7 +55,7 @@ fun interface Encoder<T> {
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughListEncoder
-            List::class -> ListEncoder(encoderFor(type.arguments.first().type!!, stringType, schema))
+            List::class -> ListEncoder(encoderFor(type.arguments.first().type!!, stringType, schema.elementType))
             LongArray::class -> LongArrayEncoder()
             IntArray::class -> IntArrayEncoder()
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassThroughSetEncoder
@@ -63,13 +64,13 @@ fun interface Encoder<T> {
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughSetEncoder
-            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!, stringType, schema))
+            Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!, stringType, schema.elementType))
             Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!, stringType, schema))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
             is KClass<*> if classifier.java.isEnum -> EnumEncoder()
-            is KClass<*> if classifier.isData -> ReflectionRecordEncoder<Any>(schema)
+            is KClass<*> if classifier.isData -> ReflectionRecordEncoder(schema, classifier as KClass<Any>)
             else -> error("Unsupported type $type")
          }
          return if (type.isMarkedNullable) NullEncoder(encoder) else encoder

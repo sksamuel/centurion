@@ -1,10 +1,14 @@
 package com.sksamuel.centurion.avro.encoders
 
+import com.sksamuel.centurion.avro.schemas.Foo10
+import com.sksamuel.centurion.avro.schemas.Foo11
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.util.Utf8
 
 class ReflectionRecordEncoderTest : FunSpec({
@@ -124,6 +128,25 @@ class ReflectionRecordEncoderTest : FunSpec({
       ReflectionRecordEncoder<Foo>(schema).encode(
          schema, Foo(maps)
       ) shouldBe record
+   }
+
+   test("records of lists of records") {
+
+      val schema = ReflectionSchemaBuilder().schema(Foo10::class)
+      val b = schema.getField("b").schema()
+
+      val record = GenericData.Record(schema)
+      record.put("a", "hello")
+      record.put("b", GenericData.Array<GenericRecord>(2, b).also { array ->
+         array.add(GenericData.Record(b.elementType).also { it.put("b", true) })
+         array.add(GenericData.Record(b.elementType).also { it.put("b", false) })
+      })
+
+      ReflectionRecordEncoder<Foo10>(schema).encode(
+         schema,
+         Foo10(a = "hello", b = listOf(Foo11(b = true), Foo11(b = false)))
+      ) shouldBe record
+
    }
 })
 
