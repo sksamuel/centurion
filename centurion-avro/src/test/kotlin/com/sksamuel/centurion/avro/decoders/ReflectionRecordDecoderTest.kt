@@ -1,11 +1,16 @@
 package com.sksamuel.centurion.avro.decoders
 
 import com.sksamuel.centurion.avro.encoders.Wine
+import com.sksamuel.centurion.avro.schemas.Foo10
+import com.sksamuel.centurion.avro.schemas.Foo11
+import com.sksamuel.centurion.avro.schemas.Foo12
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.util.Utf8
 
 class ReflectionRecordDecoderTest : FunSpec({
@@ -153,5 +158,43 @@ class ReflectionRecordDecoderTest : FunSpec({
       record.put("map", maps)
 
       ReflectionRecordDecoder<Foo>(schema).decode(schema, record) shouldBe Foo(maps)
+   }
+
+   test("records of lists of records") {
+
+      val schema = ReflectionSchemaBuilder().schema(Foo10::class)
+      val b = schema.getField("b").schema()
+
+      val record = GenericData.Record(schema)
+      record.put("a", "hello")
+      record.put("b", GenericData.Array<GenericRecord>(2, b).also { array ->
+         array.add(GenericData.Record(b.elementType).also { it.put("b", true) })
+         array.add(GenericData.Record(b.elementType).also { it.put("b", false) })
+      })
+
+      ReflectionRecordDecoder<Foo10>(schema).decode(
+         schema,
+         record
+      ) shouldBe Foo10(a = "hello", b = listOf(Foo11(b = true), Foo11(b = false)))
+
+   }
+
+   test("records of sets of records") {
+
+      val schema = ReflectionSchemaBuilder().schema(Foo12::class)
+      val b = schema.getField("b").schema()
+
+      val record = GenericData.Record(schema)
+      record.put("a", "hello")
+      record.put("b", GenericData.Array<GenericRecord>(2, b).also { array ->
+         array.add(GenericData.Record(b.elementType).also { it.put("b", true) })
+         array.add(GenericData.Record(b.elementType).also { it.put("b", false) })
+      })
+
+      ReflectionRecordDecoder<Foo12>(schema).decode(
+         schema,
+         record
+      ) shouldBe Foo12(a = "hello", b = setOf(Foo11(b = true), Foo11(b = false)))
+
    }
 })

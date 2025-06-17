@@ -43,7 +43,7 @@ fun interface Decoder<T> {
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughListDecoder
-            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType, schema))
+            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType, schema.elementType))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
@@ -52,8 +52,8 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughSetDecoder
-            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType, schema))
-            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType, schema))
+            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType, schema.elementType))
+            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType, schema.valueType))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)

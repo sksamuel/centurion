@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.encoders
 
 import com.sksamuel.centurion.avro.schemas.Foo10
 import com.sksamuel.centurion.avro.schemas.Foo11
+import com.sksamuel.centurion.avro.schemas.Foo12
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -145,6 +146,25 @@ class ReflectionRecordEncoderTest : FunSpec({
       ReflectionRecordEncoder<Foo10>(schema).encode(
          schema,
          Foo10(a = "hello", b = listOf(Foo11(b = true), Foo11(b = false)))
+      ) shouldBe record
+
+   }
+
+   test("records of sets of records") {
+
+      val schema = ReflectionSchemaBuilder().schema(Foo12::class)
+      val b = schema.getField("b").schema()
+
+      val record = GenericData.Record(schema)
+      record.put("a", "hello")
+      record.put("b", GenericData.Array<GenericRecord>(2, b).also { array ->
+         array.add(GenericData.Record(b.elementType).also { it.put("b", true) })
+         array.add(GenericData.Record(b.elementType).also { it.put("b", false) })
+      })
+
+      ReflectionRecordEncoder<Foo12>(schema).encode(
+         schema,
+         Foo12(a = "hello", b = setOf(Foo11(b = true), Foo11(b = false)))
       ) shouldBe record
 
    }

@@ -64,7 +64,7 @@ fun interface Encoder<T> {
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughSetEncoder
             Set::class -> SetEncoder(encoderFor(type.arguments.first().type!!, stringType, schema.elementType))
-            Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!, stringType, schema))
+            Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!, stringType, schema.valueType))
             LocalTime::class -> LocalTimeEncoder
             LocalDateTime::class -> LocalDateTimeEncoder
             Instant::class -> InstantEncoder
