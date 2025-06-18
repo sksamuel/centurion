@@ -102,5 +102,13 @@ fun createRecordProgramatically(foo: Foo): GenericData.Record {
    record.put("field_h", foo.field_h)
    record.put("field_i", foo.field_i)
    record.put("field_j", foo.field_j)
+   record.put("field_k", foo.field_k.map {
+      val barRecord = GenericData.Record(barSchema)
+      barRecord.put("field_a", it.field_a)
+      barRecord.put("field_b", it.field_b)
+      barRecord.put("field_c", it.field_c)
+      barRecord.put("field_d", it.field_d)
+      barRecord
+   })
    return record
 }
