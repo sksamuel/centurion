@@ -8,6 +8,13 @@ import kotlin.random.Random
 val longArraySchema: Schema = SchemaBuilder.array().items().longType()
 val stringArraySchema: Schema = SchemaBuilder.array().items().stringType()
 
+val barSchema: Schema = SchemaBuilder.record("foo").fields()
+   .requiredString("field_a")
+   .requiredBoolean("field_b")
+   .requiredInt("field_c")
+   .requiredDouble("field_d")
+   .endRecord()
+
 val schema: Schema =
    SchemaBuilder.record("foo").fields()
       .requiredString("field_a")
@@ -20,6 +27,7 @@ val schema: Schema =
       .requiredInt("field_h")
       .name("field_i").type(longArraySchema).noDefault()
       .name("field_j").type(stringArraySchema).noDefault()
+      .name("field_k").type(SchemaBuilder.array().items(barSchema)).noDefault()
       .endRecord()
 
 data class Foo(
@@ -33,6 +41,14 @@ data class Foo(
    val field_h: Int,
    val field_i: List<Long>,
    val field_j: Set<String>,
+   val field_k: List<Bar>,
+)
+
+data class Bar(
+   val field_a: String,
+   val field_b: Boolean,
+   val field_c: Int,
+   val field_d: Double
 )
 
 fun createIds(): List<Long> {
@@ -51,6 +67,14 @@ fun createFoo(): Foo {
       field_h = 821377124,
       field_i = createIds(),
       field_j = createRandomStrings().toSet(),
+      field_k = List(10) {
+         Bar(
+            field_a = "bar string $it",
+            field_b = it % 2 == 0,
+            field_c = it * 1000,
+            field_d = it.toDouble() / 3.14
+         )
+      }
    )
    return foo
 }

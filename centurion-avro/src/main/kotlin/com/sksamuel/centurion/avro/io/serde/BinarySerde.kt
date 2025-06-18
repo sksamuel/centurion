@@ -2,16 +2,18 @@ package com.sksamuel.centurion.avro.io.serde
 
 import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
+import com.sksamuel.centurion.avro.encoders.BinaryEncoderPooledObjectFactory
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
-import com.sksamuel.centurion.avro.io.BinaryEncoderPool
 import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericRecord
+import org.apache.avro.io.BinaryEncoder
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
+import org.apache.commons.pool2.impl.GenericObjectPool
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.reflect.KClass
@@ -29,7 +31,7 @@ class BinarySerde<T : Any>(
    private val schema: Schema,
    private val encoder: Encoder<T>,
    private val decoder: Decoder<T>,
-   private val binaryEncoderPool: BinaryEncoderPool,
+   encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
@@ -49,19 +51,28 @@ class BinarySerde<T : Any>(
          val schema = ReflectionSchemaBuilder(true).schema(kclass)
          val encoder = ReflectionRecordEncoder(schema, kclass)
          val decoder = ReflectionRecordDecoder(schema, kclass)
-         val pool = BinaryEncoderPool(Int.MAX_VALUE, encoderFactory)
-         return BinarySerde(schema, encoder, decoder, pool, decoderFactory)
+         return BinarySerde(schema, encoder, decoder, encoderFactory, decoderFactory)
       }
    }
 
+   private val config = GenericObjectPoolConfig<BinaryEncoder>().also {
+      it.maxIdle = 1
+      it.maxTotal = 50
+   }
+
+   private val pool = GenericObjectPool(BinaryEncoderPooledObjectFactory(encoderFactory), config)
+
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
-      binaryEncoderPool.use(baos) {
-         val writer = BinaryWriter(schema, baos, it, encoder)
+      val binaryEncoder = pool.borrowObject()
+      try {
+         val writer = BinaryWriter(schema, baos, binaryEncoder, encoder)
          writer.use {
             writer.write(obj)
             writer.close()
          }
+      } finally {
+         pool.returnObject(binaryEncoder)
       }
       return baos.toByteArray()
    }

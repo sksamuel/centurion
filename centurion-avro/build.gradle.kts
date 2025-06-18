@@ -2,6 +2,7 @@ dependencies {
    api(project(Projects.schemas))
    implementation(libs.avro)
    implementation(libs.kotlinx.coroutines.core)
+   implementation(libs.commons.pool)
    testImplementation(libs.jackson.module.kotlin)
    testImplementation("org.xerial.snappy:snappy-java:1.1.10.7")
    testImplementation("com.ning:compress-lzf:1.1.2")

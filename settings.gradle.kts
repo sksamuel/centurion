@@ -48,6 +48,8 @@ dependencyResolutionManagement {
 
          library("lettuce-core", "io.lettuce:lettuce-core:6.7.1.RELEASE")
 
+         library("commons-pool", "org.apache.commons:commons-pool2:2.12.1")
+
          val testcontainers = "1.21.1"
          library("testcontainers", "org.testcontainers:testcontainers:$testcontainers")
          library("testcontainers-redis", "com.redis:testcontainers-redis:2.2.4")

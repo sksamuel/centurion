@@ -4,6 +4,7 @@ package com.sksamuel.centurion.avro.benchmarks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.sksamuel.centurion.avro.Bar
 import com.sksamuel.centurion.avro.Foo
 import com.sksamuel.centurion.avro.createFoo
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
@@ -90,6 +91,7 @@ fun main() {
                record.get("field_h") as Int,
                record.get("field_i") as List<Long>,
                (record.get("field_j") as List<String>).toSet(),
+               record.get("field_k") as List<Bar>,
             )
             count += foo.field_c
          }
