@@ -28,8 +28,8 @@ allprojects {
    kotlin {
       compilerOptions {
          jvmTarget = JvmTarget.JVM_17
-         apiVersion = KotlinVersion.KOTLIN_2_2
-         languageVersion = KotlinVersion.KOTLIN_2_2
+         apiVersion = KotlinVersion.KOTLIN_2_1
+         languageVersion = KotlinVersion.KOTLIN_2_1
          freeCompilerArgs.set(listOf("-Xwhen-guards"))
       }
    }
