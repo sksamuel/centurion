@@ -1,3 +1,71 @@
+# Centurion JMH Benchmarks
+
+This project now includes JMH (Java Microbenchmark Harness) benchmarks for measuring the performance of Avro serialization and deserialization operations.
+
+## Running the Benchmarks
+
+To run all benchmarks:
+```
+./gradlew :centurion-avro:jmh
+```
+
+To run a specific benchmark:
+```
+./gradlew :centurion-avro:jmh -Pjmh.args="SerializeBenchmark"
+./gradlew :centurion-avro:jmh -Pjmh.args="DeserializeBenchmark"
+./gradlew :centurion-avro:jmh -Pjmh.args="SizeBenchmark"
+```
+
+To run a specific benchmark method:
+```
+./gradlew :centurion-avro:jmh -Pjmh.args="SerializeBenchmark.serializeAsJsonJackson"
+```
+
+To customize JMH parameters:
+```
+./gradlew :centurion-avro:jmh -Pjmh.args="-i 10 -wi 5 -f 2 SerializeBenchmark"
+```
+
+Where:
+- `-i` specifies the number of iterations
+- `-wi` specifies the number of warmup iterations
+- `-f` specifies the number of forks
+
+## Available Benchmarks
+
+### SerializeBenchmark
+Measures the performance of serializing Avro data using different methods:
+- `serializeAsJsonJackson`: Serializes data as JSON using Jackson
+- `serializeAsJsonJacksonGzip`: Serializes data as JSON using Jackson with GZIP compression
+- `serializeAsAvroBytesNoReuse`: Serializes data as Avro bytes without reusing encoders
+- `serializeAsAvroBytesWithReuse`: Serializes data as Avro bytes with encoder reuse
+- `serializeAsAvroBytesWithPool`: Serializes data as Avro bytes with a pool of encoders
+- `serializeAsAvroBytesWithProgramaticallyReuseEncoder`: Serializes data as Avro bytes programmatically with encoder reuse
+- `serializeAsAvroBytesWithGzipProgramaticallyReuseEncoder`: Serializes data as Avro bytes programmatically with GZIP compression and encoder reuse
+
+### DeserializeBenchmark
+Measures the performance of deserializing Avro data using different methods:
+- `deserializeJsonJackson`: Deserializes JSON data using Jackson
+- `deserializeAvroReflectionRecordDecoderNoReuse`: Deserializes Avro data using ReflectionRecordDecoder without reuse
+- `deserializeAvroReflectionRecordDecoderWithReuse`: Deserializes Avro data using ReflectionRecordDecoder with reuse
+- `deserializeAvroProgramatically`: Deserializes Avro data programmatically
+
+### SizeBenchmark
+Compares the size of serialized data using different formats and compression methods:
+- Jackson JSON: `jacksonUncompressed`, `jacksonGzip`, `jacksonDeflate`, `jacksonSnappy`, `jacksonLZF`, `jacksonZstd`
+- Avro: `avroUncompressed`, `avroGzip`, `avroDeflate`, `avroSnappy`, `avroLZF`, `avroZstd`
+
+## Implementation Details
+
+The benchmarks are implemented using JMH (Java Microbenchmark Harness) and are located in a dedicated sourceset:
+- `centurion-avro/src/jmh/kotlin/com/sksamuel/centurion/avro/benchmarks/`
+
+This ensures that the benchmarks are properly isolated from the main code and tests, while still having access to all the necessary dependencies.
+
+## Legacy Benchmark Results (for reference)
+
+The following are results from the previous benchmark implementation:
+
 with encoder returning a lambda,
 30,000,000 encodings
 

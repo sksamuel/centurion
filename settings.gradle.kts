@@ -50,6 +50,10 @@ dependencyResolutionManagement {
 
          library("commons-pool", "org.apache.commons:commons-pool2:2.12.1")
 
+         val jmh = "1.37"
+         library("jmh-core", "org.openjdk.jmh:jmh-core:$jmh")
+         library("jmh-generator-annprocess", "org.openjdk.jmh:jmh-generator-annprocess:$jmh")
+
          val testcontainers = "1.21.1"
          library("testcontainers", "org.testcontainers:testcontainers:$testcontainers")
          library("testcontainers-redis", "com.redis:testcontainers-redis:2.2.4")
