@@ -62,7 +62,7 @@ class BinarySerde<T : Any>(
 
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
-      BinaryWriter(schema, baos, encoderFactory, encoder).use { it.write(obj) }
+      BinaryWriter(schema, baos, encoderFactory, encoder, null).use { it.write(obj) }
       return baos.toByteArray()
    }
 

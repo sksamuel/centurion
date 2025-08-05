@@ -62,8 +62,15 @@ open class SerializeBenchmark {
    @Benchmark
    fun serializeAsAvroBytesNoReuse(blackhole: Blackhole) {
       val baos = ByteArrayOutputStream()
-      val writer = BinaryWriter(schema, baos, EncoderFactory.get(), encoder)
+      val writer = BinaryWriter(schema, baos, EncoderFactory.get(), encoder, null)
       writer.use { it.write(foo) }
+      blackhole.consume(baos.toByteArray())
+   }
+
+   @Benchmark
+   fun serializeAsAvroBytesWithReuse(blackhole: Blackhole) {
+      val baos = ByteArrayOutputStream()
+      BinaryWriter(schema, baos, EncoderFactory.get(), encoder, reuse).use { it.write(foo) }
       blackhole.consume(baos.toByteArray())
    }
 

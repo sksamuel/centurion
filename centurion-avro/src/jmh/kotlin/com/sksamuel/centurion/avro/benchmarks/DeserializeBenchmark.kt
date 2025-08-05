@@ -197,6 +197,7 @@ private fun createAvroBytes(foo: Foo): ByteArray {
       out = baos,
       ef = EncoderFactory.get(),
       encoder = encoder,
+      reuse = null
    ).use { it.write(foo) }
 
    return baos.toByteArray()

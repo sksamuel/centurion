@@ -20,7 +20,8 @@ class BinaryWriterTest : FunSpec({
          schema = schema,
          out = baos,
          ef = EncoderFactory.get(),
-         encoder = ReflectionRecordEncoder(schema)
+         encoder = ReflectionRecordEncoder(schema),
+         reuse = null,
       )
       writer.write(Foo("hello", 123))
       writer.write(Foo("world", 456))

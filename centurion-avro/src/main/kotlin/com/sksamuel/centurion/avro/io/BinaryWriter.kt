@@ -4,6 +4,7 @@ import com.sksamuel.centurion.avro.encoders.Encoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
+import org.apache.avro.io.BinaryEncoder
 import org.apache.avro.io.EncoderFactory
 import java.io.OutputStream
 
@@ -25,10 +26,11 @@ class BinaryWriter<T>(
    private val out: OutputStream,
    ef: EncoderFactory,
    private val encoder: Encoder<T>,
+   reuse: BinaryEncoder?,
 ) : AutoCloseable {
 
    private val datum = GenericDatumWriter<GenericRecord>(schema)
-   private val binaryEncoder = ef.binaryEncoder(out, null)
+   private val binaryEncoder = ef.binaryEncoder(out, reuse)
 
    fun write(obj: T) {
       val record = encoder.encode(schema, obj) as GenericRecord
