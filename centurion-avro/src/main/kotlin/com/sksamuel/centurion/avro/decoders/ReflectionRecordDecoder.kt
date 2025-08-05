@@ -1,5 +1,6 @@
 package com.sksamuel.centurion.avro.decoders
 
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
@@ -29,8 +30,22 @@ class ReflectionRecordDecoder<T : Any>(
    private val constructor = kclass.primaryConstructor ?: error("No primary constructor for type $kclass")
 
    companion object {
-      inline operator fun <reified T : Any> invoke(schema: Schema): ReflectionRecordDecoder<T> =
-         ReflectionRecordDecoder(schema, T::class)
+
+      /**
+       * Creates a [ReflectionRecordDecoder] for the given [schema] and type [T].
+       */
+      inline operator fun <reified T : Any> invoke(schema: Schema): ReflectionRecordDecoder<T> {
+         return ReflectionRecordDecoder(schema, T::class)
+      }
+
+      /**
+       * Creates a [ReflectionRecordDecoder] for the given type [T].
+       * This will use the [ReflectionSchemaBuilder] to generate the Avro schema for the type [T].
+       */
+      inline operator fun <reified T : Any> invoke(): ReflectionRecordDecoder<T> {
+         val schema = ReflectionSchemaBuilder().schema(T::class)
+         return ReflectionRecordDecoder(schema, T::class)
+      }
    }
 
    private val decodeFn: ((GenericRecord) -> T) = buildDecodeFn(schema)
