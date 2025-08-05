@@ -2,18 +2,14 @@ package com.sksamuel.centurion.avro.io.serde
 
 import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
-import com.sksamuel.centurion.avro.encoders.BinaryEncoderPooledObjectFactory
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
-import org.apache.avro.io.BinaryEncoder
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import org.apache.commons.pool2.impl.GenericObjectPool
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.reflect.KClass
@@ -31,11 +27,16 @@ class BinarySerde<T : Any>(
    private val schema: Schema,
    private val encoder: Encoder<T>,
    private val decoder: Decoder<T>,
-   encoderFactory: EncoderFactory,
+   private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
    companion object {
+
+      /**
+       * Creates a [BinarySerde] for the given type [T] using reflection to generate the schema,
+       * encoder and decoder.
+       */
       inline operator fun <reified T : Any> invoke(
          encoderFactory: EncoderFactory,
          decoderFactory: DecoderFactory,
@@ -43,6 +44,10 @@ class BinarySerde<T : Any>(
          return invoke(T::class, encoderFactory, decoderFactory)
       }
 
+      /**
+       * Creates a [BinarySerde] for the given kclass using reflection to generate the schema,
+       * encoder and decoder.
+       */
       operator fun <T : Any> invoke(
          kclass: KClass<T>,
          encoderFactory: EncoderFactory,
@@ -55,25 +60,9 @@ class BinarySerde<T : Any>(
       }
    }
 
-   private val config = GenericObjectPoolConfig<BinaryEncoder>().also {
-      it.maxIdle = 1
-      it.maxTotal = 50
-   }
-
-   private val pool = GenericObjectPool(BinaryEncoderPooledObjectFactory(encoderFactory), config)
-
    override fun serialize(obj: T): ByteArray {
       val baos = ByteArrayOutputStream()
-      val binaryEncoder = pool.borrowObject()
-      try {
-         val writer = BinaryWriter(schema, baos, binaryEncoder, encoder)
-         writer.use {
-            writer.write(obj)
-            writer.close()
-         }
-      } finally {
-         pool.returnObject(binaryEncoder)
-      }
+      BinaryWriter(schema, baos, encoderFactory, encoder).use { it.write(obj) }
       return baos.toByteArray()
    }
 

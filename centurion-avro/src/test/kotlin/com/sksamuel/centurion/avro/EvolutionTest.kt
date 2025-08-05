@@ -38,7 +38,7 @@ class EvolutionTest : FunSpec() {
          BinaryWriter(
             schema = writer,
             out = baos,
-            binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
+            EncoderFactory.get(),
             encoder = encoder
          ).use {
             it.write(Foo1("a", true))

@@ -19,7 +19,7 @@ class BinaryWriterTest : FunSpec({
       val writer = BinaryWriter<Foo>(
          schema = schema,
          out = baos,
-         binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
+         ef = EncoderFactory.get(),
          encoder = ReflectionRecordEncoder(schema)
       )
       writer.write(Foo("hello", 123))
