@@ -195,7 +195,7 @@ private fun createAvroBytes(foo: Foo): ByteArray {
    BinaryWriter(
       schema = schema,
       out = baos,
-      binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null),
+      ef = EncoderFactory.get(),
       encoder = encoder,
    ).use { it.write(foo) }
 
