@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
    implementation(libs.avro)
+   implementation(kotlin("reflect"))
    implementation(libs.kotlinx.coroutines.core)
    implementation(libs.commons.pool)
    testImplementation(libs.jackson.module.kotlin)
