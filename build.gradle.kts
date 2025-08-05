@@ -12,12 +12,6 @@ allprojects {
    group = Libs.org
    version = Ci.version
 
-   java {
-      targetCompatibility = JavaVersion.VERSION_21
-      sourceCompatibility = JavaVersion.VERSION_21
-      withSourcesJar()
-   }
-
    dependencies {
       testImplementation(rootProject.libs.bundles.testing)
    }
@@ -33,7 +27,7 @@ allprojects {
 
    kotlin {
       compilerOptions {
-         jvmTarget = JvmTarget.JVM_21
+         jvmTarget = JvmTarget.JVM_17
          apiVersion = KotlinVersion.KOTLIN_2_2
          languageVersion = KotlinVersion.KOTLIN_2_2
          freeCompilerArgs.set(listOf("-Xwhen-guards"))

@@ -10,15 +10,16 @@ plugins {
 
 java {
    toolchain {
-      languageVersion.set(JavaLanguageVersion.of(11))
+      languageVersion.set(JavaLanguageVersion.of(17))
    }
-   sourceCompatibility = JavaVersion.VERSION_11
-   targetCompatibility = JavaVersion.VERSION_11
+   sourceCompatibility = JavaVersion.VERSION_17
+   targetCompatibility = JavaVersion.VERSION_17
+   withSourcesJar()
 }
 
 kotlin {
    compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_11)
+      jvmTarget.set(JvmTarget.JVM_17)
       apiVersion.set(KotlinVersion.KOTLIN_2_2)
       languageVersion.set(KotlinVersion.KOTLIN_2_2)
    }
