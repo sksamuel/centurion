@@ -8,6 +8,9 @@ plugins {
    kotlin("jvm")
 }
 
+group = Libs.org
+version = Ci.version
+
 java {
    toolchain {
       languageVersion.set(JavaLanguageVersion.of(17))

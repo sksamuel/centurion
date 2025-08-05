@@ -8,7 +8,7 @@ pluginManagement {
       maven("https://plugins.gradle.org/m2/")
    }
    plugins {
-      kotlin("jvm").version("2.1.21")
+      kotlin("jvm").version("2.2.0")
    }
 }
 
