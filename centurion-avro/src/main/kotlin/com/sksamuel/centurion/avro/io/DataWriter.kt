@@ -24,7 +24,9 @@ class DataWriter<T>(
 ) : AutoCloseable {
 
   private val datum = GenericDatumWriter<GenericRecord>(schema)
-  private val writer = DataFileWriter(datum).setCodec(codecFactory).create(schema, output)
+  private val writer = DataFileWriter(datum)
+     .setCodec(codecFactory)
+     .create(schema, output)
 
   fun write(obj: T) {
     val record = encoder.encode(schema, obj) as GenericRecord

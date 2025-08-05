@@ -1,5 +1,6 @@
 package com.sksamuel.centurion.avro.io.serde
 
+import org.apache.avro.file.CodecFactory
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import java.util.concurrent.ConcurrentHashMap
@@ -18,10 +19,19 @@ class BinarySerdeFactory(
    }
 }
 
+
+class DataSerdeFactory(
+   private val encoderFactory: EncoderFactory,
+   private val decoderFactory: DecoderFactory,
+   private val codecFactory: CodecFactory?,
+) : SerdeFactory {
+   override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {
+      return DataSerde(kclass, encoderFactory, decoderFactory, codecFactory)
+   }
+}
+
 class CachingSerdeFactory(private val underlying: SerdeFactory) : SerdeFactory {
-
    private val cache = ConcurrentHashMap<KClass<*>, Serde<*>>()
-
    override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {
       return cache.getOrPut(kclass) { underlying.serdeFor(kclass) } as Serde<T>
    }
