@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
    kotlin("jvm")
-   id("signing")
 }
 
 allprojects {
@@ -37,7 +36,6 @@ allprojects {
          jvmTarget = JvmTarget.JVM_21
          apiVersion = KotlinVersion.KOTLIN_2_2
          languageVersion = KotlinVersion.KOTLIN_2_2
-         freeCompilerArgs.add("-Xwhen-guards")
       }
    }
 }

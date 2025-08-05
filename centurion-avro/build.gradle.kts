@@ -5,9 +5,9 @@ plugins {
 }
 
 dependencies {
-   implementation(libs.avro)
    implementation(kotlin("reflect"))
    implementation(libs.kotlinx.coroutines.core)
+   implementation(libs.avro)
    implementation(libs.commons.pool)
    testImplementation(libs.jackson.module.kotlin)
    testImplementation("org.xerial.snappy:snappy-java:1.1.10.7")
