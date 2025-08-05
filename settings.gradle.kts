@@ -21,7 +21,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 
 include("centurion-avro")
-include("centurion-avro-lettuce")
+//include("centurion-avro-lettuce")
 //include("centurion-orc")
 //include("centurion-parquet")
 //include("centurion-parquet")
@@ -40,7 +40,6 @@ dependencyResolutionManagement {
          library("avro", "org.apache.avro:avro:1.12.0")
 
          val kotest = "6.0.0.M10"
-         library("kotest-junit5", "io.kotest:kotest-runner-junit5:$kotest")
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
          library("kotest-property", "io.kotest:kotest-property:$kotest")
@@ -65,7 +64,6 @@ dependencyResolutionManagement {
          bundle(
             "testing",
             listOf(
-               "kotest-junit5",
                "kotest-core",
                "kotest-json",
                "kotest-property",

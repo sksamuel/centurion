@@ -45,6 +45,16 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
          val schema = ReflectionSchemaBuilder().schema(T::class)
          return ReflectionRecordEncoder(schema, T::class)
       }
+
+      /**
+       * Creates a [ReflectionRecordEncoder] for the given type [T].
+       * This will automatically build the Avro schema for the type [T] using
+       * [ReflectionSchemaBuilder].
+       */
+      operator fun <T : Any> invoke(kclass: KClass<T>): ReflectionRecordEncoder<T> {
+         val schema = ReflectionSchemaBuilder().schema(kclass)
+         return ReflectionRecordEncoder(schema, kclass)
+      }
    }
 
    private val encoders: List<Encoding> = buildEncodings(schema, kclass)

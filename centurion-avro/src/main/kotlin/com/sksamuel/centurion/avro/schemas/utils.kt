@@ -10,3 +10,11 @@ val STRING_SCHEMA_JAVA: Schema = SchemaBuilder.builder().stringType().also {
 }
 
 fun Schema.asNullUnion(): Schema = SchemaBuilder.unionOf().nullType().and().type(this).endUnion()
+
+/**
+ * Returns the non-null component of a UNION schema
+ */
+fun Schema.unionNonNullComponent(): Schema {
+   require(isUnion && isNullable)
+   return types.first { !it.isNullable }
+}

@@ -21,7 +21,6 @@ class BinarySerdeFactory(
    }
 }
 
-
 class DataSerdeFactory(
    private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
@@ -34,6 +33,7 @@ class DataSerdeFactory(
    }
 }
 
+@Suppress("UNCHECKED_CAST")
 class CachingSerdeFactory(private val underlying: SerdeFactory) : SerdeFactory {
    private val cache = ConcurrentHashMap<KClass<*>, Serde<*>>()
    override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {

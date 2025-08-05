@@ -26,6 +26,7 @@ kotlin {
       jvmTarget.set(JvmTarget.JVM_17)
       apiVersion.set(KotlinVersion.KOTLIN_2_2)
       languageVersion.set(KotlinVersion.KOTLIN_2_2)
+      freeCompilerArgs.set(listOf("-Xwhen-guards"))
    }
 }
 
@@ -34,4 +35,20 @@ dependencies {
    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M10")
    testImplementation("io.kotest:kotest-assertions-json:6.0.0.M10")
    testImplementation("io.kotest:kotest-property:6.0.0.M10")
+}
+
+tasks.named<Test>("test") {
+   useJUnitPlatform()
+   filter {
+      isFailOnNoMatchingTests = false
+   }
+   testLogging {
+      showExceptions = true
+      showStandardStreams = true
+      events = setOf(
+         TestLogEvent.FAILED,
+         TestLogEvent.PASSED
+      )
+      exceptionFormat = TestExceptionFormat.FULL
+   }
 }

@@ -46,6 +46,15 @@ class ReflectionRecordDecoder<T : Any>(
          val schema = ReflectionSchemaBuilder().schema(T::class)
          return ReflectionRecordDecoder(schema, T::class)
       }
+
+      /**
+       * Creates a [ReflectionRecordDecoder] for the given type [T].
+       * This will use the [ReflectionSchemaBuilder] to generate the Avro schema for the type [T].
+       */
+      operator fun <T : Any> invoke(kclass: KClass<T>): ReflectionRecordDecoder<T> {
+         val schema = ReflectionSchemaBuilder().schema(kclass)
+         return ReflectionRecordDecoder(schema, kclass)
+      }
    }
 
    private val decodeFn: ((GenericRecord) -> T) = buildDecodeFn(schema)
