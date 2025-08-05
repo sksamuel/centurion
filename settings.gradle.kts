@@ -8,7 +8,7 @@ pluginManagement {
       maven("https://plugins.gradle.org/m2/")
    }
    plugins {
-      kotlin("jvm").version("2.1.20")
+      kotlin("jvm").version("2.2.0")
    }
 }
 
@@ -17,9 +17,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("centurion-avro")
 include("centurion-avro-lettuce")
-include("centurion-orc")
-include("centurion-parquet")
-include("centurion-schemas")
+//include("centurion-orc")
+//include("centurion-parquet")
+//include("centurion-schemas")
 
 dependencyResolutionManagement {
    repositories {
@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.12.0")
 
-         val kotest = "6.0.0.M4"
+         val kotest = "6.0.0.M10"
          library("kotest-junit5", "io.kotest:kotest-runner-junit5:$kotest")
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
