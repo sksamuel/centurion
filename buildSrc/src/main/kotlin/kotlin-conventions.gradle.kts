@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
@@ -35,20 +33,4 @@ dependencies {
    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M10")
    testImplementation("io.kotest:kotest-assertions-json:6.0.0.M10")
    testImplementation("io.kotest:kotest-property:6.0.0.M10")
-}
-
-tasks.named<Test>("test") {
-   useJUnitPlatform()
-   filter {
-      isFailOnNoMatchingTests = false
-   }
-   testLogging {
-      showExceptions = true
-      showStandardStreams = true
-      events = setOf(
-         TestLogEvent.FAILED,
-         TestLogEvent.PASSED
-      )
-      exceptionFormat = TestExceptionFormat.FULL
-   }
 }
