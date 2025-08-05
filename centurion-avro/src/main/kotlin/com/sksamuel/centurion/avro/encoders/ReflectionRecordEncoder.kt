@@ -1,5 +1,6 @@
 package com.sksamuel.centurion.avro.encoders
 
+import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import java.lang.invoke.LambdaMetafactory
@@ -18,15 +19,30 @@ import kotlin.reflect.full.declaredMemberProperties
  * from the given schema.
  *
  * This encoder requires a small overhead in CPU time verus programmatically generated encoders of around 10%.
+ *
  * To benefit from the cached encodings ensure that you create a reflection-based encoder
- * once per schema and re-use it throughout your project.
+ * once per class and re-use it throughout your project.
  *
  * Instances of this class are thread-safe.
  */
 class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Encoder<T> {
 
    companion object {
+
+      /**
+       * Creates a [ReflectionRecordEncoder] for the given [schema] and type [T].
+       */
       inline operator fun <reified T : Any> invoke(schema: Schema): ReflectionRecordEncoder<T> {
+         return ReflectionRecordEncoder(schema, T::class)
+      }
+
+      /**
+       * Creates a [ReflectionRecordEncoder] for the given type [T].
+       * This will automatically build the Avro schema for the type [T] using
+       * [ReflectionSchemaBuilder].
+       */
+      inline operator fun <reified T : Any> invoke(): ReflectionRecordEncoder<T> {
+         val schema = ReflectionSchemaBuilder().schema(T::class)
          return ReflectionRecordEncoder(schema, T::class)
       }
    }
