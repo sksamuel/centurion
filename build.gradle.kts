@@ -36,6 +36,7 @@ allprojects {
          jvmTarget = JvmTarget.JVM_21
          apiVersion = KotlinVersion.KOTLIN_2_2
          languageVersion = KotlinVersion.KOTLIN_2_2
+         freeCompilerArgs.set(listOf("-Xwhen-guards"))
       }
    }
 }
