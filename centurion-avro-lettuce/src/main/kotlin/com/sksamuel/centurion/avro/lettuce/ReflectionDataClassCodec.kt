@@ -4,7 +4,6 @@ import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import io.lettuce.core.codec.RedisCodec
-import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
@@ -24,10 +23,6 @@ class ReflectionDataClassCodec<T : Any>(
    private val schema = ReflectionSchemaBuilder().schema(kclass)
    private val encoder = ReflectionRecordEncoder(schema, kclass)
    private val decoder = ReflectionRecordDecoder(schema, kclass)
-
-   init {
-      GenericData.get().setFastReaderEnabled(true)
-   }
 
    override fun decodeKey(buffer: ByteBuffer): T {
       return decoder.decode(schema, read(buffer))
