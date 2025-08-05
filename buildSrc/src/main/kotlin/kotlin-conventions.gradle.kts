@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
    `java-library`
    kotlin("jvm")
+   id("io.kotest")
 }
 
 group = Libs.org
@@ -30,24 +31,7 @@ kotlin {
 
 dependencies {
    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
-   testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M10")
    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M10")
    testImplementation("io.kotest:kotest-assertions-json:6.0.0.M10")
    testImplementation("io.kotest:kotest-property:6.0.0.M10")
-}
-
-tasks.named<Test>("test") {
-   useJUnitPlatform()
-   filter {
-      isFailOnNoMatchingTests = false
-   }
-   testLogging {
-      showExceptions = true
-      showStandardStreams = true
-      events = setOf(
-         TestLogEvent.FAILED,
-         TestLogEvent.PASSED
-      )
-      exceptionFormat = TestExceptionFormat.FULL
-   }
 }
