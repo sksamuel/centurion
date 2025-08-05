@@ -14,6 +14,8 @@ class BinarySerdeFactory(
    private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
 ) : SerdeFactory {
+   constructor() : this(EncoderFactory.get(), DecoderFactory.get())
+
    override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {
       return BinarySerde(kclass, encoderFactory, decoderFactory)
    }
@@ -25,6 +27,8 @@ class DataSerdeFactory(
    private val decoderFactory: DecoderFactory,
    private val codecFactory: CodecFactory?,
 ) : SerdeFactory {
+   constructor() : this(EncoderFactory.get(), DecoderFactory.get(), null)
+
    override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {
       return DataSerde(kclass, encoderFactory, decoderFactory, codecFactory)
    }
