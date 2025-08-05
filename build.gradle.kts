@@ -14,8 +14,8 @@ allprojects {
    version = Ci.version
 
    java {
-      targetCompatibility = JavaVersion.VERSION_17
-      sourceCompatibility = JavaVersion.VERSION_17
+      targetCompatibility = JavaVersion.VERSION_21
+      sourceCompatibility = JavaVersion.VERSION_21
       withSourcesJar()
    }
 
@@ -34,9 +34,9 @@ allprojects {
 
    kotlin {
       compilerOptions {
-         jvmTarget = JvmTarget.JVM_17
-         apiVersion = KotlinVersion.KOTLIN_2_1
-         languageVersion = KotlinVersion.KOTLIN_2_1
+         jvmTarget = JvmTarget.JVM_21
+         apiVersion = KotlinVersion.KOTLIN_2_2
+         languageVersion = KotlinVersion.KOTLIN_2_2
          freeCompilerArgs.add("-Xwhen-guards")
       }
    }
