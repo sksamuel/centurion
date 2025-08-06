@@ -21,7 +21,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 
 include("centurion-avro")
-//include("centurion-avro-lettuce")
+include("centurion-avro-lettuce")
 //include("centurion-orc")
 //include("centurion-parquet")
 //include("centurion-parquet")

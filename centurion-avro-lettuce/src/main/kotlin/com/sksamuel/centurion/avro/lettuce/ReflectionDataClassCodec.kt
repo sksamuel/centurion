@@ -14,6 +14,9 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
 
+/**
+ * A [RedisCodec] for encoding and decoding data classes using Avro.
+ */
 class ReflectionDataClassCodec<T : Any>(
    private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,

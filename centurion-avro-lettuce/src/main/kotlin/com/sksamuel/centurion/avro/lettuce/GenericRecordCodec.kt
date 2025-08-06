@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.lettuce
 
 import io.lettuce.core.codec.RedisCodec
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
@@ -12,15 +11,14 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 
+/**
+ * A [RedisCodec] for encoding and decoding [GenericRecord]s using Avro.
+ */
 class GenericRecordCodec(
    private val schema: Schema,
    private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
 ) : RedisCodec<GenericRecord, GenericRecord> {
-
-   init {
-      GenericData.get().setFastReaderEnabled(true)
-   }
 
    override fun decodeKey(buffer: ByteBuffer): GenericRecord {
       return decode(buffer)
