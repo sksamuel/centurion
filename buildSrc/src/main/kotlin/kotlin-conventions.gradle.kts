@@ -19,6 +19,15 @@ java {
    withSourcesJar()
 }
 
+tasks.test {
+   useJUnitPlatform()
+   testLogging {
+      showExceptions = true
+      showStandardStreams = true
+      exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+   }
+}
+
 kotlin {
    compilerOptions {
       jvmTarget.set(JvmTarget.JVM_17)
@@ -31,6 +40,7 @@ kotlin {
 dependencies {
    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
    testImplementation("io.kotest:kotest-framework-engine:6.0.0.M11")
+   testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M11")
    testImplementation("io.kotest:kotest-assertions-core:6.0.0.M11")
    testImplementation("io.kotest:kotest-assertions-json:6.0.0.M11")
    testImplementation("io.kotest:kotest-extensions-testcontainers:6.0.0.M11")
