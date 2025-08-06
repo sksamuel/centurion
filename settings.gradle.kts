@@ -43,7 +43,6 @@ dependencyResolutionManagement {
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
          library("kotest-property", "io.kotest:kotest-property:$kotest")
-         library("kotest-testcontainers", "io.kotest:kotest-extensions-testcontainers:$kotest")
 
          library("kotlinx-coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
