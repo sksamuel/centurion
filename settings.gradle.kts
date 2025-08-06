@@ -39,11 +39,6 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.12.0")
 
-         val kotest = "6.0.0.M11"
-         library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
-         library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
-         library("kotest-property", "io.kotest:kotest-property:$kotest")
-
          library("kotlinx-coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
          library("jackson-module-kotlin", "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
@@ -59,16 +54,6 @@ dependencyResolutionManagement {
          val testcontainers = "1.21.1"
          library("testcontainers", "org.testcontainers:testcontainers:$testcontainers")
          library("testcontainers-redis", "com.redis:testcontainers-redis:2.2.4")
-
-         bundle(
-            "testing",
-            listOf(
-               "kotest-core",
-               "kotest-json",
-               "kotest-property",
-               "kotest-testcontainers",
-            )
-         )
       }
    }
 }
