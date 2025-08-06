@@ -1,5 +1,14 @@
 ## Changelog
 
+### 1.4.8 (August 2025)
+
+* Fixed nullable maps in encoder and decoder
+
+### 1.4.7 (August 2025)
+
+* Extra constructors for convenience on Serde's
+* Add `CachingSerdeFactory`
+
 ### 1.4.4 (June 2025)
 
 * Fix for encoding lists of records
