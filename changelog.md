@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.4.9 (August 2025)
+
+* Removed setFastReaderEnabled from Redis codecs
+
 ### 1.4.8 (August 2025)
 
 * Fixed nullable maps in encoder and decoder
