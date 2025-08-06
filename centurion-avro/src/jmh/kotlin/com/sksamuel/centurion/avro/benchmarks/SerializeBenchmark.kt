@@ -3,7 +3,6 @@ package com.sksamuel.centurion.avro.benchmarks
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryWriter
-import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
@@ -60,22 +59,31 @@ open class SerializeBenchmark {
    }
 
    @Benchmark
-   fun serializeAsAvroBytesNoReuse(blackhole: Blackhole) {
+   fun serializeAvroReflectionNoReuse(blackhole: Blackhole) {
       val baos = ByteArrayOutputStream()
-      val writer = BinaryWriter(schema, baos, EncoderFactory.get(), encoder, null)
-      writer.use { it.write(foo) }
+      BinaryWriter(schema, baos, EncoderFactory.get(), encoder, null).use { it.write(foo) }
       blackhole.consume(baos.toByteArray())
    }
 
    @Benchmark
-   fun serializeAsAvroBytesWithReuse(blackhole: Blackhole) {
+   fun serializeAvroReflectionWithReuse(blackhole: Blackhole) {
       val baos = ByteArrayOutputStream()
       BinaryWriter(schema, baos, EncoderFactory.get(), encoder, reuse).use { it.write(foo) }
       blackhole.consume(baos.toByteArray())
    }
 
    @Benchmark
-   fun serializeAsAvroBytesWithProgramaticallyReuseEncoder(blackhole: Blackhole) {
+   fun serializeAvroProgramaticallyNoReuse(blackhole: Blackhole) {
+      val baos = ByteArrayOutputStream()
+      val encoder = EncoderFactory.get().binaryEncoder(baos, null)
+      val record = createRecordProgramatically(foo)
+      writer.write(record, encoder)
+      encoder.flush()
+      blackhole.consume(baos.toByteArray())
+   }
+
+   @Benchmark
+   fun serializeAvroProgramaticallyWithReuse(blackhole: Blackhole) {
       val baos = ByteArrayOutputStream()
       val encoder = EncoderFactory.get().binaryEncoder(baos, reuse)
       val record = createRecordProgramatically(foo)
@@ -85,7 +93,19 @@ open class SerializeBenchmark {
    }
 
    @Benchmark
-   fun serializeAsAvroBytesWithGzipProgramaticallyReuseEncoder(blackhole: Blackhole) {
+   fun serializeAvroProgramaticallyGzipNoReuse(blackhole: Blackhole) {
+      val baos = ByteArrayOutputStream()
+      val gzip = GZIPOutputStream(baos)
+      val encoder = EncoderFactory.get().binaryEncoder(gzip, null)
+      val record = createRecordProgramatically(foo)
+      writer.write(record, encoder)
+      encoder.flush()
+      gzip.close()
+      blackhole.consume(baos.toByteArray())
+   }
+
+   @Benchmark
+   fun serializeAvroProgramaticallyGzipWithReuse(blackhole: Blackhole) {
       val baos = ByteArrayOutputStream()
       val gzip = GZIPOutputStream(baos)
       val encoder = EncoderFactory.get().binaryEncoder(gzip, reuse)
@@ -97,26 +117,4 @@ open class SerializeBenchmark {
    }
 }
 
-fun createRecordProgramatically(foo: Foo): GenericData.Record {
-   val record = GenericData.Record(schema)
-   record.put("field_a", foo.field_a)
-   record.put("field_b", foo.field_b)
-   record.put("field_c", foo.field_c)
-   record.put("field_d", foo.field_d)
-   record.put("field_e", foo.field_e)
-   record.put("field_f", foo.field_f)
-   record.put("field_g", foo.field_g)
-   record.put("field_h", foo.field_h)
-   record.put("field_i", foo.field_i)
-   record.put("field_j", foo.field_j)
-   record.put("field_k", foo.field_k.map {
-      val barRecord = GenericData.Record(barSchema)
-      barRecord.put("field_a", it.field_a)
-      barRecord.put("field_b", it.field_b)
-      barRecord.put("field_c", it.field_c)
-      barRecord.put("field_d", it.field_d)
-      barRecord
-   })
-   return record
-}
 
