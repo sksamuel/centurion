@@ -95,7 +95,7 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
 
          val callSite = LambdaMetafactory.metafactory(
             /* caller = */ lookup,
-            /* interfaceMethodName = */ "apply", // the name of the method inside the interface
+            /* interfaceMethodName = */ "apply", // the name of the SAM inside the Function interface
             /* factoryType = */ factoryType,
             /* interfaceMethodType = */ MethodType.methodType(Any::class.java, Any::class.java), // erased apply
             /* implementation = */ methodHandle, // this is the reflection call that will be inlined

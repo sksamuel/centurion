@@ -34,7 +34,7 @@ object BigDecimalStringEncoder : Encoder<BigDecimal> {
 }
 
 /**
- * An [[Encoder]] for [[BigDecimal]] that encodes as fixed size byte arrays.
+ * An [Encoder] for [BigDecimal] that encodes as fixed size byte arrays.
  */
 object BigDecimalFixedEncoder : Encoder<BigDecimal> {
 

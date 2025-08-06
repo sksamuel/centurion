@@ -4,6 +4,7 @@ import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import java.math.BigDecimal
+import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -50,6 +51,8 @@ fun interface Encoder<T> {
             Short::class -> ShortEncoder
             Byte::class -> ByteEncoder
             BigDecimal::class -> BigDecimalStringEncoder
+            ByteBuffer::class -> ByteBufferEncoder
+            ByteArray::class -> ByteArrayEncoder
             List::class if type.arguments.first().type == typeOf<Long>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Int>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Short>() -> PassThroughListEncoder

@@ -39,7 +39,7 @@ dependencyResolutionManagement {
 
          library("avro", "org.apache.avro:avro:1.12.0")
 
-         val kotest = "6.0.0.M10"
+         val kotest = "6.0.0.M11"
          library("kotest-core", "io.kotest:kotest-assertions-core:$kotest")
          library("kotest-json", "io.kotest:kotest-assertions-json:$kotest")
          library("kotest-property", "io.kotest:kotest-property:$kotest")

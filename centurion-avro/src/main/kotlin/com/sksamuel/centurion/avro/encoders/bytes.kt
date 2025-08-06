@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 object ByteBufferEncoder : Encoder<ByteBuffer> {
    override fun encode(schema: Schema, value: ByteBuffer): Any? {
       return when (schema.type) {
-         Schema.Type.BYTES -> Encoder.identity<ByteBuffer>()
+         Schema.Type.BYTES -> Encoder.identity()
          Schema.Type.FIXED -> FixedByteBufferEncoder
          else -> error("ByteBufferEncoder doesn't support schema type ${schema.type}")
       }

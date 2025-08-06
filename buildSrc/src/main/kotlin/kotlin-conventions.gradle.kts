@@ -30,7 +30,8 @@ kotlin {
 
 dependencies {
    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
-   testImplementation("io.kotest:kotest-assertions-core:6.0.0.M10")
-   testImplementation("io.kotest:kotest-assertions-json:6.0.0.M10")
-   testImplementation("io.kotest:kotest-property:6.0.0.M10")
+   testImplementation("io.kotest:kotest-framework-engine:6.0.0-LOCAL")
+   testImplementation("io.kotest:kotest-assertions-core:6.0.0-LOCAL")
+   testImplementation("io.kotest:kotest-assertions-json:6.0.0-LOCAL")
+   testImplementation("io.kotest:kotest-property:6.0.0-LOCAL")
 }
