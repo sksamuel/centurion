@@ -9,6 +9,14 @@
 * Extra constructors for convenience on Serde's
 * Add `CachingSerdeFactory`
 
+### 1.4.6 (June 2025)
+
+* Fix for decoding sets of records sksamuel 17 Jun 2025 18:36 90d3b56e
+
+### 1.4.5 (June 2025)
+
+* Added ReflectionDataClassCodec sksamuel 17 Jun 2025 17:27 8dc00d57
+
 ### 1.4.4 (June 2025)
 
 * Fix for encoding lists of records
