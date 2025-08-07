@@ -39,10 +39,12 @@ kotlin {
 
 dependencies {
    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
-   testImplementation("io.kotest:kotest-framework-engine:6.0.0.M11")
-   testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M11")
-   testImplementation("io.kotest:kotest-assertions-core:6.0.0.M11")
-   testImplementation("io.kotest:kotest-assertions-json:6.0.0.M11")
-   testImplementation("io.kotest:kotest-extensions-testcontainers:6.0.0.M11")
-   testImplementation("io.kotest:kotest-property:6.0.0.M11")
+
+   val kotestVersion = "6.0.0-LOCAL"
+   testImplementation("io.kotest:kotest-framework-engine:$kotestVersion")
+   testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+   testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+   testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
+   testImplementation("io.kotest:kotest-extensions-testcontainers:$kotestVersion")
+   testImplementation("io.kotest:kotest-property:$kotestVersion")
 }

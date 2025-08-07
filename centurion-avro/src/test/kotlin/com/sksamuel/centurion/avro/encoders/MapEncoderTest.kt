@@ -9,6 +9,7 @@ data class Foo1(val map: Map<String, Boolean>)
 data class Foo2(val map: Map<String, Boolean>?)
 
 class MapEncoderTest : FunSpec({
+
    test("map") {
 
       val schema = ReflectionSchemaBuilder().schema(Foo1::class)
@@ -19,7 +20,6 @@ class MapEncoderTest : FunSpec({
 
       encoder.encode(schema, Foo1(mapOf("a" to true, "b" to false))) shouldBe expected
    }
-
 
    test("nullable map") {
 

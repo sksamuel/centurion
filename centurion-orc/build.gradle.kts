@@ -1,4 +1,8 @@
+plugins {
+   id("kotlin-conventions")
+   id("publishing-conventions")
+}
+
 dependencies {
-   api(project(Projects.schemas))
    implementation(Libs.Orc.core)
 }
