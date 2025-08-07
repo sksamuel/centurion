@@ -45,7 +45,7 @@ class RoundTripTest : FunSpec() {
          after.wine shouldBe before.wine
          after.arrays shouldBe before.arrays
          after.ba shouldBe before.ba
-         after.bb shouldBe "qwe"
+         after.bb shouldBe before.bb
       }
    }
 }

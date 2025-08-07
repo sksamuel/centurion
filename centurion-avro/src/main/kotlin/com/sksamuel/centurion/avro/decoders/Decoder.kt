@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro.decoders
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
+import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalTime
 import kotlin.reflect.KClass
@@ -38,6 +39,8 @@ fun interface Decoder<T> {
             Long::class -> LongDecoder
             Byte::class -> ByteDecoder
             Short::class -> ShortDecoder
+            ByteArray::class -> ByteArrayDecoder
+            ByteBuffer::class -> ByteBufferDecoder
             List::class if type.arguments.first().type == typeOf<Long>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Int>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Short>() -> PassthroughListDecoder

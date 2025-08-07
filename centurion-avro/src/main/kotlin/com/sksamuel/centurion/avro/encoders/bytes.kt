@@ -7,8 +7,8 @@ import java.nio.ByteBuffer
 object ByteBufferEncoder : Encoder<ByteBuffer> {
    override fun encode(schema: Schema, value: ByteBuffer): Any? {
       return when (schema.type) {
-         Schema.Type.BYTES -> Encoder.identity()
-         Schema.Type.FIXED -> FixedByteBufferEncoder
+         Schema.Type.BYTES -> value.array()
+         Schema.Type.FIXED -> FixedByteBufferEncoder.encode(schema, value)
          else -> error("ByteBufferEncoder doesn't support schema type ${schema.type}")
       }
    }
@@ -26,8 +26,8 @@ object FixedByteBufferEncoder : Encoder<ByteBuffer> {
 object ByteArrayEncoder : Encoder<ByteArray> {
    override fun encode(schema: Schema, value: ByteArray): Any? {
       return when (schema.type) {
-         Schema.Type.BYTES -> Encoder.identity<ByteArray>()
-         Schema.Type.FIXED -> FixedByteArrayEncoder
+         Schema.Type.BYTES -> value
+         Schema.Type.FIXED -> FixedByteArrayEncoder.encode(schema, value)
          else -> error("ByteArrayEncoder doesn't support schema type ${schema.type}")
       }
    }
