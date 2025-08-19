@@ -8,6 +8,7 @@ import kotlin.reflect.KClass
 class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<T> {
 
    private val j: Class<T> = kclass.java
+   private val map = j.enumConstants.associateBy { it.name }
 
    init {
       require(kclass.java.isEnum)
@@ -19,7 +20,6 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<T> {
 
    override fun decode(schema: Schema, value: Any?): T {
       require(schema.type == Schema.Type.ENUM)
-      val map = j.enumConstants.associateBy { it.name }
       val symbol = when (value) {
          is GenericEnumSymbol<*> -> value.toString()
          is String -> value
