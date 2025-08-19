@@ -58,7 +58,7 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Double>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Float>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> ListDecoder(StringTypeDecoder)
+            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> SetDecoder(StringTypeDecoder)
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
             LocalTime::class -> LocalTimeDecoder
