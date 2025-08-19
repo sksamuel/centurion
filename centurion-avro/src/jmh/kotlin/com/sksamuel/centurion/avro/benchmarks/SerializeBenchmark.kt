@@ -45,6 +45,7 @@ open class SerializeBenchmark {
    private val writer = GenericDatumWriter<GenericRecord>(schema)
 
    init {
+      GenericData.get().setFastReaderEnabled(true)
       GenericData.setStringType(schema, GenericData.StringType.String)
    }
 
