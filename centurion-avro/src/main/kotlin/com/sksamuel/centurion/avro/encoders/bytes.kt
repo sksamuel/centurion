@@ -15,11 +15,12 @@ object ByteBufferEncoder : Encoder<ByteBuffer> {
 }
 
 object FixedByteBufferEncoder : Encoder<ByteBuffer> {
+   private val instance = GenericData.get()
    override fun encode(schema: Schema, value: ByteBuffer): Any? {
       require(schema.type == Schema.Type.FIXED)
       val array = ByteArray(schema.fixedSize)
       System.arraycopy(value.array(), 0, array, 0, value.array().size)
-      return GenericData.get().createFixed(null, array, schema)
+      return instance.createFixed(null, array, schema)
    }
 }
 
@@ -34,10 +35,11 @@ object ByteArrayEncoder : Encoder<ByteArray> {
 }
 
 object FixedByteArrayEncoder : Encoder<ByteArray> {
+   private val instance = GenericData.get()
    override fun encode(schema: Schema, value: ByteArray): Any? {
       require(schema.type == Schema.Type.FIXED)
       val array = ByteArray(schema.fixedSize)
       System.arraycopy(value, 0, array, 0, value.size)
-      return GenericData.get().createFixed(null, array, schema)
+      return instance.createFixed(null, array, schema)
    }
 }

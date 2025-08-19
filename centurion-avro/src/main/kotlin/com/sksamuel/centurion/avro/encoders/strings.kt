@@ -63,10 +63,11 @@ object ByteStringEncoder : Encoder<String> {
  * An [Encoder] for Strings that encodes as [org.apache.avro.generic.GenericFixed]s.
  */
 object FixedStringEncoder : Encoder<String> {
+   private val instance = GenericData.get()
    override fun encode(schema: Schema, value: String): Any? {
       val bytes = value.encodeToByteArray()
       if (bytes.size > schema.fixedSize)
          error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
-      return GenericData.get().createFixed(null, bytes, schema)
+      return instance.createFixed(null, bytes, schema)
    }
 }

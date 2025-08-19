@@ -35,7 +35,7 @@ fun interface Encoder<T> {
        */
       fun <T : Any> identity(): Encoder<T> = Encoder { schema, value -> value }
 
-      fun encoderFor(type: KType, stringType: String?, schema: Schema): Encoder<*> {
+      fun encoderFor(type: KType, schema: Schema): Encoder<*> {
          if (type.isMarkedNullable) require(schema.isUnion) { "Require UNION for fields marked nullable" }
          val nonNullSchema = if (schema.isUnion) schema.unionNonNullComponent() else schema
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
@@ -64,7 +64,6 @@ fun interface Encoder<T> {
             List::class -> ListEncoder(
                encoderFor(
                   type.arguments.first().type!!,
-                  stringType,
                   nonNullSchema.elementType
                )
             )
@@ -82,16 +81,14 @@ fun interface Encoder<T> {
             Set::class -> SetEncoder(
                encoderFor(
                   type.arguments.first().type!!,
-                  stringType,
-                  if (schema.isUnion) schema.unionNonNullComponent().elementType else schema.elementType
+                  nonNullSchema.elementType
                )
             )
 
             Map::class -> MapEncoder(
                encoderFor(
                   type.arguments[1].type!!,
-                  stringType,
-                  if (schema.isUnion) schema.unionNonNullComponent().valueType else schema.valueType
+                  nonNullSchema.valueType
                )
             )
 

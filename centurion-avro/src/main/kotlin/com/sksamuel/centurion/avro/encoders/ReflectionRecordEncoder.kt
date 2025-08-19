@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro.encoders
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecord
 import java.lang.invoke.LambdaMetafactory
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -59,7 +60,7 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
 
    private val encoders: List<Encoding> = buildEncodings(schema, kclass)
 
-   override fun encode(schema: Schema, value: T): Any? {
+   override fun encode(schema: Schema, value: T): GenericRecord {
       val record = GenericData.Record(schema)
       encoders.map { (encoder, getter, pos, schema) ->
          val value = getter.apply(value)
@@ -83,7 +84,6 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
          val methodHandle = lookup.unreflect(getter)
          val encoder = Encoder.encoderFor(
             type = member.returnType,
-            stringType = schema.getProp(GenericData.STRING_PROP),
             schema = avroField.schema()
          ) as Encoder<Any?>
 

@@ -39,7 +39,7 @@ class IntArrayEncoder : Encoder<IntArray> {
 class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
    override fun encode(schema: Schema, value: List<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      return if (value.isEmpty()) emptyList()
+      return if (value.isEmpty()) value
       else value.map { encoder.encode(schema.elementType, it) }
    }
 }
