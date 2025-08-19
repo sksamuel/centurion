@@ -6,9 +6,9 @@ class IntArrayDecoder(private val decoder: Decoder<Int>) : Decoder<IntArray> {
    override fun decode(schema: Schema, value: Any?): IntArray {
       require(schema.type == Schema.Type.ARRAY)
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toIntArray()
+         // put list first as avro encodes as GenericArray mostly
          is List<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toIntArray()
+         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toIntArray()
          else -> error("Unsupported list type $value")
       }
    }
@@ -18,9 +18,9 @@ class LongArrayDecoder(private val decoder: Decoder<Long>) : Decoder<LongArray> 
    override fun decode(schema: Schema, value: Any?): LongArray {
       require(schema.type == Schema.Type.ARRAY)
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toLongArray()
+         // put list first as avro encodes as GenericArray mostly
          is List<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toLongArray()
+         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toLongArray()
          else -> error("Unsupported list type $value")
       }
    }
@@ -29,9 +29,9 @@ class LongArrayDecoder(private val decoder: Decoder<Long>) : Decoder<LongArray> 
 object PassthroughListDecoder : Decoder<List<Any?>> {
    override fun decode(schema: Schema, value: Any?): List<Any?> {
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.asList()
+         // put list first as avro encodes as GenericArray mostly
          is List<*> -> value
+         is Array<*> -> value.asList()
          is Collection<*> -> value.toList()
          else -> error("Unsupported list type $value")
       }
@@ -42,9 +42,9 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
    override fun decode(schema: Schema, value: Any?): List<T> {
       val elementType = schema.elementType
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.map { decoder.decode(elementType, it) }
+         // put list first as avro encodes as GenericArray mostly
          is Collection<*> -> value.map { decoder.decode(elementType, it) }
+         is Array<*> -> value.map { decoder.decode(elementType, it) }
          else -> error("Unsupported list type $value")
       }
    }
@@ -53,10 +53,9 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
 object PassthroughSetDecoder : Decoder<Set<Any?>> {
    override fun decode(schema: Schema, value: Any?): Set<Any?> {
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.toSet()
          is Set<*> -> value
          is Collection<*> -> value.toSet()
+         is Array<*> -> value.toSet()
          else -> error("Unsupported list type $value")
       }
    }
@@ -66,9 +65,9 @@ class SetDecoder<T>(private val decoder: Decoder<T>) : Decoder<Set<T>> {
    override fun decode(schema: Schema, value: Any?): Set<T> {
       require(schema.type == Schema.Type.ARRAY)
       return when (value) {
-         // put array first as avro encodes as generic array mostly
-         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
+         // put list first as avro encodes as GenericArray mostly
          is Collection<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
+         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toSet()
          else -> error("Unsupported set type $value")
       }
    }
