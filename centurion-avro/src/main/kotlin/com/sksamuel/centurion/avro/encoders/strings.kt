@@ -26,35 +26,35 @@ object StringEncoder : Encoder<String> {
  * of any [GenericData.STRING_PROP] settings on the schema.
  */
 object JavaStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any? = value
+   override fun encode(schema: Schema, value: String): Any = value
 }
 
 /**
  * An [Encoder] for UUID that encodes as avro [Utf8]s.
  */
 object Utf8UUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema, value: UUID): Any? = Utf8(value.toString())
+   override fun encode(schema: Schema, value: UUID): Any = Utf8(value.toString())
 }
 
 /**
  * An [Encoder] for UUID that encodes as JVM Strings.
  */
 object JavaStringUUIDEncoder : Encoder<UUID> {
-   override fun encode(schema: Schema, value: UUID): Any? = value.toString()
+   override fun encode(schema: Schema, value: UUID): Any = value.toString()
 }
 
 /**
  * An [Encoder] for Strings that encodes as avro [Utf8]s.
  */
 object UTF8StringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any? = Utf8(value)
+   override fun encode(schema: Schema, value: String): Any = Utf8(value)
 }
 
 /**
  * An [Encoder] for Strings that encodes as [ByteBuffer]s.
  */
 object ByteStringEncoder : Encoder<String> {
-   override fun encode(schema: Schema, value: String): Any? {
+   override fun encode(schema: Schema, value: String): Any {
       return { ByteBuffer.wrap(value.encodeToByteArray()) }
    }
 }

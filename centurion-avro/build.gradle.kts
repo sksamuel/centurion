@@ -17,7 +17,6 @@ dependencies {
 
 jmh {
    jmhVersion = "1.37"
-   duplicateClassesStrategy = DuplicatesStrategy.WARN
    fork = 2
    warmupIterations = 3
    iterations = 5

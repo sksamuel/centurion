@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro.benchmarks
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
 import com.sksamuel.centurion.avro.io.BinaryWriter
+import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
@@ -30,8 +31,8 @@ import java.util.zip.GZIPOutputStream
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
 @Fork(value = 1, jvmArgs = ["-Xms2G", "-Xmx2G"])
-@Warmup(iterations = 2, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 open class SerializeBenchmark {
 
    private val ef = EncoderFactory.get()
@@ -42,6 +43,10 @@ open class SerializeBenchmark {
 
    private val reuse = ef.binaryEncoder(ByteArrayOutputStream(), null)
    private val writer = GenericDatumWriter<GenericRecord>(schema)
+
+   init {
+      GenericData.setStringType(schema, GenericData.StringType.String)
+   }
 
    @Benchmark
    fun serializeAsJsonJackson(blackhole: Blackhole) {

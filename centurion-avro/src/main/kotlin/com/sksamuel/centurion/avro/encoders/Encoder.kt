@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.encoders
 
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
 import java.math.BigDecimal
 import java.nio.ByteBuffer
 import java.time.Instant
@@ -34,14 +33,15 @@ fun interface Encoder<T> {
       /**
        * Returns an [Encoder] that encodes by simply returning the input value.
        */
-      fun <T : Any> identity(): Encoder<T> = object : Encoder<T> {
-         override fun encode(schema: Schema, value: T): Any? = value
-      }
+      fun <T : Any> identity(): Encoder<T> = Encoder { schema, value -> value }
 
       fun encoderFor(type: KType, stringType: String?, schema: Schema): Encoder<*> {
          if (type.isMarkedNullable) require(schema.isUnion) { "Require UNION for fields marked nullable" }
+         val nonNullSchema = if (schema.isUnion) schema.unionNonNullComponent() else schema
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
-            String::class if GenericData.StringType.String.name == stringType -> JavaStringEncoder
+            String::class if nonNullSchema.type == Schema.Type.STRING -> JavaStringEncoder
+            String::class if nonNullSchema.type == Schema.Type.BYTES -> ByteStringEncoder
+            String::class if nonNullSchema.type == Schema.Type.FIXED -> FixedStringEncoder
             String::class -> StringEncoder
             Boolean::class -> BooleanEncoder
             Float::class -> FloatEncoder
@@ -58,12 +58,14 @@ fun interface Encoder<T> {
             List::class if type.arguments.first().type == typeOf<Short>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughListEncoder
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughListEncoder
-            List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<String>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Double>() -> PassThroughListEncoder
+            List::class if type.arguments.first().type == typeOf<Float>() -> PassThroughListEncoder
             List::class -> ListEncoder(
                encoderFor(
                   type.arguments.first().type!!,
                   stringType,
-                  if (schema.isUnion) schema.unionNonNullComponent().elementType else schema.elementType
+                  nonNullSchema.elementType
                )
             )
 
@@ -74,7 +76,9 @@ fun interface Encoder<T> {
             Set::class if type.arguments.first().type == typeOf<Short>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Byte>() -> PassThroughSetEncoder
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassThroughSetEncoder
-            Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<String>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Double>() -> PassThroughSetEncoder
+            Set::class if type.arguments.first().type == typeOf<Float>() -> PassThroughSetEncoder
             Set::class -> SetEncoder(
                encoderFor(
                   type.arguments.first().type!!,
@@ -115,3 +119,4 @@ fun interface Encoder<T> {
       }
    }
 }
+
