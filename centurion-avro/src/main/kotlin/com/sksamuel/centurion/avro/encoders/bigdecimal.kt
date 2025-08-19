@@ -6,7 +6,7 @@ import org.apache.avro.Schema
 import java.math.BigDecimal
 
 /**
- * An [[Encoder]] for [[BigDecimal]] that encodes as byte arrays.
+ * An [Encoder] for [BigDecimal] that encodes as byte arrays.
  */
 object BigDecimalBytesEncoder : Encoder<BigDecimal> {
 
