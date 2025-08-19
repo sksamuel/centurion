@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.decoders
 
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalTime
@@ -27,10 +26,10 @@ fun interface Decoder<T> {
    companion object {
 
       @Suppress("UNCHECKED_CAST")
-      fun decoderFor(type: KType, stringType: String?, schema: Schema): Decoder<*> {
+      fun decoderFor(type: KType,   schema: Schema): Decoder<*> {
+         val nonNullSchema = if (schema.isUnion) schema.unionNonNullComponent() else schema
          val decoder: Decoder<*> = when (val classifier = type.classifier) {
-            // this prop seems to be ignored by the fast reader implementation
-            String::class if GenericData.StringType.String.name == stringType -> StringTypeDecoder
+            String::class if schema.type == Schema.Type.STRING -> StringTypeDecoder
             String::class -> StringDecoder
             Boolean::class -> BooleanDecoder
             Float::class -> FloatDecoder
@@ -48,8 +47,8 @@ fun interface Decoder<T> {
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Double>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Float>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughListDecoder
-            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, stringType, if (schema.isUnion) schema.unionNonNullComponent().elementType else schema.elementType))
+            List::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> PassthroughListDecoder
+            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
             Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
@@ -59,9 +58,9 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Double>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Float>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<String>() && GenericData.StringType.String.name == stringType -> PassthroughSetDecoder
-            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, stringType, if (schema.isUnion) schema.unionNonNullComponent().elementType else schema.elementType))
-            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, stringType, if (schema.isUnion) schema.unionNonNullComponent().valueType else schema.valueType))
+            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> PassthroughSetDecoder
+            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
+            Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
             LocalTime::class -> LocalTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)

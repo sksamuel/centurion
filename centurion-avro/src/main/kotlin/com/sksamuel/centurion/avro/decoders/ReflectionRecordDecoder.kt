@@ -2,7 +2,6 @@ package com.sksamuel.centurion.avro.decoders
 
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -68,7 +67,7 @@ class ReflectionRecordDecoder<T : Any>(
 
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
-         val decoder = Decoder.decoderFor(param.type, schema.getProp(GenericData.STRING_PROP), avroField.schema())
+         val decoder = Decoder.decoderFor(param.type, avroField.schema())
          Decoding(avroField.pos(), decoder, avroField.schema())
       }
 
