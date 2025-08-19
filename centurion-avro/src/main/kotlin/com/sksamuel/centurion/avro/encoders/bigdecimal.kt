@@ -26,10 +26,10 @@ object BigDecimalBytesEncoder : Encoder<BigDecimal> {
  * An [Encoder] for [BigDecimal] that encodes as Strings.
  */
 object BigDecimalStringEncoder : Encoder<BigDecimal> {
-
+   private val encoder = StringEncoder.contraMap<BigDecimal> { it.toString() }
    override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.STRING)
-      return StringEncoder.contraMap<BigDecimal> { it.toString() }
+      return encoder.encode(schema, value)
    }
 }
 
