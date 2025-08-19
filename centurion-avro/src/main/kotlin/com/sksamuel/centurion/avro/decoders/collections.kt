@@ -50,7 +50,7 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
 object PassthroughSetDecoder : Decoder<Set<Any?>> {
    override fun decode(schema: Schema, value: Any?): Set<Any?> {
       return when (value) {
-         is Set<*> -> value
+         // put list first as avro encodes as GenericArray mostly
          is Collection<*> -> value.toSet()
          is Array<*> -> value.toSet()
          else -> error("Unsupported list type $value")
