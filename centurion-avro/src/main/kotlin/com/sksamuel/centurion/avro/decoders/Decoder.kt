@@ -47,7 +47,7 @@ fun interface Decoder<T> {
             List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Double>() -> PassthroughListDecoder
             List::class if type.arguments.first().type == typeOf<Float>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> PassthroughListDecoder
+            List::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> ListDecoder(StringTypeDecoder)
             List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
@@ -58,7 +58,7 @@ fun interface Decoder<T> {
             Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Double>() -> PassthroughSetDecoder
             Set::class if type.arguments.first().type == typeOf<Float>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> PassthroughSetDecoder
+            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> ListDecoder(StringTypeDecoder)
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
             LocalTime::class -> LocalTimeDecoder
