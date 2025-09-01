@@ -16,5 +16,23 @@ abstract class GradlePlugin : Plugin<Project> {
          outputBase.toFile().mkdirs()
          it.output.set(outputBase.absolutePathString())
       }
+
+      target.tasks.register("generateEncoders", GenerateEncodersTask::class.java) {
+         it.group = "centurion"
+         it.description = "Generate Centurion Encoder instances from Avro schemas"
+
+         val outputBase = target.projectDir.toPath().resolve("src/main/kotlin")
+         outputBase.toFile().mkdirs()
+         it.output.set(outputBase.absolutePathString())
+      }
+
+      target.tasks.register("generateDecoders", GenerateDecodersTask::class.java) {
+         it.group = "centurion"
+         it.description = "Generate Centurion Decoder instances from Avro schemas"
+
+         val outputBase = target.projectDir.toPath().resolve("src/main/kotlin")
+         outputBase.toFile().mkdirs()
+         it.output.set(outputBase.absolutePathString())
+      }
    }
 }
