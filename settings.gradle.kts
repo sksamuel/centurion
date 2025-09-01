@@ -22,6 +22,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("centurion-avro")
 include("centurion-avro-lettuce")
+include("centurion-avro-gradle-plugin")
 include("centurion-orc")
 //include("centurion-parquet")
 //include("centurion-parquet")
@@ -46,6 +47,8 @@ dependencyResolutionManagement {
          library("lettuce-core", "io.lettuce:lettuce-core:6.7.1.RELEASE")
 
          library("commons-pool", "org.apache.commons:commons-pool2:2.12.1")
+
+         library("kotlinpoet", "com.squareup:kotlinpoet:2.2.0")
 
          val jmh = "1.37"
          library("jmh-core", "org.openjdk.jmh:jmh-core:$jmh")
