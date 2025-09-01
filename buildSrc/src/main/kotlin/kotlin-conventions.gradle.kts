@@ -40,7 +40,7 @@ kotlin {
 dependencies {
    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
 
-   val kotestVersion = "6.0.0"
+   val kotestVersion = "6.0.1"
    testImplementation("io.kotest:kotest-framework-engine:$kotestVersion")
    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
