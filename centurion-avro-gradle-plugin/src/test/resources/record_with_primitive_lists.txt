@@ -1,0 +1,13 @@
+package com.sksamuel.centurion
+
+import kotlin.Int
+import kotlin.String
+import kotlin.collections.List
+import org.apache.avro.generic.GenericData
+import org.apache.avro.util.Utf8
+
+public data class Foo(
+  public val a: Int,
+  public val b: String,
+  public val c: List<String>,
+)
