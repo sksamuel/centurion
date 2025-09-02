@@ -18,24 +18,41 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.util.Utf8
-import java.nio.file.Path
 import java.sql.Timestamp
 
-class AvroPoet {
+class DataClassBuilder {
 
    private val types = mutableListOf<TypeSpec>()
-   private val parser = Schema.Parser()
 
-   fun generate(input: Path) {
+   fun build(schema: Schema): FileSpec {
+      val file = FileSpec.builder(packageName = schema.namespace, fileName = schema.name)
 
-      val schema = parser.parse(input.toFile())
-      record(schema)
+      // standard imports
+      file.addImport(GenericData::class.java.`package`.name, "GenericData")
+      file.addImport(Utf8::class.java.`package`.name, "Utf8")
 
-      val spec = FileSpec.builder(schema.namespace, schema.name)
-      spec.addImport(GenericData::class.java.`package`.name, "GenericData")
-      spec.addImport(Utf8::class.java.`package`.name, "Utf8")
+      val type = buildType(schema)
+      file.addType(type)
+      return file.build()
+   }
 
-      types.distinctBy { it.name }.forEach { spec.addType(it) }
+   private fun buildType(schema: Schema): TypeSpec {
+      return when (schema.type) {
+         Schema.Type.RECORD -> record(schema)
+         Schema.Type.ENUM -> TODO()
+         Schema.Type.ARRAY -> TODO()
+         Schema.Type.MAP -> TODO()
+         Schema.Type.UNION -> TODO()
+         Schema.Type.FIXED -> TODO()
+         Schema.Type.STRING -> TODO()
+         Schema.Type.BYTES -> TODO()
+         Schema.Type.INT -> TODO()
+         Schema.Type.LONG -> TODO()
+         Schema.Type.FLOAT -> TODO()
+         Schema.Type.DOUBLE -> TODO()
+         Schema.Type.BOOLEAN -> TODO()
+         Schema.Type.NULL -> TODO()
+      }
    }
 
    private fun ref(schema: Schema): TypeName {
@@ -86,7 +103,7 @@ class AvroPoet {
       return ref(schema.types[1]).copy(nullable = true)
    }
 
-   private fun record(schema: Schema): ClassName {
+   private fun record(schema: Schema): TypeSpec {
       require(schema.type == Schema.Type.RECORD) { "$schema must be record" }
 
       val type = TypeSpec.classBuilder(schema.name).addModifiers(KModifier.DATA)
@@ -119,37 +136,37 @@ class AvroPoet {
          type.addProperty(prop.build())
       }
 
-      val ref = ClassName(schema.namespace, schema.name)
+//      val ref = ClassName(schema.namespace, schema.name)
 
-      val decoder = FunSpec.builder("decode")
-         .addModifiers(KModifier.OVERRIDE)
-         .addParameter("record", GenericRecord::class.asClassName())
-         .returns(ref)
+//      val decoder = FunSpec.builder("decode")
+//         .addModifiers(KModifier.OVERRIDE)
+//         .addParameter("record", GenericRecord::class.asClassName())
+//         .returns(ref)
 
-      val decoderBody = CodeBlock.builder()
+//      val decoderBody = CodeBlock.builder()
 
-      schema.fields.forEach {
-         if (it.schema().isNullable) {
-            decoderBody.addStatement(
-               "val ${it.name()} = if (record.hasField(%S)) record.get(%S) else null",
-               it.name(),
-               it.name()
-            )
-         } else {
-            decoderBody.addStatement("val ${it.name()} = record.get(%S)", it.name())
-         }
-      }
-
-      decoderBody.addStatement("")
-
-      decoderBody.addStatement("return ${schema.name}(").indent()
-      schema.fields.forEach {
-//         decoderBody.add(decode(it.schema(), it.name()).toBuilder().add(",\n").build())
-      }
-      decoderBody.unindent()
-      decoderBody.addStatement(")")
-
-      decoder.addCode(decoderBody.build())
+//      schema.fields.forEach {
+//         if (it.schema().isNullable) {
+//            decoderBody.addStatement(
+//               "val ${it.name()} = if (record.hasField(%S)) record.get(%S) else null",
+//               it.name(),
+//               it.name()
+//            )
+//         } else {
+//            decoderBody.addStatement("val ${it.name()} = record.get(%S)", it.name())
+//         }
+//      }
+//
+//      decoderBody.addStatement("")
+//
+//      decoderBody.addStatement("return ${schema.name}(").indent()
+//      schema.fields.forEach {
+////         decoderBody.add(decode(it.schema(), it.name()).toBuilder().add(",\n").build())
+//      }
+//      decoderBody.unindent()
+//      decoderBody.addStatement(")")
+//
+//      decoder.addCode(decoderBody.build())
 
       val schemaInit = CodeBlock.builder()
          .addStatement(
@@ -158,33 +175,30 @@ class AvroPoet {
             "/" + schema.fullName + ".avsc",
          ).indent()
 
-      val schemaFn = PropertySpec.builder("schema", Schema::class, KModifier.OVERRIDE).initializer(schemaInit.build())
+//      val schemaFn = PropertySpec.builder("schema", Schema::class, KModifier.OVERRIDE).initializer(schemaInit.build())
 
-      val companion = TypeSpec.companionObjectBuilder()
-         .addFunction(decoder.build())
-         .addProperty(schemaFn.build())
-         .build()
+//      val companion = TypeSpec.companionObjectBuilder()
+//         .addFunction(decoder.build())
+//         .addProperty(schemaFn.build())
+//         .build()
+//
+//      val encoder = FunSpec.builder("encode")
+//         .returns(GenericRecord::class.asClassName())
+//         .addModifiers(KModifier.OVERRIDE)
+//         .addStatement("val schema = ${schema.name}.schema")
+//         .addStatement("val record = GenericData.Record(schema)")
 
-      val encoder = FunSpec.builder("encode")
-         .returns(GenericRecord::class.asClassName())
-         .addModifiers(KModifier.OVERRIDE)
-         .addStatement("val schema = ${schema.name}.schema")
-         .addStatement("val record = GenericData.Record(schema)")
-
-      schema.fields.forEach {
+//      schema.fields.forEach {
 //         encoder.addStatement("record.put(%S, ${encode(it.schema(), it.name())})", it.name())
-      }
+//      }
+//
+//      encoder.addStatement("return record")
 
-      encoder.addStatement("return record")
-
-      type
+      return type
          .primaryConstructor(constructor.build())
-         .addType(companion)
-         .addFunction(encoder.build())
+//         .addType(companion)
+//         .addFunction(encoder.build())
          .build()
-         .apply { types.add(this) }
-
-      return ref
    }
 }
 
