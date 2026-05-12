@@ -1,6 +1,13 @@
 name: jmh
 
 on:
+  push:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - 'doc/**'
+      - '*.md'
   workflow_dispatch:
     inputs:
       include:
