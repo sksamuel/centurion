@@ -31,8 +31,8 @@ import java.util.zip.GZIPOutputStream
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
 @Fork(value = 1, jvmArgs = ["-Xms2G", "-Xmx2G"])
-@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
 open class SerializeBenchmark {
 
    private val ef = EncoderFactory.get()

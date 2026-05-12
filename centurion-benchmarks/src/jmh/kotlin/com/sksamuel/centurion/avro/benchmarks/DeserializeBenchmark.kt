@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
 @Fork(value = 1, jvmArgs = ["-Xms2G", "-Xmx2G"])
-@Warmup(iterations = 2, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
 open class DeserializeBenchmark {
 
    private val df = DecoderFactory.get()
