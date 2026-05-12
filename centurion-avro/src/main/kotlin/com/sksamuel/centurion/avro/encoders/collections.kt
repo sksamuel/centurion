@@ -10,7 +10,11 @@ class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
       require(schema.type == Schema.Type.ARRAY)
       if (value.isEmpty()) return emptyList()
       val elementType = schema.elementType
-      return value.map { encoder.encode(elementType, it) }
+      val result = ArrayList<Any?>(value.size)
+      for (i in value.indices) {
+         result.add(encoder.encode(elementType, value[i]))
+      }
+      return result
    }
 }
 
@@ -42,7 +46,18 @@ class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
       require(schema.type == Schema.Type.ARRAY)
       if (value.isEmpty()) return value
       val elementType = schema.elementType
-      return value.map { encoder.encode(elementType, it) }
+      val size = value.size
+      val result = ArrayList<Any?>(size)
+      if (value is RandomAccess) {
+         for (i in 0 until size) {
+            result.add(encoder.encode(elementType, value[i]))
+         }
+      } else {
+         for (element in value) {
+            result.add(encoder.encode(elementType, element))
+         }
+      }
+      return result
    }
 }
 
@@ -69,7 +84,11 @@ class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
       require(schema.type == Schema.Type.ARRAY)
       if (value.isEmpty()) return emptyList()
       val elementType = schema.elementType
-      return value.map { encoder.encode(elementType, it) }
+      val result = ArrayList<Any?>(value.size)
+      for (element in value) {
+         result.add(encoder.encode(elementType, element))
+      }
+      return result
    }
 }
 
