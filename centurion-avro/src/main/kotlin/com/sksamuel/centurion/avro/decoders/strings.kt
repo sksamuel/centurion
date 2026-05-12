@@ -99,7 +99,7 @@ object ByteStringDecoder : Decoder<String> {
 
 private fun ByteBuffer.readRemainingBytes(): ByteArray {
    val bytes = ByteArray(remaining())
-   get(bytes)
+   duplicate().get(bytes)
    return bytes
 }
 
