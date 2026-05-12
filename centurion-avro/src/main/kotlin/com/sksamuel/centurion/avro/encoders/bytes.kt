@@ -19,15 +19,15 @@ object ByteBufferEncoder : Encoder<ByteBuffer> {
 }
 
 object FixedByteBufferEncoder : Encoder<ByteBuffer> {
-   private val instance = GenericData.get()
    override fun encode(schema: Schema, value: ByteBuffer): Any? {
       require(schema.type == Schema.Type.FIXED)
       val remaining = value.remaining()
-      if (remaining > schema.fixedSize)
-         error("Cannot write ByteBuffer with $remaining bytes to fixed type of size ${schema.fixedSize}")
-      val array = ByteArray(schema.fixedSize)
+      val fixedSize = schema.fixedSize
+      if (remaining > fixedSize)
+         error("Cannot write ByteBuffer with $remaining bytes to fixed type of size $fixedSize")
+      val array = ByteArray(fixedSize)
       value.duplicate().get(array, 0, remaining)
-      return instance.createFixed(null, array, schema)
+      return GenericData.Fixed(schema, array)
    }
 }
 
@@ -42,13 +42,13 @@ object ByteArrayEncoder : Encoder<ByteArray> {
 }
 
 object FixedByteArrayEncoder : Encoder<ByteArray> {
-   private val instance = GenericData.get()
    override fun encode(schema: Schema, value: ByteArray): Any? {
       require(schema.type == Schema.Type.FIXED)
-      if (value.size > schema.fixedSize)
-         error("Cannot write ByteArray with ${value.size} bytes to fixed type of size ${schema.fixedSize}")
-      val array = ByteArray(schema.fixedSize)
+      val fixedSize = schema.fixedSize
+      if (value.size > fixedSize)
+         error("Cannot write ByteArray with ${value.size} bytes to fixed type of size $fixedSize")
+      val array = ByteArray(fixedSize)
       System.arraycopy(value, 0, array, 0, value.size)
-      return instance.createFixed(null, array, schema)
+      return GenericData.Fixed(schema, array)
    }
 }
