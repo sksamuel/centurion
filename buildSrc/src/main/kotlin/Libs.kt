@@ -10,15 +10,6 @@ object Libs {
       const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC"
    }
 
-   object Parquet {
-      const val common = "org.apache.parquet:parquet-common:1.11.2"
-      const val hadoop = "org.apache.parquet:parquet-hadoop:1.11.2"
-   }
-
-   object Hadoop {
-      const val common = "org.apache.hadoop:hadoop-common:2.10.1"
-      const val client = "org.apache.hadoop:hadoop-client:2.10.1"
-   }
 }
 
 object Projects {
