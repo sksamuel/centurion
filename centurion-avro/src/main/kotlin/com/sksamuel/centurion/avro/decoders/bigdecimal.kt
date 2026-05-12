@@ -34,7 +34,6 @@ object BigDecimalStringDecoder : Decoder<BigDecimal> {
       require(schema.type == Schema.Type.STRING)
       return when (value) {
          is CharSequence -> BigDecimal(value.toString())
-         is Utf8 -> BigDecimal(value.toString())
          else -> error("Unsupported value for BigDecimal string decoder: $value")
       }
    }
