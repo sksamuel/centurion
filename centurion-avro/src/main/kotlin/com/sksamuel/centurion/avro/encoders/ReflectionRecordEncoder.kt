@@ -58,22 +58,27 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
       }
    }
 
-   private val encoders: List<Encoding> = buildEncodings(schema, kclass)
+   private val encoders: Array<Encoding> = buildEncodings(schema, kclass)
 
    override fun encode(schema: Schema, value: T): GenericRecord {
       val record = GenericData.Record(schema)
-      encoders.forEach { (encoder, getter, pos, schema) ->
-         val fieldValue = getter.apply(value)
-         val encoded = encoder.encode(schema, fieldValue)
-         record.put(pos, encoded)
+      val encoders = this.encoders
+      var i = 0
+      while (i < encoders.size) {
+         val encoding = encoders[i]
+         val fieldValue = encoding.fn.apply(value)
+         record.put(encoding.pos, encoding.encoder.encode(encoding.schema, fieldValue))
+         i++
       }
       return record
    }
 
    @Suppress("UNCHECKED_CAST")
-   private fun buildEncodings(schema: Schema, kclass: KClass<out Any>): List<Encoding> {
+   private fun buildEncodings(schema: Schema, kclass: KClass<out Any>): Array<Encoding> {
       val lookup = MethodHandles.lookup()
-      return kclass.declaredMemberProperties.map { member: KProperty1<out Any, *> ->
+      val members = kclass.declaredMemberProperties.toList()
+      return Array(members.size) { i ->
+         val member: KProperty1<out Any, *> = members[i]
 
          val avroField = schema.getField(member.name)
             ?: error("Could not find field ${member.name} in Avro schema")
@@ -110,7 +115,7 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
 
    private fun fieldGetterName(name: String) = "get${name.replaceFirstChar { it.uppercase() }}"
 
-   private data class Encoding(
+   private class Encoding(
       val encoder: Encoder<Any?>,
       val fn: Function<Any?, Any?>,
       val pos: Int,
