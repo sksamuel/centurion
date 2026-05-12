@@ -19,7 +19,7 @@ object BigDecimalBytesDecoder : Decoder<BigDecimal> {
       require(schema.type == Schema.Type.BYTES)
       val logical = schema.logicalType as LogicalTypes.Decimal
       return when (value) {
-         is ByteBuffer -> converter.fromBytes(value, schema, logical)
+         is ByteBuffer -> converter.fromBytes(value.duplicate(), schema, logical)
          is ByteArray -> converter.fromBytes(ByteBuffer.wrap(value), schema, logical)
          else -> error("Unsupported value for BigDecimal bytes decoder: $value")
       }
