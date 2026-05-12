@@ -26,6 +26,9 @@ class CompressingSerde<T : Any>(
    }
 
    override fun deserialize(bytes: ByteArray): T {
-      return serde.deserialize(codec.decompress(ByteBuffer.wrap(bytes)).array())
+      val decompressed = codec.decompress(ByteBuffer.wrap(bytes))
+      val b = ByteArray(decompressed.remaining())
+      decompressed.get(b)
+      return serde.deserialize(b)
    }
 }
