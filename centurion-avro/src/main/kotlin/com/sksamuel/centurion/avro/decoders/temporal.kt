@@ -56,18 +56,18 @@ object LocalTimeDecoder : Decoder<LocalTime> {
             when (val logicalType = schema.logicalType) {
                is TimeMicros -> TIME_MICROS_CONVERSION.fromLong(value, schema, logicalType)
                null -> LocalTime.ofNanoOfDay(TimeUnit.MILLISECONDS.toNanos(value))
-               else -> error("Unsupported schema for Instant: $schema")
+               else -> error("Unsupported schema for LocalTime: $schema")
             }
          }
 
          is Int -> {
             when (val logicalType = schema.logicalType) {
                is TimeMillis -> TIME_MILLIS_CONVERSION.fromInt(value, schema, logicalType)
-               else -> error("Unsupported schema for Instant: $schema")
+               else -> error("Unsupported schema for LocalTime: $schema")
             }
          }
 
-         else -> error("Unsupported schema and value for Instant: $schema $value")
+         else -> error("Unsupported schema and value for LocalTime: $schema $value")
       }
    }
 }
