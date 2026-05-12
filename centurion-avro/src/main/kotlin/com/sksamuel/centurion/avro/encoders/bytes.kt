@@ -38,6 +38,8 @@ object FixedByteArrayEncoder : Encoder<ByteArray> {
    private val instance = GenericData.get()
    override fun encode(schema: Schema, value: ByteArray): Any? {
       require(schema.type == Schema.Type.FIXED)
+      if (value.size > schema.fixedSize)
+         error("Cannot write ByteArray with ${value.size} bytes to fixed type of size ${schema.fixedSize}")
       val array = ByteArray(schema.fixedSize)
       System.arraycopy(value, 0, array, 0, value.size)
       return instance.createFixed(null, array, schema)
