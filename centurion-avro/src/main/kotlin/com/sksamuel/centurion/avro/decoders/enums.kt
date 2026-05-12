@@ -26,6 +26,6 @@ class EnumDecoder<T : Enum<T>>(kclass: KClass<T>) : Decoder<T> {
          is Utf8 -> value.toString()
          else -> error("Unsupported enum container $value")
       }
-      return map[symbol] ?: error("Unknown symbol $value")
+      return map[symbol] ?: error("Unknown enum symbol \"$symbol\" for ${j.name}; valid values are ${map.keys}")
    }
 }
