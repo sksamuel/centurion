@@ -68,6 +68,9 @@ object FixedStringEncoder : Encoder<String> {
       val bytes = value.encodeToByteArray()
       if (bytes.size > schema.fixedSize)
          error("Cannot write string with ${bytes.size} bytes to fixed type of size ${schema.fixedSize}")
-      return instance.createFixed(null, bytes, schema)
+      val padded = if (bytes.size == schema.fixedSize) bytes else ByteArray(schema.fixedSize).also {
+         System.arraycopy(bytes, 0, it, 0, bytes.size)
+      }
+      return instance.createFixed(null, padded, schema)
    }
 }

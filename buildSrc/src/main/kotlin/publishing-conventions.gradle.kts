@@ -10,7 +10,7 @@ mavenPublishing {
    signAllPublications()
    pom {
       name.set("centurion")
-      description.set("Kotlin Avro/Parquet Toolkit")
+      description.set("Kotlin Avro Toolkit")
       url.set("http://www.github.com/sksamuel/centurion")
 
       scm {

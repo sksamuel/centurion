@@ -16,10 +16,10 @@ object StringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       return when (value) {
          is CharSequence -> value.toString() // covers String and Utf8 as well
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
-         is GenericFixed -> Utf8(value.bytes()).toString()
-         else -> error("Unsupported type $value")
+         is ByteArray -> String(value, Charsets.UTF_8)
+         is ByteBuffer -> String(value.readRemainingBytes(), Charsets.UTF_8)
+         is GenericFixed -> String(value.bytes(), Charsets.UTF_8)
+         else -> error("Cannot decode ${value?.javaClass?.name} as String: $value")
       }
    }
 }
@@ -55,7 +55,7 @@ object UTF8Decoder : Decoder<Utf8> {
          is ByteArray -> Utf8(value)
          is ByteBuffer -> Utf8(value.readRemainingBytes())
          is GenericFixed -> Utf8(value.bytes())
-         else -> error("Unsupported type $value")
+         else -> error("Cannot decode ${value?.javaClass?.name} as Utf8: $value")
       }
    }
 }
@@ -90,8 +90,8 @@ object ByteStringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.BYTES)
       return when (value) {
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
+         is ByteArray -> String(value, Charsets.UTF_8)
+         is ByteBuffer -> String(value.readRemainingBytes(), Charsets.UTF_8)
          else -> error("This decoder expects bytes but was $value")
       }
    }
@@ -99,7 +99,7 @@ object ByteStringDecoder : Decoder<String> {
 
 private fun ByteBuffer.readRemainingBytes(): ByteArray {
    val bytes = ByteArray(remaining())
-   get(bytes)
+   duplicate().get(bytes)
    return bytes
 }
 
@@ -110,7 +110,7 @@ object GenericFixedStringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.FIXED)
       return when (value) {
-         is GenericFixed -> Utf8(value.bytes()).toString()
+         is GenericFixed -> String(value.bytes(), Charsets.UTF_8)
          else -> error("This decoder expects GenericFixed but was $value")
       }
    }

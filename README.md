@@ -15,14 +15,14 @@ and seamless integration with modern JVM applications.
 - **Zero-copy performance:** Optimized encoders/decoders with reflection caching and pooled resources
 - **Schema evolution made easy:** First-class support for forward/backward compatible schema changes
 - **Batteries included:** Support for 40+ types out of the box including temporal types, BigDecimal, collections
-- **Production ready:** Built on Apache Avro and Parquet - battle-tested formats used at scale
+- **Production ready:** Built on Apache Avro - a battle-tested format used at scale
 
 See [changelog](changelog.md) for release notes.
 
 ## Features
 
 - **Type-safe schema definitions:** Define schemas using Kotlin's type system with compile-time safety
-- **Multiple format support:** Seamlessly work with Avro and Parquet formats
+- **Avro format support:** Binary and data file I/O for Apache Avro
 - **High-performance Serde API:** Zero-copy serialization with automatic compression support  
 - **Schema evolution:** Forward and backward compatible schema changes for Avro
 - **Code generation:** Generate data classes and optimized encoders/decoders from Avro schemas
@@ -32,14 +32,10 @@ See [changelog](changelog.md) for release notes.
 
 ## Getting Started
 
-Add Centurion to your build depending on which formats you need:
+Add Centurion to your build:
 
 ```kotlin
-// For Avro support
 implementation("com.sksamuel.centurion:centurion-avro:<version>")
-
-// For Parquet support
-implementation("com.sksamuel.centurion:centurion-parquet:<version>")
 ```
 
 ## Quick Start
@@ -145,79 +141,19 @@ FileInputStream("users.avro").use { input ->
 }
 ```
 
-## Parquet Operations
-
-### Writing Parquet Data
-
-```kotlin
-import com.sksamuel.centurion.parquet.Parquet
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.Path
-
-// Define schema and data
-val schema = Schema.Struct(
-  Schema.Field("product_id", Schema.Strings),
-  Schema.Field("quantity", Schema.Int32),
-  Schema.Field("price", Schema.Decimal(Schema.Precision(10), Schema.Scale(2)))
-)
-
-val data = listOf(
-  Struct(schema, "PROD-001", 10, java.math.BigDecimal("29.99")),
-  Struct(schema, "PROD-002", 5, java.math.BigDecimal("15.50")),
-  Struct(schema, "PROD-003", 20, java.math.BigDecimal("8.75"))
-)
-
-// Write to Parquet
-val path = Path("sales.parquet")
-val conf = Configuration()
-val writer = Parquet.writer(path, schema, conf)
-
-data.forEach { struct ->
-  writer.write(struct)
-}
-writer.close()
-```
-
-### Reading Parquet Data
-
-```kotlin
-import com.sksamuel.centurion.parquet.Parquet
-
-// Read from Parquet
-val path = Path("sales.parquet")
-val conf = Configuration()
-val reader = Parquet.reader(path, conf)
-
-var struct = reader.read()
-while (struct != null) {
-  println("Product: ${struct["product_id"]}, Qty: ${struct["quantity"]}")
-  struct = reader.read()
-}
-reader.close()
-
-// Count records efficiently
-val recordCount = Parquet.count(listOf(path), conf)
-println("Total records: $recordCount")
-```
-
 ## Schema Conversion
 
-Convert between different format schemas:
+Convert a Centurion schema to its Avro counterpart:
 
 ```kotlin
 import com.sksamuel.centurion.avro.schemas.toAvroSchema
-import com.sksamuel.centurion.parquet.schemas.ToParquetSchema
 
-// Convert Centurion schema to Avro schema
 val centurionSchema = Schema.Struct(
   Schema.Field("name", Schema.Strings),
   Schema.Field("age", Schema.Int32)
 )
 
 val avroSchema = centurionSchema.toAvroSchema()
-
-// Convert to Parquet schema
-val parquetSchema = ToParquetSchema.toParquetType(centurionSchema)
 ```
 
 ## Advanced Types
@@ -530,51 +466,12 @@ Centurion includes several performance optimizations:
 ```kotlin
 // Reuse binary encoders
 val writer = BinaryWriter(schema, output, encoder, reuse = myEncoder)
-
-// Connection pooling for Parquet
-val writer = Parquet.writer(path, schema, conf).apply {
-    // Writer configuration
-}
-```
-
-### Streaming Processing
-```kotlin
-// Stream large Parquet files without loading into memory
-val reader = Parquet.reader(path, conf)
-reader.sequence().forEach { struct ->
-    // Process one record at a time
-}
-```
-
-## Configuration Options
-
-### Parquet Writer Settings
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `compressionCodec` | `SNAPPY` | Compression algorithm: UNCOMPRESSED, SNAPPY, GZIP, LZO, BROTLI, LZ4, ZSTD |
-| `dictionaryEncoding` | `true` | Enable dictionary encoding for string columns |
-| `rowGroupSize` | `134217728` | Row group size in bytes (128MB) |
-| `pageSize` | `1048576` | Page size in bytes (1MB) |
-| `writerVersion` | `PARQUET_1_0` | Parquet format version |
-| `validation` | `true` | Validate written data |
-
-```kotlin
-val settings = ParquetWriterSettings(
-    compressionCodec = CompressionCodecName.ZSTD,
-    dictionaryEncoding = true,
-    rowGroupSize = 256 * 1024 * 1024, // 256MB
-    pageSize = 2 * 1024 * 1024 // 2MB
-)
-
-val writer = Parquet.writer(path, conf, schema, settings = settings)
 ```
 
 ## Performance Tips
 
 - **Reuse readers/writers** when processing multiple files with the same schema
 - **Use streaming APIs** for large datasets to avoid loading everything into memory
-- **Choose appropriate compression** for Parquet files based on your data characteristics
 - **Batch operations** when writing multiple records to improve throughput
 - **Enable `globalUseJavaString`** for Avro when working primarily with Java strings
 - **Use primitive array types** (`LongArray`, `IntArray`) instead of boxed collections
@@ -649,9 +546,7 @@ reader.sequence().forEach { record ->
 
 | Module | Description |
 |--------|-------------|
-| `centurion-schemas` | Core schema definitions and Struct implementations |
 | `centurion-avro` | Avro format support with binary and data file I/O |
-| `centurion-parquet` | Parquet format support with Hadoop integration |
 | `centurion-avro-lettuce` | Redis integration for Avro serialization |
 | `centurion-avro-gradle-plugin` | Gradle plugin for code generation from Avro schemas |
 
