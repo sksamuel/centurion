@@ -43,26 +43,36 @@ fun interface Decoder<T> {
             BigDecimal::class -> BigDecimalStringDecoder
             ByteArray::class -> ByteArrayDecoder
             ByteBuffer::class -> ByteBufferDecoder
-            List::class if type.arguments.first().type == typeOf<Long>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Int>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Short>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Double>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<Float>() -> PassthroughListDecoder
-            List::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> ListDecoder(StringTypeDecoder)
-            List::class -> ListDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
+            List::class -> {
+               val firstArgType = type.arguments.firstOrNull()?.type
+               when {
+                  firstArgType == typeOf<Long>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Int>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Short>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Byte>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Boolean>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Double>() -> PassthroughListDecoder
+                  firstArgType == typeOf<Float>() -> PassthroughListDecoder
+                  firstArgType == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> ListDecoder(StringTypeDecoder)
+                  else -> ListDecoder(decoderFor(firstArgType!!, nonNullSchema.elementType))
+               }
+            }
             LongArray::class -> LongArrayDecoder(LongDecoder)
             IntArray::class -> IntArrayDecoder(IntDecoder)
-            Set::class if type.arguments.first().type == typeOf<Long>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Int>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Short>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Byte>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Boolean>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Double>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<Float>() -> PassthroughSetDecoder
-            Set::class if type.arguments.first().type == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> SetDecoder(StringTypeDecoder)
-            Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
+            Set::class -> {
+               val firstArgType = type.arguments.firstOrNull()?.type
+               when {
+                  firstArgType == typeOf<Long>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Int>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Short>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Byte>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Boolean>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Double>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<Float>() -> PassthroughSetDecoder
+                  firstArgType == typeOf<String>() && nonNullSchema.elementType.type == Schema.Type.STRING -> SetDecoder(StringTypeDecoder)
+                  else -> SetDecoder(decoderFor(firstArgType!!, nonNullSchema.elementType))
+               }
+            }
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
             LocalTime::class -> LocalTimeDecoder
             LocalDateTime::class -> LocalDateTimeDecoder
