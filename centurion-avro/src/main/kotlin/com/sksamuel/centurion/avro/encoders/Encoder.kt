@@ -38,7 +38,6 @@ fun interface Encoder<T> {
       fun encoderFor(type: KType, schema: Schema): Encoder<*> {
          if (type.isMarkedNullable) require(schema.isUnion) { "Require UNION for fields marked nullable" }
          val nonNullSchema = if (schema.isUnion) schema.unionNonNullComponent() else schema
-         val firstArgType = type.arguments.firstOrNull()?.type
          val encoder: Encoder<*> = when (val classifier = type.classifier) {
             String::class if nonNullSchema.type == Schema.Type.STRING -> JavaStringEncoder
             String::class if nonNullSchema.type == Schema.Type.BYTES -> ByteStringEncoder
@@ -54,27 +53,37 @@ fun interface Encoder<T> {
             BigDecimal::class -> BigDecimalStringEncoder
             ByteBuffer::class -> ByteBufferEncoder
             ByteArray::class -> ByteArrayEncoder
-            List::class if firstArgType == typeOf<Long>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Int>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Short>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Byte>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Boolean>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<String>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Double>() -> PassThroughListEncoder
-            List::class if firstArgType == typeOf<Float>() -> PassThroughListEncoder
-            List::class -> ListEncoder(encoderFor(firstArgType!!, nonNullSchema.elementType))
+            List::class -> {
+               val firstArgType = type.arguments.firstOrNull()?.type
+               when {
+                  firstArgType == typeOf<Long>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Int>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Short>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Byte>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Boolean>() -> PassThroughListEncoder
+                  firstArgType == typeOf<String>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Double>() -> PassThroughListEncoder
+                  firstArgType == typeOf<Float>() -> PassThroughListEncoder
+                  else -> ListEncoder(encoderFor(firstArgType!!, nonNullSchema.elementType))
+               }
+            }
 
             LongArray::class -> LongArrayEncoder()
             IntArray::class -> IntArrayEncoder()
-            Set::class if firstArgType == typeOf<Long>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Int>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Short>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Byte>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Boolean>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<String>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Double>() -> PassThroughSetEncoder
-            Set::class if firstArgType == typeOf<Float>() -> PassThroughSetEncoder
-            Set::class -> SetEncoder(encoderFor(firstArgType!!, nonNullSchema.elementType))
+            Set::class -> {
+               val firstArgType = type.arguments.firstOrNull()?.type
+               when {
+                  firstArgType == typeOf<Long>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Int>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Short>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Byte>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Boolean>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<String>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Double>() -> PassThroughSetEncoder
+                  firstArgType == typeOf<Float>() -> PassThroughSetEncoder
+                  else -> SetEncoder(encoderFor(firstArgType!!, nonNullSchema.elementType))
+               }
+            }
 
             Map::class -> MapEncoder(encoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
 
