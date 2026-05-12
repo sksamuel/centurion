@@ -43,14 +43,32 @@ class ListDecoder<T>(private val decoder: Decoder<T>) : Decoder<List<T>> {
       val elementType = schema.elementType
       return when (value) {
          // put list first as avro encodes as GenericArray mostly
+         is List<*> -> {
+            val size = value.size
+            val result = ArrayList<T>(size)
+            if (value is RandomAccess) {
+               for (i in 0 until size) {
+                  result.add(decoder.decode(elementType, value[i]))
+               }
+            } else {
+               for (element in value) {
+                  result.add(decoder.decode(elementType, element))
+               }
+            }
+            result
+         }
          is Collection<*> -> {
             val result = ArrayList<T>(value.size)
-            value.forEach { result.add(decoder.decode(elementType, it)) }
+            for (element in value) {
+               result.add(decoder.decode(elementType, element))
+            }
             result
          }
          is Array<*> -> {
             val result = ArrayList<T>(value.size)
-            value.forEach { result.add(decoder.decode(elementType, it)) }
+            for (i in value.indices) {
+               result.add(decoder.decode(elementType, value[i]))
+            }
             result
          }
          else -> error("Unsupported list type $value")
