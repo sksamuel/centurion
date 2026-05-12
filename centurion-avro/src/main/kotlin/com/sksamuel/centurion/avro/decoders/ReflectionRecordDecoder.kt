@@ -72,11 +72,11 @@ class ReflectionRecordDecoder<T : Any>(
       }
 
       return { record ->
-         val args = decoders.map { (pos, decoder, schema) ->
-            val value = record.get(pos)
-            decoder.decode(schema, value)
+         val args = Array(decoders.size) { i ->
+            val (pos, decoder, fieldSchema) = decoders[i]
+            decoder.decode(fieldSchema, record.get(pos))
          }
-         constructor.call(*args.toTypedArray())
+         constructor.call(*args)
       }
    }
 
