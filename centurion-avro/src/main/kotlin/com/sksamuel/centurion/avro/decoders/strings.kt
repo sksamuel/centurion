@@ -53,6 +53,7 @@ object CharSequenceDecoder : Decoder<CharSequence> {
 object UTF8Decoder : Decoder<Utf8> {
    override fun decode(schema: Schema, value: Any?): Utf8 {
       return when (value) {
+         is Utf8 -> value
          is CharSequence -> Utf8(value.toString())
          is ByteArray -> Utf8(value)
          is ByteBuffer -> Utf8(value.readRemainingBytes())
