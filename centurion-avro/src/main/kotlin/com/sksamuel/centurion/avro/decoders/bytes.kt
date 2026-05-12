@@ -11,7 +11,7 @@ object ByteArrayDecoder : Decoder<ByteArray> {
          is GenericData.Fixed -> value.bytes()
          is ByteBuffer -> {
             val array = ByteArray(value.remaining())
-            value.get(array)
+            value.duplicate().get(array)
             array
          }
          else -> error("Cannot decode ${value?.javaClass} as ByteArray")
@@ -26,7 +26,7 @@ object ByteBufferDecoder : Decoder<ByteBuffer> {
          is GenericData.Fixed -> ByteBuffer.wrap(value.bytes())
          is ByteBuffer -> {
             val array = ByteArray(value.remaining())
-            value.get(array)
+            value.duplicate().get(array)
             ByteBuffer.wrap(array)
          }
          else -> error("Cannot decode ${value?.javaClass} as ByteBuffer")
