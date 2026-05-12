@@ -72,7 +72,10 @@ object LocalTimeDecoder : Decoder<LocalTime> {
    }
 }
 
-val OffsetDateTimeDecoder: Decoder<OffsetDateTime> = InstantDecoder.map { it.atOffset(ZoneOffset.UTC) }
+object OffsetDateTimeDecoder : Decoder<OffsetDateTime> {
+   override fun decode(schema: Schema, value: Any?): OffsetDateTime =
+      InstantDecoder.decode(schema, value).atOffset(ZoneOffset.UTC)
+}
 
 /**
  * [Decoder] for [LocalDateTime] which supports [LocalTimestampMillis], [LocalTimestampMicros] and Longs.

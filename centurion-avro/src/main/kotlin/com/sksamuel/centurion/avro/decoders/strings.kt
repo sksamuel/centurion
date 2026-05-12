@@ -40,7 +40,9 @@ object StringTypeDecoder : Decoder<String> {
  * The schema is not used, meaning this decoder is forgiving of types that do not conform to
  * the schema, but are nevertheless coerable to strings.
  */
-val CharSequenceDecoder: Decoder<CharSequence> = StringDecoder.map { it }
+object CharSequenceDecoder : Decoder<CharSequence> {
+   override fun decode(schema: Schema, value: Any?): CharSequence = StringDecoder.decode(schema, value)
+}
 
 /**
  * A [Decoder] for [Utf8] that pattern matches on the incoming type to decode.
