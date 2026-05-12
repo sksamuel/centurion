@@ -62,9 +62,9 @@ class ReflectionRecordEncoder<T : Any>(schema: Schema, kclass: KClass<T>) : Enco
 
    override fun encode(schema: Schema, value: T): GenericRecord {
       val record = GenericData.Record(schema)
-      encoders.map { (encoder, getter, pos, schema) ->
-         val value = getter.apply(value)
-         val encoded = encoder.encode(schema, value)
+      encoders.forEach { (encoder, getter, pos, schema) ->
+         val fieldValue = getter.apply(value)
+         val encoded = encoder.encode(schema, fieldValue)
          record.put(pos, encoded)
       }
       return record
