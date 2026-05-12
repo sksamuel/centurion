@@ -5,6 +5,7 @@ import org.apache.avro.Schema
 import java.math.BigDecimal
 import java.nio.ByteBuffer
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -64,6 +65,7 @@ fun interface Decoder<T> {
             Set::class -> SetDecoder(decoderFor(type.arguments.first().type!!, nonNullSchema.elementType))
             Map::class -> MapDecoder(decoderFor(type.arguments[1].type!!, nonNullSchema.valueType))
             LocalTime::class -> LocalTimeDecoder
+            LocalDateTime::class -> LocalDateTimeDecoder
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
             is KClass<*> if classifier.isData -> ReflectionRecordDecoder(schema, classifier)
