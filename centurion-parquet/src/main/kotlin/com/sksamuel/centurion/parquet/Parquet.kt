@@ -17,8 +17,9 @@ object Parquet {
   fun count(paths: List<Path>, conf: Configuration): Long {
     return paths.sumOf { path ->
       val input = HadoopInputFile.fromPath(path, conf)
-      val reader = ParquetFileReader.open(input)
-      reader.footer.blocks.sumOf { it.rowCount }
+      ParquetFileReader.open(input).use { reader ->
+        reader.footer.blocks.sumOf { it.rowCount }
+      }
     }
   }
 
