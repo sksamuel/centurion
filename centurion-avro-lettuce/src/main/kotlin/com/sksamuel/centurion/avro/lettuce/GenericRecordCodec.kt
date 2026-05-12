@@ -20,6 +20,9 @@ class GenericRecordCodec(
    private val decoderFactory: DecoderFactory,
 ) : RedisCodec<GenericRecord, GenericRecord> {
 
+   private val datumReader = GenericDatumReader<GenericRecord>(/* writer = */ schema, /* reader = */ schema)
+   private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
+
    override fun decodeKey(buffer: ByteBuffer): GenericRecord {
       return decode(buffer)
    }
@@ -37,18 +40,16 @@ class GenericRecordCodec(
    }
 
    private fun decode(buffer: ByteBuffer): GenericRecord {
-      val datum = GenericDatumReader<GenericRecord>(/* writer = */ schema, /* reader = */ schema)
       val bytes = ByteArray(buffer.remaining())
       buffer.get(bytes)
       val decoder = decoderFactory.binaryDecoder(ByteArrayInputStream(bytes), null)
-      return datum.read(null, decoder)
+      return datumReader.read(null, decoder)
    }
 
    private fun encode(record: GenericRecord): ByteBuffer {
-      val datum = GenericDatumWriter<GenericRecord>(record.schema)
       val baos = ByteArrayOutputStream()
       val encoder = encoderFactory.binaryEncoder(baos, null)
-      datum.write(record, encoder)
+      datumWriter.write(record, encoder)
       encoder.flush()
       return ByteBuffer.wrap(baos.toByteArray())
    }
