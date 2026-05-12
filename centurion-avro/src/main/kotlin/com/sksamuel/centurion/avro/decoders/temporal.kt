@@ -19,6 +19,13 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
+private val LOCAL_TIMESTAMP_MILLIS_CONVERSION = LocalTimestampMillisConversion()
+private val LOCAL_TIMESTAMP_MICROS_CONVERSION = LocalTimestampMicrosConversion()
+private val TIME_MILLIS_CONVERSION = TimeMillisConversion()
+private val TIME_MICROS_CONVERSION = TimeMicrosConversion()
+private val TIMESTAMP_MILLIS_CONVERSION = TimestampMillisConversion()
+private val TIMESTAMP_MICROS_CONVERSION = TimestampMicrosConversion()
+
 /**
  * [Decoder] for [Instant] which supports [LogicalTypes.TimestampMillis], [LogicalTypes.TimestampMicros] and Longs.
  */
@@ -27,8 +34,8 @@ object InstantDecoder : Decoder<Instant> {
       return when (value) {
          is Long -> {
             when (val logicalType = schema.logicalType) {
-               is LogicalTypes.TimestampMillis -> TimestampMillisConversion().fromLong(value, schema, logicalType)
-               is LogicalTypes.TimestampMicros -> TimestampMicrosConversion().fromLong(value, schema, logicalType)
+               is LogicalTypes.TimestampMillis -> TIMESTAMP_MILLIS_CONVERSION.fromLong(value, schema, logicalType)
+               is LogicalTypes.TimestampMicros -> TIMESTAMP_MICROS_CONVERSION.fromLong(value, schema, logicalType)
                null -> Instant.ofEpochMilli(value)
                else -> error("Unsupported schema for Instant: $schema")
             }
@@ -47,7 +54,7 @@ object LocalTimeDecoder : Decoder<LocalTime> {
       return when (value) {
          is Long -> {
             when (val logicalType = schema.logicalType) {
-               is TimeMicros -> TimeMicrosConversion().fromLong(value, schema, logicalType)
+               is TimeMicros -> TIME_MICROS_CONVERSION.fromLong(value, schema, logicalType)
                null -> LocalTime.ofNanoOfDay(TimeUnit.MILLISECONDS.toNanos(value))
                else -> error("Unsupported schema for Instant: $schema")
             }
@@ -55,7 +62,7 @@ object LocalTimeDecoder : Decoder<LocalTime> {
 
          is Int -> {
             when (val logicalType = schema.logicalType) {
-               is TimeMillis -> TimeMillisConversion().fromInt(value, schema, logicalType)
+               is TimeMillis -> TIME_MILLIS_CONVERSION.fromInt(value, schema, logicalType)
                else -> error("Unsupported schema for Instant: $schema")
             }
          }
@@ -65,7 +72,10 @@ object LocalTimeDecoder : Decoder<LocalTime> {
    }
 }
 
-val OffsetDateTimeDecoder: Decoder<OffsetDateTime> = InstantDecoder.map { it.atOffset(ZoneOffset.UTC) }
+object OffsetDateTimeDecoder : Decoder<OffsetDateTime> {
+   override fun decode(schema: Schema, value: Any?): OffsetDateTime =
+      InstantDecoder.decode(schema, value).atOffset(ZoneOffset.UTC)
+}
 
 /**
  * [Decoder] for [LocalDateTime] which supports [LocalTimestampMillis], [LocalTimestampMicros] and Longs.
@@ -75,8 +85,8 @@ object LocalDateTimeDecoder : Decoder<LocalDateTime> {
       return when (value) {
          is Long -> {
             when (val logicalType = schema.logicalType) {
-               is LocalTimestampMillis -> LocalTimestampMillisConversion().fromLong(value, schema, logicalType)
-               is LocalTimestampMicros -> LocalTimestampMicrosConversion().fromLong(value, schema, logicalType)
+               is LocalTimestampMillis -> LOCAL_TIMESTAMP_MILLIS_CONVERSION.fromLong(value, schema, logicalType)
+               is LocalTimestampMicros -> LOCAL_TIMESTAMP_MICROS_CONVERSION.fromLong(value, schema, logicalType)
                null -> LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC)
                else -> error("Unsupported schema for LocalDateTime: $schema")
             }

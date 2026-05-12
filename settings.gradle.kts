@@ -24,8 +24,6 @@ include("centurion-avro")
 include("centurion-avro-lettuce")
 //include("centurion-avro-gradle-plugin")
 include("centurion-benchmarks")
-//include("centurion-parquet")
-//include("centurion-schemas")
 
 dependencyResolutionManagement {
    repositories {

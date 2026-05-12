@@ -69,7 +69,7 @@ fun interface Decoder<T> {
             Instant::class -> InstantDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
             is KClass<*> if classifier.isData -> ReflectionRecordDecoder(schema, classifier)
-            else -> error("Unsupported type $type")
+            else -> error("No Decoder available for type $type with schema ${schema.type} ($schema)")
          }
          return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
       }

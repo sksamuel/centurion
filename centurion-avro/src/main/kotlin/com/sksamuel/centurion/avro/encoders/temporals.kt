@@ -20,14 +20,22 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
+private val LOCAL_TIMESTAMP_MILLIS_CONVERSION = LocalTimestampMillisConversion()
+private val LOCAL_TIMESTAMP_MICROS_CONVERSION = LocalTimestampMicrosConversion()
+private val TIME_MILLIS_CONVERSION = TimeMillisConversion()
+private val TIME_MICROS_CONVERSION = TimeMicrosConversion()
+private val TIMESTAMP_MILLIS_CONVERSION = TimestampMillisConversion()
+private val TIMESTAMP_MICROS_CONVERSION = TimestampMicrosConversion()
+
 object LocalDateTimeEncoder : Encoder<LocalDateTime> {
    override fun encode(schema: Schema, value: LocalDateTime): Any? {
+      val logicalType = schema.logicalType
       return when {
-         schema.logicalType is LocalTimestampMillis ->
-            LocalTimestampMillisConversion().toLong(value, schema, schema.logicalType)
+         logicalType is LocalTimestampMillis ->
+            LOCAL_TIMESTAMP_MILLIS_CONVERSION.toLong(value, schema, logicalType)
 
-         schema.logicalType is LocalTimestampMicros ->
-            LocalTimestampMicrosConversion().toLong(value, schema, schema.logicalType)
+         logicalType is LocalTimestampMicros ->
+            LOCAL_TIMESTAMP_MICROS_CONVERSION.toLong(value, schema, logicalType)
 
          schema.type == Schema.Type.LONG ->
             value.toInstant(ZoneOffset.UTC).toEpochMilli()
@@ -39,12 +47,13 @@ object LocalDateTimeEncoder : Encoder<LocalDateTime> {
 
 object LocalTimeEncoder : Encoder<LocalTime> {
    override fun encode(schema: Schema, value: LocalTime): Any? {
+      val logicalType = schema.logicalType
       return when {
-         schema.logicalType is TimeMillis ->
-            TimeMillisConversion().toInt(value, schema, schema.logicalType)
+         logicalType is TimeMillis ->
+            TIME_MILLIS_CONVERSION.toInt(value, schema, logicalType)
 
-         schema.logicalType is TimeMicros ->
-            TimeMicrosConversion().toLong(value, schema, schema.logicalType)
+         logicalType is TimeMicros ->
+            TIME_MICROS_CONVERSION.toLong(value, schema, logicalType)
 
          schema.type == Schema.Type.INT ->
             TimeUnit.NANOSECONDS.toMillis(value.toNanoOfDay())
@@ -59,12 +68,13 @@ object LocalTimeEncoder : Encoder<LocalTime> {
  */
 object InstantEncoder : Encoder<Instant> {
    override fun encode(schema: Schema, value: Instant): Any? {
+      val logicalType = schema.logicalType
       return when {
-         schema.logicalType is TimestampMillis ->
-            TimestampMillisConversion().toLong(value, schema, schema.logicalType)
+         logicalType is TimestampMillis ->
+            TIMESTAMP_MILLIS_CONVERSION.toLong(value, schema, logicalType)
 
-         schema.logicalType is TimestampMicros ->
-            TimestampMicrosConversion().toLong(value, schema, schema.logicalType)
+         logicalType is TimestampMicros ->
+            TIMESTAMP_MICROS_CONVERSION.toLong(value, schema, logicalType)
 
          schema.type == Schema.Type.LONG -> value.toEpochMilli()
          else -> error("Unsupported schema for LocalDateTime: $schema")
@@ -72,4 +82,7 @@ object InstantEncoder : Encoder<Instant> {
    }
 }
 
-val OffsetDateTimeEncoder: Encoder<OffsetDateTime> = InstantEncoder.contraMap { it.toInstant() }
+object OffsetDateTimeEncoder : Encoder<OffsetDateTime> {
+   override fun encode(schema: Schema, value: OffsetDateTime): Any? =
+      InstantEncoder.encode(schema, value.toInstant())
+}

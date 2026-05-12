@@ -15,4 +15,9 @@ jmh {
    warmupIterations = 3
    iterations = 5
    threads = 1
+   resultFormat = "JSON"
+   resultsFile = layout.buildDirectory.file("results/jmh/results.json")
+   (project.findProperty("jmh.includes") as String?)
+      ?.takeIf { it.isNotBlank() }
+      ?.let { includes = listOf(it) }
 }
