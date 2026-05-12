@@ -17,7 +17,7 @@ object StringDecoder : Decoder<String> {
       return when (value) {
          is CharSequence -> value.toString() // covers String and Utf8 as well
          is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.array()).toString()
+         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
          is GenericFixed -> Utf8(value.bytes()).toString()
          else -> error("Unsupported type $value")
       }
@@ -53,7 +53,7 @@ object UTF8Decoder : Decoder<Utf8> {
       return when (value) {
          is CharSequence -> Utf8(value.toString())
          is ByteArray -> Utf8(value)
-         is ByteBuffer -> Utf8(value.array())
+         is ByteBuffer -> Utf8(value.readRemainingBytes())
          is GenericFixed -> Utf8(value.bytes())
          else -> error("Unsupported type $value")
       }
@@ -91,10 +91,16 @@ object ByteStringDecoder : Decoder<String> {
       require(schema.type == Schema.Type.BYTES)
       return when (value) {
          is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.array()).toString()
+         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
          else -> error("This decoder expects bytes but was $value")
       }
    }
+}
+
+private fun ByteBuffer.readRemainingBytes(): ByteArray {
+   val bytes = ByteArray(remaining())
+   get(bytes)
+   return bytes
 }
 
 /**
