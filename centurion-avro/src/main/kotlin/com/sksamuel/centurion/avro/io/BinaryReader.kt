@@ -30,9 +30,11 @@ class BinaryReader<T>(
 
    private val datum = GenericDatumReader<GenericRecord>(/* writer = */ writerSchema, /* reader = */ readerSchema)
    private val binaryDecoder = factory.binaryDecoder(input, reuse)
+   private var reusableRecord: GenericRecord? = null
 
    fun read(): T {
-      val record = datum.read(null, binaryDecoder)
+      val record = datum.read(reusableRecord, binaryDecoder)
+      reusableRecord = record
       return decoder.decode(readerSchema, record)
    }
 
