@@ -15,10 +15,6 @@ object Libs {
       const val hadoop = "org.apache.parquet:parquet-hadoop:1.11.2"
    }
 
-   object Orc {
-      const val core = "org.apache.orc:orc-core:2.1.2"
-   }
-
    object Hadoop {
       const val common = "org.apache.hadoop:hadoop-common:2.10.1"
       const val client = "org.apache.hadoop:hadoop-client:2.10.1"
