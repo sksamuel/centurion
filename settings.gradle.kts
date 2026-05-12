@@ -22,9 +22,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("centurion-avro")
 include("centurion-avro-lettuce")
-include("centurion-avro-gradle-plugin")
+//include("centurion-avro-gradle-plugin")
+include("centurion-benchmarks")
 include("centurion-orc")
-//include("centurion-parquet")
 //include("centurion-parquet")
 //include("centurion-schemas")
 
