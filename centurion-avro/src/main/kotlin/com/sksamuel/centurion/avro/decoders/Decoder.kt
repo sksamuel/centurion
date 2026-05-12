@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.decoders
 
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
+import java.math.BigDecimal
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalTime
@@ -38,6 +39,7 @@ fun interface Decoder<T> {
             Long::class -> LongDecoder
             Byte::class -> ByteDecoder
             Short::class -> ShortDecoder
+            BigDecimal::class -> BigDecimalStringDecoder
             ByteArray::class -> ByteArrayDecoder
             ByteBuffer::class -> ByteBufferDecoder
             List::class if type.arguments.first().type == typeOf<Long>() -> PassthroughListDecoder
