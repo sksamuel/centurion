@@ -53,7 +53,11 @@ internal object IntegerWriter : Writer {
 }
 
 internal object LongWriter : Writer {
-  override fun write(consumer: RecordConsumer, value: Any) = consumer.addLong(value.toString().toLong())
+  override fun write(consumer: RecordConsumer, value: Any) = when (value) {
+    is Long -> consumer.addLong(value)
+    is Number -> consumer.addLong(value.toLong())
+    else -> consumer.addLong(value.toString().toLong())
+  }
 }
 
 internal object DoubleWriter : Writer {
