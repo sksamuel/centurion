@@ -8,8 +8,9 @@ import org.apache.avro.Schema
 class ArrayEncoder<T>(private val encoder: Encoder<T>) : Encoder<Array<T>> {
    override fun encode(schema: Schema, value: Array<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      return if (value.isEmpty()) emptyList()
-      else value.map { encoder.encode(schema.elementType, it) }
+      if (value.isEmpty()) return emptyList()
+      val elementType = schema.elementType
+      return value.map { encoder.encode(elementType, it) }
    }
 }
 
@@ -39,8 +40,9 @@ class IntArrayEncoder : Encoder<IntArray> {
 class ListEncoder<T>(private val encoder: Encoder<T>) : Encoder<List<T>> {
    override fun encode(schema: Schema, value: List<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      return if (value.isEmpty()) value
-      else value.map { encoder.encode(schema.elementType, it) }
+      if (value.isEmpty()) return value
+      val elementType = schema.elementType
+      return value.map { encoder.encode(elementType, it) }
    }
 }
 
@@ -65,8 +67,9 @@ object PassThroughListEncoder : Encoder<List<Any?>> {
 class SetEncoder<T>(private val encoder: Encoder<T>) : Encoder<Set<T>> {
    override fun encode(schema: Schema, value: Set<T>): List<Any?> {
       require(schema.type == Schema.Type.ARRAY)
-      return if (value.isEmpty()) emptyList()
-      else value.map { encoder.encode(schema.elementType, it) }
+      if (value.isEmpty()) return emptyList()
+      val elementType = schema.elementType
+      return value.map { encoder.encode(elementType, it) }
    }
 }
 
