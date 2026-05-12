@@ -45,14 +45,8 @@ class ReflectionDataClassCodec<T : Any>(
 
    private fun read(buffer: ByteBuffer): GenericRecord {
       val datum = GenericDatumReader<GenericRecord>(/* writer = */ schema, /* reader = */ schema)
-      val bytes: ByteArray = when (buffer.hasArray()) {
-         true -> buffer.array()
-         else -> {
-            val bytesArray = ByteArray(buffer.remaining())
-            buffer.get(bytesArray, 0, bytesArray.size)
-            bytesArray
-         }
-      }
+      val bytes = ByteArray(buffer.remaining())
+      buffer.get(bytes)
       val decoder = decoderFactory.binaryDecoder(ByteArrayInputStream(bytes), null)
       return datum.read(null, decoder)
    }
