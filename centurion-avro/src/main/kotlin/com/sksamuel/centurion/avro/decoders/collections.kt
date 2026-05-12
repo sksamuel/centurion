@@ -4,10 +4,11 @@ import org.apache.avro.Schema
 
 class IntArrayDecoder(private val decoder: Decoder<Int>) : Decoder<IntArray> {
    override fun decode(schema: Schema, value: Any?): IntArray {
+      val elementType = schema.elementType
       return when (value) {
          // put list first as avro encodes as GenericArray mostly
-         is List<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toIntArray()
-         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toIntArray()
+         is List<*> -> IntArray(value.size) { i -> decoder.decode(elementType, value[i]) }
+         is Array<*> -> IntArray(value.size) { i -> decoder.decode(elementType, value[i]) }
          else -> error("Unsupported list type $value")
       }
    }
@@ -15,10 +16,11 @@ class IntArrayDecoder(private val decoder: Decoder<Int>) : Decoder<IntArray> {
 
 class LongArrayDecoder(private val decoder: Decoder<Long>) : Decoder<LongArray> {
    override fun decode(schema: Schema, value: Any?): LongArray {
+      val elementType = schema.elementType
       return when (value) {
          // put list first as avro encodes as GenericArray mostly
-         is List<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toLongArray()
-         is Array<*> -> value.map { decoder.decode(schema.elementType, it) }.toTypedArray().toLongArray()
+         is List<*> -> LongArray(value.size) { i -> decoder.decode(elementType, value[i]) }
+         is Array<*> -> LongArray(value.size) { i -> decoder.decode(elementType, value[i]) }
          else -> error("Unsupported list type $value")
       }
    }
