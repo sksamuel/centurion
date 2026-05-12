@@ -37,6 +37,6 @@ class DataSerdeFactory(
 class CachingSerdeFactory(private val underlying: SerdeFactory) : SerdeFactory {
    private val cache = ConcurrentHashMap<KClass<*>, Serde<*>>()
    override fun <T : Any> serdeFor(kclass: KClass<T>): Serde<T> {
-      return cache.getOrPut(kclass) { underlying.serdeFor(kclass) } as Serde<T>
+      return cache.computeIfAbsent(kclass) { underlying.serdeFor(it as KClass<Any>) } as Serde<T>
    }
 }
