@@ -138,9 +138,9 @@ fun createRecordProgramatically(foo: Foo): GenericData.Record {
    record.put("field_f", foo.field_f)
    record.put("field_g", foo.field_g)
    record.put("field_h", foo.field_h)
-   record.put("enum", foo.enum)
-   record.put("listOfEnums", foo.listOfEnums)
-   record.put("setOfEnums", foo.setOfEnums)
+   record.put("enum", GenericData.EnumSymbol(enumSchema, foo.enum.name))
+   record.put("listOfEnums", foo.listOfEnums.map { GenericData.EnumSymbol(enumSchema, it.name) })
+   record.put("setOfEnums", foo.setOfEnums.map { GenericData.EnumSymbol(enumSchema, it.name) })
    record.put("listOfLongs", foo.listOfLongs)
    record.put("setOfStrings", foo.setOfStrings)
    record.put("complexList", foo.complexList.map {
