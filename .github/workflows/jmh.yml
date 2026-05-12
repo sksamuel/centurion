@@ -1,5 +1,7 @@
 name: jmh
 
+run-name: jmh @ ${{ inputs.commit || github.sha }}
+
 on:
   push:
     branches:
@@ -10,6 +12,10 @@ on:
       - '*.md'
   workflow_dispatch:
     inputs:
+      commit:
+        description: 'Commit SHA, branch, or tag to benchmark (defaults to HEAD of the selected branch)'
+        required: false
+        default: ''
       include:
         description: 'JMH benchmark regex filter (e.g. SerializeBenchmark)'
         required: false
@@ -23,6 +29,8 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit || github.sha }}
 
       - uses: actions/setup-java@v4
         with:
@@ -50,6 +58,7 @@ jobs:
           summary-always: true
           auto-push: false
           save-data-file: false
+          skip-fetch-gh-pages: true
 
       - name: Upload raw JMH results
         if: ${{ !cancelled() }}
