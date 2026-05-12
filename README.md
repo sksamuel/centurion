@@ -546,7 +546,6 @@ reader.sequence().forEach { record ->
 
 | Module | Description |
 |--------|-------------|
-| `centurion-schemas` | Core schema definitions and Struct implementations |
 | `centurion-avro` | Avro format support with binary and data file I/O |
 | `centurion-avro-lettuce` | Redis integration for Avro serialization |
 | `centurion-avro-gradle-plugin` | Gradle plugin for code generation from Avro schemas |

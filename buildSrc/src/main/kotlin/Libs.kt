@@ -12,6 +12,3 @@ object Libs {
 
 }
 
-object Projects {
-   const val schemas = ":centurion-schemas"
-}
