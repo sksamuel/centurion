@@ -97,7 +97,7 @@ fun interface Encoder<T> {
             Instant::class -> InstantEncoder
             is KClass<*> if classifier.java.isEnum -> EnumEncoder()
             is KClass<*> if classifier.isData -> ReflectionRecordEncoder(schema, classifier)
-            else -> error("Unsupported type $type")
+            else -> error("No Encoder available for type $type with schema ${schema.type} ($schema)")
          }
          return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
       }
