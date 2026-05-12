@@ -82,9 +82,7 @@ class MapEncoder<T>(
 ) : Encoder<Map<String, T>> {
    override fun encode(schema: Schema, value: Map<String, T>): Map<String, Any?> {
       require(schema.type == Schema.Type.MAP)
-      return if (value.isEmpty()) emptyMap()
-      else value.map { (key, value) ->
-         key.toString() to valueEncoder.encode(schema.valueType, value)
-      }.toMap()
+      if (value.isEmpty()) return emptyMap()
+      return value.mapValues { (_, v) -> valueEncoder.encode(schema.valueType, v) }
    }
 }
