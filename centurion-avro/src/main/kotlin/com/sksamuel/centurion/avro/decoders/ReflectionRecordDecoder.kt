@@ -56,30 +56,31 @@ class ReflectionRecordDecoder<T : Any>(
       }
    }
 
-   private val decodeFn: ((GenericRecord) -> T) = buildDecodeFn(schema)
+   private val decoders: Array<Decoding> = buildDecodings(schema)
 
    override fun decode(schema: Schema, value: Any?): T {
       val record = value as GenericRecord
-      return decodeFn(record)
+      val decoders = this.decoders
+      val args = arrayOfNulls<Any?>(decoders.size)
+      var i = 0
+      while (i < decoders.size) {
+         val decoding = decoders[i]
+         args[i] = decoding.decoder.decode(decoding.schema, record.get(decoding.pos))
+         i++
+      }
+      return constructor.call(*args)
    }
 
-   private fun buildDecodeFn(schema: Schema): (GenericRecord) -> T {
-
-      val decoders = constructor.parameters.map { param ->
+   private fun buildDecodings(schema: Schema): Array<Decoding> {
+      val params = constructor.parameters
+      return Array(params.size) { i ->
+         val param = params[i]
          val avroField = schema.getField(param.name)
             ?: error("Could not find field ${param.name} in Avro schema")
          val decoder = Decoder.decoderFor(param.type, avroField.schema())
          Decoding(avroField.pos(), decoder, avroField.schema())
       }
-
-      return { record ->
-         val args = Array(decoders.size) { i ->
-            val (pos, decoder, fieldSchema) = decoders[i]
-            decoder.decode(fieldSchema, record.get(pos))
-         }
-         constructor.call(*args)
-      }
    }
 
-   private data class Decoding(val pos: Int, val decode: Decoder<*>, val schema: Schema)
+   private class Decoding(val pos: Int, val decoder: Decoder<*>, val schema: Schema)
 }
