@@ -67,6 +67,7 @@ class ReflectionRecordDecoder<T : Any>(
 
       val decoders = constructor.parameters.map { param ->
          val avroField = schema.getField(param.name)
+            ?: error("Could not find field ${param.name} in Avro schema")
          val decoder = Decoder.decoderFor(param.type, avroField.schema())
          Decoding(avroField.pos(), decoder, avroField.schema())
       }
