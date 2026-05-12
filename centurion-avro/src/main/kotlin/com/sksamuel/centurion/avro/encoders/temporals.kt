@@ -72,4 +72,7 @@ object InstantEncoder : Encoder<Instant> {
    }
 }
 
-val OffsetDateTimeEncoder: Encoder<OffsetDateTime> = InstantEncoder.contraMap { it.toInstant() }
+object OffsetDateTimeEncoder : Encoder<OffsetDateTime> {
+   override fun encode(schema: Schema, value: OffsetDateTime): Any? =
+      InstantEncoder.encode(schema, value.toInstant())
+}
