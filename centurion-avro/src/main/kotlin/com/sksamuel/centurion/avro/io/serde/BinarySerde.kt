@@ -4,11 +4,13 @@ import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
-import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumReader
+import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
+import org.apache.avro.io.BinaryDecoder
+import org.apache.avro.io.BinaryEncoder
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 import java.io.ByteArrayOutputStream
@@ -22,6 +24,10 @@ import kotlin.reflect.KClass
  * deserialization time. This format is especially effective when the consumers and producers both know the
  * schema that was used, for instance, in versioned endpoints, or when the same application is used to read
  * and write the data.
+ *
+ * Instances are safe to share across threads. Per-thread mutable state
+ * ([ByteArrayOutputStream], [BinaryEncoder], [BinaryDecoder]) is held in [ThreadLocal]s and reused
+ * across calls; the schema-bound [GenericDatumWriter] / [GenericDatumReader] are shared.
  */
 class BinarySerde<T : Any>(
    private val schema: Schema,
@@ -60,16 +66,28 @@ class BinarySerde<T : Any>(
       }
    }
 
+   private val datumWriter = GenericDatumWriter<GenericRecord>(schema)
+   private val datumReader = GenericDatumReader<GenericRecord>(schema, schema)
+
+   private val baosLocal = ThreadLocal.withInitial { ByteArrayOutputStream(256) }
+   private val binaryEncoderLocal = ThreadLocal<BinaryEncoder?>()
+   private val binaryDecoderLocal = ThreadLocal<BinaryDecoder?>()
+
    override fun serialize(obj: T): ByteArray {
-      val baos = ByteArrayOutputStream()
-      BinaryWriter(schema, baos, encoderFactory, encoder, null).use { it.write(obj) }
+      val baos = baosLocal.get()
+      baos.reset()
+      val binEncoder = encoderFactory.binaryEncoder(baos, binaryEncoderLocal.get())
+      binaryEncoderLocal.set(binEncoder)
+      val record = encoder.encode(schema, obj) as GenericRecord
+      datumWriter.write(record, binEncoder)
+      binEncoder.flush()
       return baos.toByteArray()
    }
 
    override fun deserialize(bytes: ByteArray): T {
-      val binaryDecoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, null)
-      val datum = GenericDatumReader<GenericRecord>(schema, schema)
-      val record = datum.read(null, binaryDecoder)
+      val binDecoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, binaryDecoderLocal.get())
+      binaryDecoderLocal.set(binDecoder)
+      val record = datumReader.read(null, binDecoder)
       return decoder.decode(schema, record)
    }
 }
