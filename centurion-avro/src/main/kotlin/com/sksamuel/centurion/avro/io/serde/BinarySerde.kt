@@ -4,13 +4,13 @@ import com.sksamuel.centurion.avro.decoders.Decoder
 import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import com.sksamuel.centurion.avro.encoders.Encoder
 import com.sksamuel.centurion.avro.encoders.ReflectionRecordEncoder
-import com.sksamuel.centurion.avro.io.BinaryReader
 import com.sksamuel.centurion.avro.io.BinaryWriter
 import com.sksamuel.centurion.avro.schemas.ReflectionSchemaBuilder
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericDatumReader
+import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.reflect.KClass
 
@@ -67,6 +67,9 @@ class BinarySerde<T : Any>(
    }
 
    override fun deserialize(bytes: ByteArray): T {
-      return BinaryReader(schema, ByteArrayInputStream(bytes), decoderFactory, decoder, null).use { it.read() }
+      val binaryDecoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, null)
+      val datum = GenericDatumReader<GenericRecord>(schema, schema)
+      val record = datum.read(null, binaryDecoder)
+      return decoder.decode(schema, record)
    }
 }
