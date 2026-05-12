@@ -19,7 +19,7 @@ object StringDecoder : Decoder<String> {
          is ByteArray -> Utf8(value).toString()
          is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
          is GenericFixed -> Utf8(value.bytes()).toString()
-         else -> error("Unsupported type $value")
+         else -> error("Cannot decode ${value?.javaClass?.name} as String: $value")
       }
    }
 }
@@ -55,7 +55,7 @@ object UTF8Decoder : Decoder<Utf8> {
          is ByteArray -> Utf8(value)
          is ByteBuffer -> Utf8(value.readRemainingBytes())
          is GenericFixed -> Utf8(value.bytes())
-         else -> error("Unsupported type $value")
+         else -> error("Cannot decode ${value?.javaClass?.name} as Utf8: $value")
       }
    }
 }
