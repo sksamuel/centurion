@@ -71,7 +71,7 @@ fun interface Decoder<T> {
             is KClass<*> if classifier.isData -> ReflectionRecordDecoder(schema, classifier)
             else -> error("No Decoder available for type $type with schema ${schema.type} ($schema)")
          }
-         return if (type.isMarkedNullable) NullDecoder(decoder) else decoder
+         return if (type.isMarkedNullable) NullDecoder(schema, decoder) else decoder
       }
    }
 }

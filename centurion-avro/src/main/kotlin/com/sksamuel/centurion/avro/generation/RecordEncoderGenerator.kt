@@ -49,7 +49,8 @@ class RecordEncoderGenerator {
 
    private fun encode(property: KProperty1<out Any, *>): String {
       val baseEncoder = encoderFor(property.returnType)
-      val wrapped = if (property.returnType.isMarkedNullable) "NullEncoder($baseEncoder)" else baseEncoder
+      val wrapped = if (property.returnType.isMarkedNullable)
+         "NullEncoder(${property.name}Schema, $baseEncoder)" else baseEncoder
       return "$wrapped.encode(${property.name}Schema)"
    }
 

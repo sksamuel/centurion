@@ -99,7 +99,7 @@ fun interface Encoder<T> {
             is KClass<*> if classifier.isData -> ReflectionRecordEncoder(schema, classifier)
             else -> error("No Encoder available for type $type with schema ${schema.type} ($schema)")
          }
-         return if (type.isMarkedNullable) NullEncoder(encoder) else encoder
+         return if (type.isMarkedNullable) NullEncoder(schema, encoder) else encoder
       }
    }
 

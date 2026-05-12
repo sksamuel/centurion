@@ -48,7 +48,8 @@ class RecordDecoderGenerator {
 
    private fun decode(property: KProperty1<out Any, *>): String {
       val baseDecoder = decoderFor(property.returnType)
-      val wrapped = if (property.returnType.isMarkedNullable) "NullDecoder($baseDecoder)" else baseDecoder
+      val wrapped = if (property.returnType.isMarkedNullable)
+         "NullDecoder(${property.name}Schema, $baseDecoder)" else baseDecoder
       return "$wrapped.decode(${property.name}Schema)"
    }
 
