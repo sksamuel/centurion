@@ -155,6 +155,7 @@ fun createRecordProgramatically(foo: Foo): GenericData.Record {
 }
 
 fun deserializeProgramatically(record: GenericRecord): Foo {
+   @Suppress("UNCHECKED_CAST")
    return Foo(
       field_a = record.get("field_a").toString(),
       field_b = record.get("field_b") as Boolean,
@@ -164,14 +165,21 @@ fun deserializeProgramatically(record: GenericRecord): Foo {
       field_f = record.get("field_f").toString(),
       field_g = record.get("field_g").toString(),
       field_h = record.get("field_h") as Int,
-      enum = Enum.valueOf((record.get("listOfEnums") as GenericData.EnumSymbol).toString()),
+      enum = Enum.valueOf((record.get("enum") as GenericData.EnumSymbol).toString()),
       listOfEnums = (record.get("listOfEnums") as List<GenericData.EnumSymbol>)
          .map { Enum.valueOf(it.toString()) },
       setOfEnums = (record.get("setOfEnums") as List<GenericData.EnumSymbol>)
          .map { Enum.valueOf(it.toString()) }
          .toSet(),
-      listOfLongs = record.get("field_i") as List<Long>,
-      setOfStrings = (record.get("field_j") as List<String>).toSet(),
-      complexList = record.get("field_k") as List<Bar>,
+      listOfLongs = record.get("listOfLongs") as List<Long>,
+      setOfStrings = (record.get("setOfStrings") as List<CharSequence>).map { it.toString() }.toSet(),
+      complexList = (record.get("complexList") as List<GenericRecord>).map { barRecord ->
+         Bar(
+            field_a = barRecord.get("field_a").toString(),
+            field_b = barRecord.get("field_b") as Boolean,
+            field_c = barRecord.get("field_c") as Int,
+            field_d = barRecord.get("field_d") as Double,
+         )
+      },
    )
 }
