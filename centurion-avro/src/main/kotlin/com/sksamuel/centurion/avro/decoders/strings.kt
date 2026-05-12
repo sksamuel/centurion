@@ -16,9 +16,9 @@ object StringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       return when (value) {
          is CharSequence -> value.toString() // covers String and Utf8 as well
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
-         is GenericFixed -> Utf8(value.bytes()).toString()
+         is ByteArray -> String(value, Charsets.UTF_8)
+         is ByteBuffer -> String(value.readRemainingBytes(), Charsets.UTF_8)
+         is GenericFixed -> String(value.bytes(), Charsets.UTF_8)
          else -> error("Cannot decode ${value?.javaClass?.name} as String: $value")
       }
    }
@@ -90,8 +90,8 @@ object ByteStringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.BYTES)
       return when (value) {
-         is ByteArray -> Utf8(value).toString()
-         is ByteBuffer -> Utf8(value.readRemainingBytes()).toString()
+         is ByteArray -> String(value, Charsets.UTF_8)
+         is ByteBuffer -> String(value.readRemainingBytes(), Charsets.UTF_8)
          else -> error("This decoder expects bytes but was $value")
       }
    }
@@ -110,7 +110,7 @@ object GenericFixedStringDecoder : Decoder<String> {
    override fun decode(schema: Schema, value: Any?): String {
       require(schema.type == Schema.Type.FIXED)
       return when (value) {
-         is GenericFixed -> Utf8(value.bytes()).toString()
+         is GenericFixed -> String(value.bytes(), Charsets.UTF_8)
          else -> error("This decoder expects GenericFixed but was $value")
       }
    }
