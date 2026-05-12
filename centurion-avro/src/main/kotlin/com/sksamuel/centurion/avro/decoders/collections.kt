@@ -78,9 +78,12 @@ class MapDecoder<T>(private val decoder: Decoder<T>) : Decoder<Map<String, T>> {
    override fun decode(schema: Schema, value: Any?): Map<String, T> {
       return when (value) {
          is Map<*, *> -> {
-            value.map { (k, v) ->
-               StringDecoder.decode(STRING_SCHEMA, k) to decoder.decode(schema.valueType, v)
-            }.toMap()
+            val valueType = schema.valueType
+            val result = LinkedHashMap<String, T>(value.size)
+            value.forEach { (k, v) ->
+               result[StringDecoder.decode(STRING_SCHEMA, k)] = decoder.decode(valueType, v)
+            }
+            result
          }
          else -> error("Unsupported map type $value")
       }
