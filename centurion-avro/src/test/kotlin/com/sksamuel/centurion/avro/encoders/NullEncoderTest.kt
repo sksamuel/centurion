@@ -12,28 +12,28 @@ class NullEncoderTest : FunSpec({
    val nullableString = Schema.create(Schema.Type.STRING).asNullUnion()
 
    test("encodes null as null") {
-      NullEncoder(StringEncoder).encode(nullableString, null) shouldBe null
+      NullEncoder(nullableString, StringEncoder).encode(nullableString, null) shouldBe null
    }
 
    test("delegates non-null values to the wrapped encoder") {
-      NullEncoder(StringEncoder).encode(nullableString, "hello") shouldBe Utf8("hello")
+      NullEncoder(nullableString, StringEncoder).encode(nullableString, "hello") shouldBe Utf8("hello")
    }
 
-   test("requires a UNION schema") {
+   test("requires a UNION schema at construction") {
       val schema = Schema.create(Schema.Type.STRING)
       shouldThrow<IllegalArgumentException> {
-         NullEncoder(StringEncoder).encode(schema, "x")
+         NullEncoder(schema, StringEncoder)
       }
    }
 
-   test("requires a 2-element union") {
+   test("requires a 2-element union at construction") {
       val schema = Schema.createUnion(
          Schema.create(Schema.Type.NULL),
          Schema.create(Schema.Type.STRING),
          Schema.create(Schema.Type.INT),
       )
       shouldThrow<IllegalArgumentException> {
-         NullEncoder(StringEncoder).encode(schema, "x")
+         NullEncoder(schema, StringEncoder)
       }
    }
 })
