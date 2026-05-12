@@ -86,6 +86,11 @@ class MapEncoder<T>(
    override fun encode(schema: Schema, value: Map<String, T>): Map<String, Any?> {
       require(schema.type == Schema.Type.MAP)
       if (value.isEmpty()) return emptyMap()
-      return value.mapValues { (_, v) -> valueEncoder.encode(schema.valueType, v) }
+      val valueType = schema.valueType
+      val result = LinkedHashMap<String, Any?>(value.size)
+      for (entry in value) {
+         result[entry.key] = valueEncoder.encode(valueType, entry.value)
+      }
+      return result
    }
 }
