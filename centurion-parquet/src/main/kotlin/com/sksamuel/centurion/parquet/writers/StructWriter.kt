@@ -12,6 +12,8 @@ internal class StructWriter(
   private val root: Boolean
 ) : Writer {
 
+  private val fieldWriters: Array<Writer> = Array(schema.fields.size) { Writer.writerFor(schema.fields[it].schema) }
+
   override fun write(consumer: RecordConsumer, value: Any) {
 
     fun write() {
@@ -26,8 +28,7 @@ internal class StructWriter(
         // null values are handled in parquet by skipping them completely in the file
         if (fieldValue != null) {
           consumer.writeField(field.name, k) {
-            val writer = Writer.writerFor(field.schema)
-            writer.write(consumer, fieldValue)
+            fieldWriters[k].write(consumer, fieldValue)
           }
         }
       }
