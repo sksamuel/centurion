@@ -4,6 +4,7 @@ import org.apache.avro.Conversions
 import org.apache.avro.LogicalTypes
 import org.apache.avro.Schema
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * An [Encoder] for [BigDecimal] that encodes as byte arrays.
@@ -14,11 +15,10 @@ object BigDecimalBytesEncoder : Encoder<BigDecimal> {
 
    override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.BYTES)
-
       val logical = schema.logicalType as LogicalTypes.Decimal
-      val rm = java.math.RoundingMode.HALF_UP
-
-      return converter.toBytes(value.setScale(logical.scale, rm), schema, logical)
+      val scaled = if (value.scale() == logical.scale) value
+      else value.setScale(logical.scale, RoundingMode.HALF_UP)
+      return converter.toBytes(scaled, schema, logical)
    }
 }
 
@@ -41,10 +41,9 @@ object BigDecimalFixedEncoder : Encoder<BigDecimal> {
 
    override fun encode(schema: Schema, value: BigDecimal): Any? {
       require(schema.type == Schema.Type.FIXED)
-
       val logical = schema.logicalType as LogicalTypes.Decimal
-      val rm = java.math.RoundingMode.HALF_UP
-
-      return converter.toFixed(value.setScale(logical.scale, rm), schema, logical)
+      val scaled = if (value.scale() == logical.scale) value
+      else value.setScale(logical.scale, RoundingMode.HALF_UP)
+      return converter.toFixed(scaled, schema, logical)
    }
 }
