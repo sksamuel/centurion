@@ -22,6 +22,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("centurion-avro")
 include("centurion-avro-lettuce")
+include("centurion-spring-grpc")
 //include("centurion-avro-gradle-plugin")
 include("centurion-benchmarks")
 
@@ -42,6 +43,8 @@ dependencyResolutionManagement {
          library("jackson-module-kotlin", "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
          library("lettuce-core", "io.lettuce:lettuce-core:6.7.1.RELEASE")
+
+         library("spring-grpc-server-starter", "org.springframework.grpc:spring-grpc-server-spring-boot-starter:0.8.0")
 
          library("commons-pool", "org.apache.commons:commons-pool2:2.12.1")
 
