@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.encoders
 
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
+import org.apache.avro.util.Utf8
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.nio.ByteBuffer
@@ -44,6 +45,7 @@ fun interface Encoder<T> {
             String::class if nonNullSchema.type == Schema.Type.BYTES -> ByteStringEncoder
             String::class if nonNullSchema.type == Schema.Type.FIXED -> FixedStringEncoder
             String::class -> StringEncoder
+            Utf8::class -> Utf8Encoder
             Boolean::class -> BooleanEncoder
             Float::class -> FloatEncoder
             Double::class -> DoubleEncoder
