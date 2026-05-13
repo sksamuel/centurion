@@ -46,8 +46,6 @@ dependencyResolutionManagement {
 
          library("spring-grpc-server-starter", "org.springframework.grpc:spring-grpc-server-spring-boot-starter:0.8.0")
 
-         library("commons-pool", "org.apache.commons:commons-pool2:2.12.1")
-
          library("kotlinpoet", "com.squareup:kotlinpoet:2.2.0")
 
          val jmh = "1.37"
