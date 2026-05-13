@@ -36,7 +36,7 @@ dependencyResolutionManagement {
          val tabby = "2.2.11"
          library("sksamuel-tabby", "com.sksamuel.tabby:tabby-fp:$tabby")
 
-         library("avro", "org.apache.avro:avro:1.12.0")
+         library("avro", "org.apache.avro:avro:1.12.1")
 
          library("kotlinx-coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
