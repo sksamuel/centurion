@@ -23,6 +23,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include("centurion-avro")
 include("centurion-avro-lettuce")
 include("centurion-spring-grpc")
+include("centurion-examples-spring-grpc")
 //include("centurion-avro-gradle-plugin")
 include("centurion-benchmarks")
 
