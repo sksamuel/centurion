@@ -380,45 +380,103 @@ val reader = BinaryReader(
 val user: UserV2 = reader.read() // UserV2("Alice", 123L, "")
 ```
 
-## Redis Integration
+## Redis Integration (Lettuce)
 
-Centurion provides Redis codecs via the `centurion-avro-lettuce` module for high-performance caching:
+The `centurion-avro-lettuce` module ships two `io.lettuce.core.codec.RedisCodec`
+implementations that let you put Avro-encoded values straight onto a Redis
+connection. The codecs cache the underlying `GenericDatumReader`/`Writer`
+along with their reflection-derived encoder/decoder, so there is no
+per-operation reflection or schema lookup once the codec is constructed.
+
+### Installation
 
 ```kotlin
-import com.sksamuel.centurion.avro.lettuce.GenericRecordCodec
+implementation("com.sksamuel.centurion:centurion-avro-lettuce:<version>")
+```
+
+### Picking a codec
+
+| Codec                          | Value type      | When to use                                                                       |
+|--------------------------------|-----------------|-----------------------------------------------------------------------------------|
+| `ReflectionDataClassCodec<T>`  | Kotlin data class | You want to put/get plain data classes; the schema is derived from the class.   |
+| `GenericRecordCodec`           | `GenericRecord` | You already work with Avro's generic API or your schema isn't known at compile time. |
+
+Both codecs implement `RedisCodec<T, T>` (same type for keys and values). In
+practice you'll pair them with a string key codec via `RedisCodec.of(...)`.
+
+### Caching a data class
+
+```kotlin
 import com.sksamuel.centurion.avro.lettuce.ReflectionDataClassCodec
 import io.lettuce.core.RedisClient
-import io.lettuce.core.codec.CompressionCodec
+import io.lettuce.core.codec.RedisCodec
 import io.lettuce.core.codec.StringCodec
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 
-// For Kotlin data classes
-data class User(val id: Long, val name: String)
+data class User(val id: Long, val name: String, val email: String?)
 
-val dataClassCodec = ReflectionDataClassCodec<User>(
+// Build the codec once and share it for the lifetime of the connection.
+val userCodec = ReflectionDataClassCodec(
     encoderFactory = EncoderFactory.get(),
     decoderFactory = DecoderFactory.get(),
-    kclass = User::class
+    kclass = User::class,
 )
 
-// For generic Avro records
-val recordCodec = GenericRecordCodec(
-    schema = myAvroSchema,
-    encoderFactory = EncoderFactory.get(),
-    decoderFactory = DecoderFactory.get()
-)
-
-// Use with Redis (key as String, value as User)
 val client = RedisClient.create("redis://localhost")
-val connection = client.connect(
-    RedisCodec.of(StringCodec.UTF8, dataClassCodec)
-)
+val connection = client.connect(RedisCodec.of(StringCodec.UTF8, userCodec))
 val commands = connection.sync()
 
-commands.set("user:123", User(123L, "Alice"))
-val user = commands.get("user:123")
+commands.set("user:123", User(123L, "Alice", "alice@example.com"))
+val alice: User = commands.get("user:123")
 ```
+
+The codec reads the Avro schema from `ReflectionSchemaBuilder` once at
+construction time. Reads tolerate buffers that have been positioned or
+sliced upstream and never mutate the caller's `ByteBuffer`.
+
+### Caching a generic record
+
+When you already drive Avro through the generic API — for example because
+your schema is loaded at runtime — use `GenericRecordCodec`:
+
+```kotlin
+import com.sksamuel.centurion.avro.lettuce.GenericRecordCodec
+import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
+
+val schema: Schema = Schema.Parser().parse(/* schema JSON or .avsc */)
+
+val recordCodec = GenericRecordCodec(
+    schema = schema,
+    encoderFactory = EncoderFactory.get(),
+    decoderFactory = DecoderFactory.get(),
+)
+
+val connection = client.connect(RedisCodec.of(StringCodec.UTF8, recordCodec))
+val commands = connection.sync()
+
+val event = GenericData.Record(schema).apply {
+    put("id", 1L)
+    put("name", "login")
+}
+commands.set("event:1", event)
+```
+
+### Tips
+
+- **One codec per type, share it.** Both codecs are thread-safe and cache
+  every reusable component, so build one per type and reuse it across all
+  connections.
+- **Use the binary Avro format, not data files.** These codecs use Avro's
+  schemaless binary encoding (no per-value schema header); both sides of
+  the connection must agree on the schema. Use a registry if your
+  producers and consumers can drift.
+- **Compose with Lettuce's `CompressionCodec`** if you want gzip or LZ4
+  on top — wrap the Centurion codec with `CompressionCodec.valueCompressor(...)`.
+- **Keys are not Avro.** Keep keys as `StringCodec.UTF8` (or another
+  primitive codec). The Centurion codecs are intended for the value half
+  of the pair only, even though they implement `RedisCodec<T, T>`.
 
 ## Gradle Plugin for Code Generation
 
