@@ -31,6 +31,8 @@ class BinarySerde<T : Any>(
    private val decoderFactory: DecoderFactory,
 ) : Serde<T> {
 
+   private val datumReader = GenericDatumReader<GenericRecord>(schema, schema)
+
    companion object {
 
       /**
@@ -68,8 +70,7 @@ class BinarySerde<T : Any>(
 
    override fun deserialize(bytes: ByteArray): T {
       val binaryDecoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, null)
-      val datum = GenericDatumReader<GenericRecord>(schema, schema)
-      val record = datum.read(null, binaryDecoder)
+      val record = datumReader.read(null, binaryDecoder)
       return decoder.decode(schema, record)
    }
 }
