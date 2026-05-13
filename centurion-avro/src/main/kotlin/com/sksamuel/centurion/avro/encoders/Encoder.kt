@@ -3,6 +3,7 @@ package com.sksamuel.centurion.avro.encoders
 import com.sksamuel.centurion.avro.schemas.unionNonNullComponent
 import org.apache.avro.Schema
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalDateTime
@@ -51,6 +52,8 @@ fun interface Encoder<T> {
             Short::class -> ShortEncoder
             Byte::class -> ByteEncoder
             BigDecimal::class -> BigDecimalStringEncoder
+            BigInteger::class if nonNullSchema.type == Schema.Type.BYTES -> BigIntegerBytesEncoder
+            BigInteger::class -> BigIntegerStringEncoder
             ByteBuffer::class -> ByteBufferEncoder
             ByteArray::class -> ByteArrayEncoder
             List::class -> {

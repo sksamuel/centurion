@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.schemas
 
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
+import java.math.BigInteger
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -39,6 +40,7 @@ class ReflectionSchemaBuilder(
          Float::class -> builder.floatType()
          ByteArray::class -> builder.bytesType()
          ByteBuffer::class -> builder.bytesType()
+         BigInteger::class -> builder.bytesType()
          Set::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
          List::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
          Array::class -> builder.array().items(schemaFor(type.arguments.first().type!!))
