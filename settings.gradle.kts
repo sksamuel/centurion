@@ -24,6 +24,7 @@ include("centurion-avro")
 include("centurion-avro-lettuce")
 include("centurion-spring-grpc")
 include("centurion-examples-spring-grpc")
+include("centurion-ktor")
 //include("centurion-avro-gradle-plugin")
 include("centurion-benchmarks")
 
@@ -46,6 +47,13 @@ dependencyResolutionManagement {
          library("lettuce-core", "io.lettuce:lettuce-core:6.7.1.RELEASE")
 
          library("spring-grpc-server-starter", "org.springframework.grpc:spring-grpc-server-spring-boot-starter:0.8.0")
+
+         val ktor = "3.4.3"
+         library("ktor-serialization", "io.ktor:ktor-serialization-jvm:$ktor")
+         library("ktor-server-test-host", "io.ktor:ktor-server-test-host-jvm:$ktor")
+         library("ktor-server-content-negotiation", "io.ktor:ktor-server-content-negotiation-jvm:$ktor")
+         library("ktor-client-content-negotiation", "io.ktor:ktor-client-content-negotiation-jvm:$ktor")
+         library("ktor-client-core", "io.ktor:ktor-client-core-jvm:$ktor")
 
          library("kotlinpoet", "com.squareup:kotlinpoet:2.2.0")
 
