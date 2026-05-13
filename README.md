@@ -223,37 +223,37 @@ Centurion provides built-in encoders and decoders for a comprehensive set of typ
 
 ### Avro Type Support
 
-| Type                           | Encoder/Decoder | Notes                                                                              |
-|--------------------------------|-----------------|------------------------------------------------------------------------------------|
-| **Primitives**                 |                 |                                                                                    |
-| `Byte`, `Short`                | ✓               | Stored as Avro `INT`; decoders widen from narrower numeric types                   |
-| `Int`, `Long`                  | ✓               | Direct mapping; `LongDecoder` accepts `Int`/`Short`/`Byte`                         |
-| `Float`, `Double`              | ✓               | IEEE 754 floating point; `DoubleDecoder` accepts `Float`                           |
-| `Boolean`                      | ✓               |                                                                                    |
-| **Strings**                    |                 |                                                                                    |
-| `String`                       | ✓               | Schema-driven: encoded as `STRING` (UTF-8/Utf8), `BYTES`, or `FIXED`               |
-| `CharSequence`                 | Decoder only    | `CharSequenceDecoder` — coerces incoming UTF-8/`Utf8`/`String` without conversion  |
-| `Utf8`                         | Decoder only    | `UTF8Decoder` — keeps the Avro-native UTF-8 representation                         |
-| `UUID`                         | Encoder only    | `Utf8UUIDEncoder` (default) or `JavaStringUUIDEncoder`                             |
-| **Temporal Types**             |                 |                                                                                    |
-| `Instant`                      | ✓               | `TimestampMillis`/`TimestampMicros` logical types or raw `LONG` epoch-millis       |
-| `LocalDateTime`                | ✓               | `LocalTimestampMillis`/`LocalTimestampMicros` logical types or raw `LONG`          |
-| `LocalTime`                    | ✓               | `TimeMillis` (`INT`) / `TimeMicros` (`LONG`) logical types                         |
-| `OffsetDateTime`               | ✓               | Round-trips through `Instant` at UTC                                               |
-| **Numeric Types**              |                 |                                                                                    |
-| `BigDecimal`                   | ✓               | Separate encoders/decoders for `BYTES`, `FIXED`, and `STRING` representations      |
-| **Collections**                |                 |                                                                                    |
-| `List<T>`, `Set<T>`            | ✓               | Generic support; primitive/`String` element types use a zero-cost passthrough path |
-| `Array<T>`                     | Encoder only    | `ArrayEncoder` — decoder side returns `List<T>`                                    |
-| `IntArray`, `LongArray`        | ✓               | Specialized primitive arrays, no boxing                                            |
-| `Map<String, T>`               | ✓               | Avro requires `String` keys; preserves insertion order                             |
-| **Binary**                     |                 |                                                                                    |
-| `ByteArray`                    | ✓               | Encoded as `BYTES` or `FIXED` (zero-padded when shorter than `fixedSize`)          |
-| `ByteBuffer`                   | ✓               | Honours `position`/`limit`; never mutates the source buffer                        |
-| **Other**                      |                 |                                                                                    |
-| Enum classes                   | ✓               | Any Kotlin or Java `enum` — uses Avro `ENUM` symbols                               |
-| Nullable types (`T?`)          | ✓               | Encoded as a 2-element union with `null`; full Kotlin null-safety                  |
-| Data classes                   | ✓               | Via reflection (`ReflectionRecord{En,De}coder`) or generated code                  |
+| Type                           | Notes                                                                                                |
+|--------------------------------|------------------------------------------------------------------------------------------------------|
+| **Primitives**                 |                                                                                                      |
+| `Byte`, `Short`                | Stored as Avro `INT`; decoders widen from narrower numeric types                                     |
+| `Int`, `Long`                  | Direct mapping; `LongDecoder` accepts `Int`/`Short`/`Byte`                                           |
+| `Float`, `Double`              | IEEE 754 floating point; `DoubleDecoder` accepts `Float`                                             |
+| `Boolean`                      |                                                                                                      |
+| **Strings**                    |                                                                                                      |
+| `String`                       | Schema-driven: encoded as `STRING` (UTF-8/Utf8), `BYTES`, or `FIXED`                                 |
+| `CharSequence`                 | Decoder only — `CharSequenceDecoder` coerces incoming UTF-8/`Utf8`/`String` without conversion       |
+| `Utf8`                         | Decoder only — `UTF8Decoder` keeps the Avro-native UTF-8 representation                              |
+| `UUID`                         | Encoder only — `Utf8UUIDEncoder` (default) or `JavaStringUUIDEncoder`                                |
+| **Temporal Types**             |                                                                                                      |
+| `Instant`                      | `TimestampMillis`/`TimestampMicros` logical types or raw `LONG` epoch-millis                         |
+| `LocalDateTime`                | `LocalTimestampMillis`/`LocalTimestampMicros` logical types or raw `LONG`                            |
+| `LocalTime`                    | `TimeMillis` (`INT`) / `TimeMicros` (`LONG`) logical types                                           |
+| `OffsetDateTime`               | Round-trips through `Instant` at UTC                                                                 |
+| **Numeric Types**              |                                                                                                      |
+| `BigDecimal`                   | Separate encoders/decoders for `BYTES`, `FIXED`, and `STRING` representations                        |
+| **Collections**                |                                                                                                      |
+| `List<T>`, `Set<T>`            | Generic support; primitive/`String` element types use a zero-cost passthrough path                   |
+| `Array<T>`                     | Encoder only — `ArrayEncoder`; the decoder side returns `List<T>`                                    |
+| `IntArray`, `LongArray`        | Specialized primitive arrays, no boxing                                                              |
+| `Map<String, T>`               | Avro requires `String` keys; preserves insertion order                                               |
+| **Binary**                     |                                                                                                      |
+| `ByteArray`                    | Encoded as `BYTES` or `FIXED` (zero-padded when shorter than `fixedSize`)                            |
+| `ByteBuffer`                   | Honours `position`/`limit`; never mutates the source buffer                                          |
+| **Other**                      |                                                                                                      |
+| Enum classes                   | Any Kotlin or Java `enum` — uses Avro `ENUM` symbols                                                 |
+| Nullable types (`T?`)          | Encoded as a 2-element union with `null`; full Kotlin null-safety                                    |
+| Data classes                   | Via reflection (`ReflectionRecord{En,De}coder`) or generated code                                    |
 
 ## High-Performance Serde API
 
