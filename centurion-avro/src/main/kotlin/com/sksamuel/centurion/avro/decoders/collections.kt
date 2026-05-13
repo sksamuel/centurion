@@ -7,7 +7,21 @@ class IntArrayDecoder(private val decoder: Decoder<Int>) : Decoder<IntArray> {
       val elementType = schema.elementType
       return when (value) {
          // put list first as avro encodes as GenericArray mostly
-         is List<*> -> IntArray(value.size) { i -> decoder.decode(elementType, value[i]) }
+         is List<*> -> {
+            val size = value.size
+            val result = IntArray(size)
+            if (value is RandomAccess) {
+               for (i in 0 until size) {
+                  result[i] = decoder.decode(elementType, value[i])
+               }
+            } else {
+               var i = 0
+               for (element in value) {
+                  result[i++] = decoder.decode(elementType, element)
+               }
+            }
+            result
+         }
          is Array<*> -> IntArray(value.size) { i -> decoder.decode(elementType, value[i]) }
          else -> error("Unsupported list type $value")
       }
@@ -19,7 +33,21 @@ class LongArrayDecoder(private val decoder: Decoder<Long>) : Decoder<LongArray> 
       val elementType = schema.elementType
       return when (value) {
          // put list first as avro encodes as GenericArray mostly
-         is List<*> -> LongArray(value.size) { i -> decoder.decode(elementType, value[i]) }
+         is List<*> -> {
+            val size = value.size
+            val result = LongArray(size)
+            if (value is RandomAccess) {
+               for (i in 0 until size) {
+                  result[i] = decoder.decode(elementType, value[i])
+               }
+            } else {
+               var i = 0
+               for (element in value) {
+                  result[i++] = decoder.decode(elementType, element)
+               }
+            }
+            result
+         }
          is Array<*> -> LongArray(value.size) { i -> decoder.decode(elementType, value[i]) }
          else -> error("Unsupported list type $value")
       }
