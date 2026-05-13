@@ -9,7 +9,6 @@ import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
@@ -48,7 +47,7 @@ class ReflectionDataClassCodec<T : Any>(
    private fun read(buffer: ByteBuffer): GenericRecord {
       val bytes = ByteArray(buffer.remaining())
       buffer.get(bytes)
-      val decoder = decoderFactory.binaryDecoder(ByteArrayInputStream(bytes), null)
+      val decoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, null)
       return datumReader.read(null, decoder)
    }
 

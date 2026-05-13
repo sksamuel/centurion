@@ -7,7 +7,6 @@ import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 
@@ -42,7 +41,7 @@ class GenericRecordCodec(
    private fun decode(buffer: ByteBuffer): GenericRecord {
       val bytes = ByteArray(buffer.remaining())
       buffer.get(bytes)
-      val decoder = decoderFactory.binaryDecoder(ByteArrayInputStream(bytes), null)
+      val decoder = decoderFactory.binaryDecoder(bytes, 0, bytes.size, null)
       return datumReader.read(null, decoder)
    }
 
