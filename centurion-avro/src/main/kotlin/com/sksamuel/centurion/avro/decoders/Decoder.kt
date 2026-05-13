@@ -8,6 +8,7 @@ import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -80,6 +81,7 @@ fun interface Decoder<T> {
             LocalTime::class -> LocalTimeDecoder
             LocalDateTime::class -> LocalDateTimeDecoder
             Instant::class -> InstantDecoder
+            UUID::class -> UUIDDecoder
             is KClass<*> if classifier.java.isEnum -> EnumDecoder(classifier as KClass<out Enum<*>>)
             is KClass<*> if classifier.isData -> ReflectionRecordDecoder(schema, classifier)
             else -> error("No Decoder available for type $type with schema ${schema.type} ($schema)")
