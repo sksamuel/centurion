@@ -5,8 +5,8 @@
 [<img src="https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Fsksamuel%2Fcenturion%2Fcenturion-avro%2Fmaven-metadata.xml&strategy=highestVersion&label=maven-snapshot">](https://central.sonatype.com/repository/maven-snapshots/com/sksamuel/centurion/centurion-avro/maven-metadata.xml)
 ![License](https://img.shields.io/github/license/sksamuel/centurion.svg?style=plastic)
 
-Centurion is a high-performance Kotlin toolkit for working with columnar and streaming data formats in a type-safe, 
-idiomatic way. Built on top of proven Apache libraries, it provides zero-copy serialization, automatic code generation,
+Centurion is a high-performance Kotlin toolkit for working with Apache Avro in a type-safe,
+idiomatic way. It provides zero-copy serialization, automatic code generation,
 and seamless integration with modern JVM applications.
 
 ## Why Centurion?
@@ -15,15 +15,13 @@ and seamless integration with modern JVM applications.
 - **Zero-copy performance:** Optimized encoders/decoders with reflection caching and pooled resources
 - **Schema evolution made easy:** First-class support for forward/backward compatible schema changes
 - **Batteries included:** Support for 40+ types out of the box including temporal types, BigDecimal, collections
-- **Production ready:** Built on Apache Avro - a battle-tested format used at scale
-
-See [changelog](changelog.md) for release notes.
+- **Production ready:** Originally built for production use at [Grindr](https://grindr.com)
 
 ## Features
 
 - **Type-safe schema definitions:** Define schemas using Kotlin's type system with compile-time safety
 - **Avro format support:** Binary and data file I/O for Apache Avro
-- **High-performance Serde API:** Zero-copy serialization with automatic compression support  
+- **High-performance Serde API:** Zero-copy serialization with automatic compression support
 - **Schema evolution:** Forward and backward compatible schema changes for Avro
 - **Code generation:** Generate data classes and optimized encoders/decoders from Avro schemas
 - **Redis integration:** Built-in Lettuce codecs for caching Avro data
@@ -125,7 +123,7 @@ import com.sksamuel.centurion.avro.decoders.ReflectionRecordDecoder
 import org.apache.avro.io.DecoderFactory
 import java.io.FileInputStream
 
-// Read from Avro binary format  
+// Read from Avro binary format
 FileInputStream("users.avro").use { input ->
   val avroSchema = schema.toAvroSchema()
   val reader = BinaryReader(
@@ -225,32 +223,32 @@ Centurion provides built-in encoders and decoders for a comprehensive set of typ
 
 ### Avro Type Support
 
-| Type | Encoder/Decoder | Notes |
-|------|-----------------|-------|
-| **Primitives** | | |
-| `Byte`, `Short`, `Int`, `Long` | ✓ | Direct mapping to Avro types |
-| `Float`, `Double` | ✓ | IEEE 754 floating point |
-| `Boolean` | ✓ | |
-| `String` | ✓ | UTF-8 encoded, optimized with `globalUseJavaString` |
-| **Temporal Types** | | |
-| `Instant` | ✓ | TimestampMillis/TimestampMicros logical types |
-| `LocalDateTime` | ✓ | LocalTimestampMillis/LocalTimestampMicros |
-| `LocalTime` | ✓ | TimeMillis/TimeMicros logical types |
-| `OffsetDateTime` | ✓ | Converted to Instant |
-| **Numeric Types** | | |
-| `BigDecimal` | ✓ | Bytes/Fixed/String encodings with scale |
-| `UUID` | ✓ | String or fixed byte encoding |
-| **Collections** | | |
-| `List<T>`, `Set<T>` | ✓ | Generic support for any element type |
-| `Array<T>` | ✓ | Native array support |
-| `LongArray`, `IntArray` | ✓ | Optimized primitive arrays |
-| `Map<String, T>` | ✓ | String keys required by Avro |
-| **Binary** | | |
-| `ByteArray` | ✓ | Direct bytes type |
-| `ByteBuffer` | ✓ | Zero-copy when possible |
-| **Enums** | ✓ | Kotlin enum classes |
-| **Nullable Types** | ✓ | Full Kotlin null-safety support |
-| **Data Classes** | ✓ | Via reflection or code generation |
+| Type                           | Encoder/Decoder | Notes                                               |
+|--------------------------------|-----------------|-----------------------------------------------------|
+| **Primitives**                 |                 |                                                     |
+| `Byte`, `Short`, `Int`, `Long` | ✓               | Direct mapping to Avro types                        |
+| `Float`, `Double`              | ✓               | IEEE 754 floating point                             |
+| `Boolean`                      | ✓               |                                                     |
+| `String`                       | ✓               | UTF-8 encoded, optimized with `globalUseJavaString` |
+| **Temporal Types**             |                 |                                                     |
+| `Instant`                      | ✓               | TimestampMillis/TimestampMicros logical types       |
+| `LocalDateTime`                | ✓               | LocalTimestampMillis/LocalTimestampMicros           |
+| `LocalTime`                    | ✓               | TimeMillis/TimeMicros logical types                 |
+| `OffsetDateTime`               | ✓               | Converted to Instant                                |
+| **Numeric Types**              |                 |                                                     |
+| `BigDecimal`                   | ✓               | Bytes/Fixed/String encodings with scale             |
+| `UUID`                         | ✓               | String or fixed byte encoding                       |
+| **Collections**                |                 |                                                     |
+| `List<T>`, `Set<T>`            | ✓               | Generic support for any element type                |
+| `Array<T>`                     | ✓               | Native array support                                |
+| `LongArray`, `IntArray`        | ✓               | Optimized primitive arrays                          |
+| `Map<String, T>`               | ✓               | String keys required by Avro                        |
+| **Binary**                     |                 |                                                     |
+| `ByteArray`                    | ✓               | Direct bytes type                                   |
+| `ByteBuffer`                   | ✓               | Zero-copy when possible                             |
+| **Enums**                      | ✓               | Kotlin enum classes                                 |
+| **Nullable Types**             | ✓               | Full Kotlin null-safety support                     |
+| **Data Classes**               | ✓               | Via reflection or code generation                   |
 
 ## High-Performance Serde API
 
@@ -522,7 +520,7 @@ fun processUser(user: User) {
 // Solution: Reuse serde instances
 class UserService {
     private val serde = BinarySerde<User>() // Create once
-    
+
     fun processUser(user: User) {
         val bytes = serde.serialize(user)
         // ...
