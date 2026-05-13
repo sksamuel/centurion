@@ -2,6 +2,7 @@ package com.sksamuel.centurion.avro.schemas
 
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
+import org.apache.avro.util.Utf8
 import java.math.BigInteger
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
@@ -31,6 +32,7 @@ class ReflectionSchemaBuilder(
 
       val schema: Schema = when (val classifier = type.classifier) {
          String::class -> if (useJavaString) STRING_SCHEMA_JAVA else STRING_SCHEMA
+         Utf8::class -> STRING_SCHEMA
          Boolean::class -> builder.booleanType()
          Int::class -> builder.intType()
          Long::class -> builder.longType()
