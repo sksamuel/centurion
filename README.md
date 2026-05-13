@@ -139,21 +139,6 @@ FileInputStream("users.avro").use { input ->
 }
 ```
 
-## Schema Conversion
-
-Convert a Centurion schema to its Avro counterpart:
-
-```kotlin
-import com.sksamuel.centurion.avro.schemas.toAvroSchema
-
-val centurionSchema = Schema.Struct(
-  Schema.Field("name", Schema.Strings),
-  Schema.Field("age", Schema.Int32)
-)
-
-val avroSchema = centurionSchema.toAvroSchema()
-```
-
 ## Advanced Types
 
 ### Working with Complex Types
