@@ -64,3 +64,10 @@ class AvroCodec<T : Any>(
 
 @Deprecated("Renamed to AvroCodec", ReplaceWith("AvroCodec<T>"))
 typealias ReflectionDataClassCodec<T> = AvroCodec<T>
+
+inline fun <reified T : Any> AvroCodec(): AvroCodec<T> = AvroCodec(T::class)
+
+inline fun <reified T : Any> AvroCodec(
+   encoderFactory: EncoderFactory,
+   decoderFactory: DecoderFactory,
+): AvroCodec<T> = AvroCodec(encoderFactory, decoderFactory, T::class)
