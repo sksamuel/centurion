@@ -9,13 +9,13 @@ import kotlinx.coroutines.future.await
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
 
-class ReflectionDataClassCodecTest : FunSpec({
+class AvroCodecTest : FunSpec({
 
    val redis = install(redisExtension)
 
    test("happy path") {
 
-      val valueCodec = ReflectionDataClassCodec(
+      val valueCodec = AvroCodec(
          encoderFactory = EncoderFactory.get(),
          decoderFactory = DecoderFactory.get(),
          Foo::class,
@@ -32,11 +32,7 @@ class ReflectionDataClassCodecTest : FunSpec({
 
    test("lists of records") {
 
-      val valueCodec = ReflectionDataClassCodec(
-         encoderFactory = EncoderFactory.get(),
-         decoderFactory = DecoderFactory.get(),
-         Wrapper::class,
-      )
+      val valueCodec = AvroCodec(Wrapper::class)
 
       val keyCodec = StringCodec.UTF8
       val conn = redis.toConnection(codec = RedisCodec.of(keyCodec, valueCodec))
