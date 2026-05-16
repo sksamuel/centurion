@@ -16,11 +16,13 @@ import kotlin.reflect.KClass
 /**
  * A [RedisCodec] for encoding and decoding data classes using Avro.
  */
-class ReflectionDataClassCodec<T : Any>(
+class AvroCodec<T : Any>(
    private val encoderFactory: EncoderFactory,
    private val decoderFactory: DecoderFactory,
    kclass: KClass<T>,
 ) : RedisCodec<T, T> {
+
+   constructor(kclass: KClass<T>) : this(EncoderFactory.get(), DecoderFactory.get(), kclass)
 
    private val schema = ReflectionSchemaBuilder().schema(kclass)
    private val encoder = ReflectionRecordEncoder(schema, kclass)
@@ -59,3 +61,6 @@ class ReflectionDataClassCodec<T : Any>(
       return ByteBuffer.wrap(baos.toByteArray())
    }
 }
+
+@Deprecated("Renamed to AvroCodec", ReplaceWith("AvroCodec<T>"))
+typealias ReflectionDataClassCodec<T> = AvroCodec<T>
